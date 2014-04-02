@@ -1,12 +1,12 @@
-package org.greencubes.util;
+package org.greencubes.launcher;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public final class Util {
 
@@ -26,18 +25,7 @@ public final class Util {
 	public static final char[] chars = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 	public static final DateFormat dateFormat = new SynchronizedDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 	public static final DateFormat fileDateFormat = new SynchronizedDateFormat(new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss"));
-	public static final float degree = (float) (180.0D / Math.PI);
 	public static final String[] emptyStringArray = new String[]{};
-
-	private static final Pattern stringFormat = Pattern.compile("(\247[0-9a-fA-F]|\247[usip]|\247r[0-9a-z]{8})", Pattern.CASE_INSENSITIVE);
-
-	public static String arrayDump(Object[] array) {
-		String s = "";
-		int i = 0;
-		for(Object o : array)
-			s += "[" + i + "] " + o;
-		return s;
-	}
 
 	public static void copyFile(File sourceFile, File destFile) throws IOException {
 		if(!destFile.exists())
@@ -232,10 +220,6 @@ public final class Util {
 		return map;
 	}
 
-	public static String clearFormat(String string) {
-		return stringFormat.matcher(string).replaceAll("");
-	}
-
 	public static boolean checkFileInDirrectory(File dir, File file) throws IOException {
 		dir = dir.getCanonicalFile();
 		file = file.getCanonicalFile();
@@ -313,20 +297,29 @@ public final class Util {
 		return (l1 << 32) + (l2 & 0xFFFFFFFFL);
 	}
 
-	private static byte[] createChecksum(String string) throws NoSuchAlgorithmException {
+	private static byte[] createChecksum(String filename) throws Exception {
+		InputStream fis = new FileInputStream(filename);
+
+		byte[] buffer = new byte[1024];
 		MessageDigest complete = MessageDigest.getInstance("MD5");
-		byte[] buffer = string.getBytes();
-		complete.update(buffer, 0, buffer.length);
+		int numRead;
+		do {
+			numRead = fis.read(buffer);
+			if(numRead > 0) {
+				complete.update(buffer, 0, numRead);
+			}
+		} while(numRead != -1);
+		fis.close();
 		return complete.digest();
 	}
 
-	public static String getMD5Checksum(String string) throws NoSuchAlgorithmException {
-		byte[] b = createChecksum(string);
-		StringBuilder result = new StringBuilder(32);
+	public static String getMD5Checksum(String filename) throws Exception {
+		byte[] b = createChecksum(filename);
+		String result = "";
 		for(int i = 0; i < b.length; i++) {
-			result.append(Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1));
+			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
 		}
-		return result.toString();
+		return result;
 	}
 
 	public static boolean equals(Object o1, Object o2) {
@@ -354,19 +347,5 @@ public final class Util {
 		} catch(UnsupportedEncodingException e) {
 			throw new AssertionError(e);
 		}
-	}
-
-	/**
-	 * Выполняет циклический здвиг массива
-	 * @param arr
-	 * @param rot
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> void shiftArray(T[] arr, int rot) {
-		T[] buff = (T[]) Array.newInstance(arr.getClass().getComponentType(), arr.length);
-		for(int i = 0; i < arr.length; ++i) {
-			buff[(i + rot) % buff.length] = arr[i];
-		}
-		System.arraycopy(buff, 0, arr, 0, arr.length);
 	}
 }

@@ -8,27 +8,44 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.greencubes.downloader.Downloader;
 
 public class Main {
 	
-	public static JFrame mainFrame;
+	public JFrame mainFrame;
 	//private static final String version = "4";
 	
 	private Downloader downloader = new Downloader("https://auth.greencubes.org/mc/");
+	private JTextField loginField;
+	private JPasswordField passwordField;
+	private String authResult;
+	private boolean processing = false;
+	private JPanel emptyPadding;
 	
 	private Main() {
 		downloader.addServer("https://auth1.greencubes.org/mc/");
@@ -47,7 +64,6 @@ public class Main {
 			e1.printStackTrace();
 		}
 		mainFrame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel background = null;
 		try {
@@ -204,12 +220,13 @@ public class Main {
 		c.gridy = 3;
 		inner.add(passwordRow, c);
 		/* Button padding */
-		panel = new JPanel();
-		panel.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
-		panel.setPreferredSize(new Dimension(304, 132));
+		emptyPadding = new JPanel();
+		emptyPadding.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
+		emptyPadding.setPreferredSize(new Dimension(304, 132));
+		emptyPadding.setOpaque(false);
 		c.gridx = 0;
 		c.gridy = 4;
-		inner.add(panel, c);
+		inner.add(emptyPadding, c);
 		
 		/* Login button */
 		c.gridx = 0;
@@ -230,7 +247,7 @@ public class Main {
 		c.gridx = 0;
 		c.gridy = 0;
 		loginRow.add(panel, c);
-		JTextField loginField = new JTextField(0);
+		loginField = new JTextField(0);
 		loginField.setPreferredSize(new Dimension(158, 23));
 		c.gridx = 1;
 		c.gridy = 0;
@@ -254,7 +271,7 @@ public class Main {
 		c.gridx = 0;
 		c.gridy = 0;
 		passwordRow.add(panel, c);
-		JPasswordField passwordField = new JPasswordField(0);
+		passwordField = new JPasswordField(0);
 		passwordField.setPreferredSize(new Dimension(158, 23));
 		c.gridx = 1;
 		c.gridy = 0;
@@ -271,9 +288,207 @@ public class Main {
 		c.gridy = 0;
 		passwordRow.add(panel, c);
 		
+		passwordField.setActionCommand("OK");
+		passwordField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				if(ae.getActionCommand().equals("OK"))
+					doLogin();
+			}
+		});
+		loginField.setActionCommand("OK");
+		loginField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				if(ae.getActionCommand().equals("OK"))
+					doLogin();
+			}
+		});
+		button.addMouseListener(new MouseListener() {
+			// Вот бы можно было сделать это лучше...
+			@Override
+            public void mouseClicked(MouseEvent e) {
+				
+            }
+			@Override
+            public void mousePressed(MouseEvent e) {
+				doLogin();
+            }
+
+			@Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+			@Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+			@Override
+            public void mouseExited(MouseEvent e) {
+            }
+		});
+		
 		mainFrame.pack();
 		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setVisible(true);
+	}
+	
+	public void doLogin() {
+		if(loginField.getText() == null || loginField.getText().length() == 0 || passwordField.getPassword() == null || passwordField.getPassword().length == 0)
+			return;
+		if(processing)
+			return;
+		try {
+	        String result = getLoginResult(loginField.getText(), String.valueOf(passwordField.getPassword()));
+	        if(result.equals("NO")) {
+	        	JOptionPane.showMessageDialog(mainFrame, "Не верный логин или пароль!", "Результат авторизации", JOptionPane.OK_OPTION);
+	        	return;
+			} else if(result.equals("BLOCKED")) {
+				JOptionPane.showMessageDialog(mainFrame, "IP заблокирован. Ждите один час.", "Результат авторизации", JOptionPane.OK_OPTION);
+				return;
+			}
+	        this.authResult = result;
+        } catch(IOException e) {
+        	JOptionPane.showMessageDialog(mainFrame, e, "Ошибка авторизации", JOptionPane.ERROR_MESSAGE);
+        	return;
+        }
+		processing = true;
+		new Thread("Client launch thread") {
+			@Override
+			public void run() {
+				try {
+	                downloadAndStart();
+                } catch(Exception e) {
+                	JOptionPane.showMessageDialog(mainFrame, e, "Ошибка запуска или обновления", JOptionPane.ERROR_MESSAGE);
+                }
+				processing = false;
+			}
+		}.start();		
+	}
+	
+	private File clientDir = new File("C:/_Greencubes/launcherTest");
+	private String clientName = "greencubes";
+	
+	private void downloadAndStart() throws Exception {
+		JTextArea statusArea = new JTextArea();
+		statusArea.setAlignmentX(0.5f);
+		statusArea.setEditable(false);
+		statusArea.setBackground(new Color(0f, 0f, 0f, 0f));
+		statusArea.setOpaque(false);
+		emptyPadding.add(statusArea);
+		statusArea.setText("Проверка обновлений...");
+		
+		List<GameFile> files = prepareVersionControl();
+		statusArea.setText("Загрузка файлов...");
+		downloadFiles(files, statusArea);
+		//mainFrame.dispose();
+	}
+	private void downloadFiles(List<GameFile> files, JTextArea statusArea) throws IOException {
+		int toDownload = 0;
+		for(int i = 0; i < files.size(); i++) {
+			GameFile file = files.get(i);
+			if(file.userFile.exists() && !file.needUpdate)
+				continue;
+			toDownload++;
+		}
+		if(toDownload > 0) {
+			int downloaded = 0;
+			for(int i = 0; i < files.size(); i++) {
+				GameFile file = files.get(i);
+				if(file.userFile.exists() && !file.needUpdate)
+					continue;
+				int repeat = 0;
+				while(true) {
+					if(++repeat == 3)
+						throw new IOException("Downloaded file does not match hash 3 times!");
+					statusArea.setText("Загрузка файлов... " + downloaded + "/" + toDownload + "\n" + file.name);
+					try {
+						downloader.downloadFile(file.userFile, file.fileUrl);
+					} catch(IOException e) {
+						throw e;
+					}
+					if(file.md5 != null)
+						try {
+							String downloadedMd5 = Util.getMD5Checksum(file.userFile.getAbsolutePath());
+							if(!file.md5.equals(downloadedMd5))
+								throw new IOException(downloadedMd5 + " != " + file.md5);
+						} catch(Exception e) {
+							throw new IOException(e);
+						}
+					break;
+				}
+				downloaded++;
+			}
+		}
+		statusArea.setText("Загрузка файлов...");
+		downloader.downloadFile(new File(clientDir, "version.md5"), "vc/" + clientName + "/version.md5");
+    }
+
+	private List<GameFile> prepareVersionControl() throws IOException {
+		List<GameFile> gameFiles = new ArrayList<GameFile>();
+		Map<String, String> currentHashes = new HashMap<String, String>();
+		File versionFile = new File(clientDir, "version.md5");
+		if(versionFile.exists()) {
+			try {
+				Scanner s = new Scanner(versionFile);
+				while(s.hasNextLine()) {
+					String line = s.nextLine();
+					if(line.startsWith("#"))
+						continue;
+					String[] split = line.split(";");
+					if(split.length < 2)
+						continue;
+					if(split.length == 2)
+						currentHashes.put(split[0], split[1]);
+					else
+						currentHashes.put(Util.join(split, ";", 0, split.length - 2), split[split.length - 1]);
+				}
+				s.close();
+			} catch(FileNotFoundException e) {
+			}
+		}
+		String serverHash = downloader.readURL("vc/" + clientName + "/version.md5");
+		List<String> newFiles = new ArrayList<String>();
+		for(String line : serverHash.split("\n")) {
+			if(line.startsWith("#"))
+				continue;
+			String[] split = line.split(";");
+			if(split.length < 2)
+				continue;
+			String name;
+			String hash;
+			if(split.length == 2) {
+				name = split[0];
+				hash = split[1];
+			} else {
+				name = Util.join(split, ";", 0, split.length - 2);
+				hash = split[split.length - 1];
+			}
+			GameFile file = new GameFile(name, clientDir);
+			file.fileUrl = URLEncoder.encode("vc/" + clientName + "/" + file.name,"UTF-8").replace("+","%20");
+			file.md5 = hash;
+			String currentHash = currentHashes.get(name);
+			if(!file.userFile.exists())
+				file.needUpdate = true;
+			else if(currentHash == null || !hash.equals(currentHash))
+				file.needUpdate = true;
+			gameFiles.add(file);
+			newFiles.add(name);
+		}
+		Iterator<Entry<String, String>> iterator = currentHashes.entrySet().iterator();
+		while(iterator.hasNext()) {
+			Entry<String, String> e = iterator.next();
+			if(!newFiles.contains(e.getKey())) {
+				File oldLib = new File(clientDir, e.getKey());
+				if(!oldLib.delete())
+					oldLib.deleteOnExit();
+			}
+		}
+		return gameFiles;
+	}
+	
+	private String getLoginResult(String userName, String password) throws IOException {
+		return downloader.readURL("auth.php?name=" + URLEncoder.encode(userName, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8"));
 	}
 	
 	public static void main(String[] args) {

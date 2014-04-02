@@ -1,4 +1,4 @@
-package org.greencubes.downloader;
+package org.greencubes.launcher;
 
 import java.io.IOException;
 

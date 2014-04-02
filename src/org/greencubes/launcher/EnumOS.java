@@ -1,4 +1,4 @@
-package org.greencubes.util;
+package org.greencubes.launcher;
 
 public enum EnumOS {
 
