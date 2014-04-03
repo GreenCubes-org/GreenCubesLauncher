@@ -13,9 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +32,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 
 public class Main {
@@ -51,7 +56,7 @@ public class Main {
 		downloader.addServer("https://auth1.greencubes.org/mc/");
 		mainFrame = new JFrame("GreenCubes Launcher");
 		mainFrame.setUndecorated(true);
-		mainFrame.setAlwaysOnTop(true);
+		mainFrame.setAlwaysOnTop(false);
 		try {
 			ArrayList<BufferedImage> icons = new ArrayList<BufferedImage>(5);
 			icons.add(ImageIO.read(Main.class.getResource("/gcico32x32.png")));
@@ -366,12 +371,15 @@ public class Main {
 		}.start();		
 	}
 	
-	private File clientDir = new File("C:/_Greencubes/launcherTest");
+	private File clientDir = new File(System.getProperty("user.dir"));
 	private String clientName = "greencubes";
 	
 	private void downloadAndStart() throws Exception {
-		JTextArea statusArea = new JTextArea();
-		statusArea.setAlignmentX(0.5f);
+		JTextPane statusArea = new JTextPane();
+		StyledDocument doc = statusArea.getStyledDocument();
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		statusArea.setEditable(false);
 		statusArea.setBackground(new Color(0f, 0f, 0f, 0f));
 		statusArea.setOpaque(false);
@@ -381,9 +389,62 @@ public class Main {
 		List<GameFile> files = prepareVersionControl();
 		statusArea.setText("Загрузка файлов...");
 		downloadFiles(files, statusArea);
-		//mainFrame.dispose();
+		launch(files);
+		mainFrame.dispose();
 	}
-	private void downloadFiles(List<GameFile> files, JTextArea statusArea) throws IOException {
+	private void launch(List<GameFile> files) {
+		List<String> classPath = new ArrayList<String>();
+		try {
+	        Scanner fr = new Scanner(new File(clientDir, "libraries/liborder.txt"));
+	        while(fr.hasNext())
+	        	classPath.add(fr.nextLine());
+	        fr.close();
+        } catch(FileNotFoundException e1) {
+	        throw new RuntimeException(e1);
+        }
+		List<String> command = new ArrayList<String>();
+		command.add(OperatingSystem.getCurrentPlatform().getJavaDir());
+		command.add("-Xmx1024M");
+		command.add("-cp");
+		StringBuilder cp = new StringBuilder();
+		
+		for(int i = 0; i < classPath.size(); ++i) {
+			cp.append(new File(clientDir, "libraries/" + classPath.get(i)).getAbsolutePath());
+			cp.append(System.getProperty("path.separator"));
+		}
+		cp.append("client.jar");
+		command.add(cp.toString());
+		command.add("org.greencubes.client.Main");
+		command.add("--fullscreen");
+		command.add("--session");
+		String[] split = authResult.split(":");
+		command.add(split[0]);
+		command.add(split[1]);
+		command.add("--connect");
+		command.add("srv1.greencubes.org");
+		ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
+		pb.directory(clientDir);
+		try {
+			
+	        Process p = pb.start();
+	        new ProcessMonitorThread(p).start();
+        } catch(IOException e) {
+        	throw new AssertionError(e);
+        }
+		/*ClassLoader loader = new URLClassLoader(newClassPath.toArray(new URL[0]));
+		try {
+	        Class<?> mainClass = loader.loadClass("org.greencubes.client.Main");
+	        Method m = mainClass.getMethod("main", String[].class);
+	        
+	        String[] split = authResult.split(":");
+	        m.invoke(null, (Object) new String[] {"--fullscreen", "--session", split[0], split[1], "--connect", "srv1.greencubes.org"});
+        } catch(Exception e) {
+	        throw new AssertionError(e);
+        }*/
+		
+    }
+
+	private void downloadFiles(List<GameFile> files, JTextPane statusArea) throws IOException {
 		int toDownload = 0;
 		for(int i = 0; i < files.size(); i++) {
 			GameFile file = files.get(i);
@@ -493,6 +554,50 @@ public class Main {
 	
 	public static void main(String[] args) {
 		new Main();		
+	}
+	
+	public class ProcessMonitorThread extends Thread {
+		private final Process process;
+
+		public ProcessMonitorThread(Process process) {
+			this.process = process;
+		}
+
+		public boolean isRunning() {
+			try {
+				this.process.exitValue();
+			} catch(IllegalThreadStateException ex) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public void run() {
+			InputStreamReader reader = new InputStreamReader(this.process.getInputStream());
+			BufferedReader buf = new BufferedReader(reader);
+			String line = null;
+
+			while(isRunning()) {
+				try {
+					while((line = buf.readLine()) != null) {
+						System.out.println("Client> " + line);
+						//this.process.getSysOutLines().add(line);
+					}
+				} catch(IOException ex) {
+					ex.printStackTrace();
+				} finally {
+					try {
+						buf.close();
+					} catch(IOException ex) {
+						//Logger.getLogger(ProcessMonitorThread.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
+			}
+			System.out.println("Client finished, disabling launcher " + this.process.exitValue());
+			System.exit(0);
+		}
 	}
 	
 }

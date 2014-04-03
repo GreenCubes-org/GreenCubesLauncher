@@ -265,34 +265,6 @@ public final class Util {
 		return buffer.toString();
 	}
 
-	public static File getAppDir(String s) {
-		String s1 = System.getProperty("user.home", ".");
-		File file;
-		switch(EnumOS.getOS()) {
-		case LINUX:
-		case SOLARIS:
-			file = new File(s1, (new StringBuilder()).append('.').append(s).append('/').toString());
-			break;
-		case WINDOWS:
-			String s2 = System.getenv("APPDATA");
-			if(s2 != null)
-				file = new File(s2, (new StringBuilder()).append(".").append(s).append('/').toString());
-			else
-				file = new File(s1, (new StringBuilder()).append('.').append(s).append('/').toString());
-			break;
-		case MACOS:
-			file = new File(s1, (new StringBuilder()).append("Library/Application Support/").append(s).toString());
-			break;
-		default:
-			file = new File(s1, (new StringBuilder()).append(s).append('/').toString());
-			break;
-		}
-		if(!file.exists() && !file.mkdirs())
-			throw new RuntimeException((new StringBuilder()).append("The working directory could not be created: ").append(file).toString());
-		else
-			return file;
-	}
-
 	public static long combine(long l1, long l2) {
 		return (l1 << 32) + (l2 & 0xFFFFFFFFL);
 	}
