@@ -404,6 +404,8 @@ public class Main {
         }
 		List<String> command = new ArrayList<String>();
 		command.add(OperatingSystem.getCurrentPlatform().getJavaDir());
+		command.add("-Xincgc");
+		command.add("-Xms1024M");
 		command.add("-Xmx1024M");
 		command.add("-cp");
 		StringBuilder cp = new StringBuilder();
