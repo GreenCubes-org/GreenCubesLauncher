@@ -359,7 +359,9 @@ public class Main {
 				return;
 			dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(f), cipher));
 			dos.writeUTF("d000m" + loginField.getText());
+			dos.close();
 		} catch(Exception e) {
+			e.printStackTrace();
 		} finally {
 			Util.close(dos);
 		}
@@ -370,12 +372,15 @@ public class Main {
 		if(f.exists()) {
 			DataInputStream dis = null;
 			try {
-				Cipher cipher = getCipher(1, "c8d3563578b9264ee7fc86d44bbb9a79");
+				Cipher cipher = getCipher(2, "c8d3563578b9264ee7fc86d44bbb9a79");
 				if(cipher == null)
 					return;
 				dis = new DataInputStream(new CipherInputStream(new FileInputStream(f), cipher));
 				loginField.setText(dis.readUTF().substring(5));
+				loginField.setCaretPosition(loginField.getText().length());
+				dis.close();
 			} catch(Exception e) {
+				e.printStackTrace();
 			} finally {
 				Util.close(dis);
 			}
