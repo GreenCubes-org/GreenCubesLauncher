@@ -14,8 +14,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
@@ -24,9 +28,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -332,10 +344,53 @@ public class Main {
             public void mouseExited(MouseEvent e) {
             }
 		});
-		
+		load();
 		mainFrame.pack();
 		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setVisible(true);
+	}
+	
+	private void save() {
+		DataOutputStream dos = null;
+		try {
+			File f = new File("launcher.dat");
+			Cipher cipher = getCipher(1, "c8d3563578b9264ee7fc86d44bbb9a79");
+			if(cipher == null)
+				return;
+			dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(f), cipher));
+			dos.writeUTF("d000m" + loginField.getText());
+		} catch(Exception e) {
+		} finally {
+			Util.close(dos);
+		}
+	}
+	
+	private void load() {
+		File f = new File("launcher.dat");
+		if(f.exists()) {
+			DataInputStream dis = null;
+			try {
+				Cipher cipher = getCipher(1, "c8d3563578b9264ee7fc86d44bbb9a79");
+				if(cipher == null)
+					return;
+				dis = new DataInputStream(new CipherInputStream(new FileInputStream(f), cipher));
+				loginField.setText(dis.readUTF().substring(5));
+			} catch(Exception e) {
+			} finally {
+				Util.close(dis);
+			}
+		}
+	}
+	
+	private Cipher getCipher(int mode, String password) throws Exception {
+		Random random = new Random(43287234L);
+		byte[] salt = new byte[8];
+		random.nextBytes(salt);
+		PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
+		SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
+		Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
+		cipher.init(mode, pbeKey, pbeParamSpec);
+		return cipher;
 	}
 	
 	public void doLogin() {
@@ -357,6 +412,7 @@ public class Main {
         	JOptionPane.showMessageDialog(mainFrame, e, "Ошибка авторизации", JOptionPane.ERROR_MESSAGE);
         	return;
         }
+		save();
 		processing = true;
 		new Thread("Client launch thread") {
 			@Override
