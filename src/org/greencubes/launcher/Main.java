@@ -54,6 +54,8 @@ import javax.swing.text.StyledDocument;
 
 public class Main {
 	
+	public static final boolean IS_64_BIT_JAVA;
+	
 	public JFrame mainFrame;
 	//private static final String version = "4";
 	
@@ -466,6 +468,7 @@ public class Main {
 		List<String> command = new ArrayList<String>();
 		command.add(OperatingSystem.getCurrentPlatform().getJavaDir());
 		command.add("-Xincgc");
+		command.add("-Djava.net.preferIPv4Stack=true");
 		command.add("-Xms1024M");
 		command.add("-Xmx1024M");
 		command.add("-cp");
@@ -617,6 +620,19 @@ public class Main {
 	
 	public static void main(String[] args) {
 		new Main();		
+	}
+	
+	static {
+		String[] opts = new String[]{"sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch"};
+		boolean is64bit = false;
+		for(String opt : opts) {
+			String val = System.getProperty(opt);
+			if(val != null && val.contains("64")) {
+				is64bit = true;
+				break;
+			}
+		}
+		IS_64_BIT_JAVA = is64bit;
 	}
 	
 	public class ProcessMonitorThread extends Thread {
