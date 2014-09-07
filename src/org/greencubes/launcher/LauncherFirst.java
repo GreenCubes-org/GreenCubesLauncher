@@ -4,10 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -51,33 +49,37 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.greencubes.swing.JPanelBG;
 
-public class Main {
+
+public class LauncherFirst {
 	
 	public static final boolean IS_64_BIT_JAVA;
 	
 	public JFrame mainFrame;
 	//private static final String version = "4";
 	
-	private Downloader downloader = new Downloader("https://auth.greencubes.org/mc/");
+	private Launcher launcher;
+	private Downloader downloader;
 	private JTextField loginField;
 	private JPasswordField passwordField;
 	private String authResult;
 	private boolean processing = false;
 	private JPanel emptyPadding;
 	
-	private Main() {
-		downloader.addServer("https://auth1.greencubes.org/mc/");
+	public LauncherFirst(Launcher launcher) {
+		this.launcher = launcher;
+		this.downloader = this.launcher.downloader;
 		mainFrame = new JFrame("GreenCubes Launcher");
 		mainFrame.setUndecorated(true);
 		mainFrame.setAlwaysOnTop(false);
 		try {
 			ArrayList<BufferedImage> icons = new ArrayList<BufferedImage>(5);
-			icons.add(ImageIO.read(Main.class.getResource("/gcico32x32.png")));
-			icons.add(ImageIO.read(Main.class.getResource("/gcico48x48.png")));
-			icons.add(ImageIO.read(Main.class.getResource("/gcico64x64.png")));
-			icons.add(ImageIO.read(Main.class.getResource("/gcico128x128.png")));
-			icons.add(ImageIO.read(Main.class.getResource("/gcico256x256.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico32x32.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico48x48.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico64x64.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico128x128.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico256x256.png")));
 			mainFrame.setIconImages(icons);
 		} catch(IOException e1) {
 			e1.printStackTrace();
@@ -86,31 +88,13 @@ public class Main {
 		
 		JPanel background = null;
 		try {
-			background = new JPanel() {
-				private static final long serialVersionUID = 1L;
-				private Image image = ImageIO.read(Main.class.getResource("/bg.png"));
-				
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					g.drawImage(image, 0, 0, this);
-				}
-			};
+			background = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/bg.png")));
 		} catch(IOException e2) {
 			throw new AssertionError(e2);
 		}
 		JPanel button = null;
 		try {
-			button = new JPanel() {
-				private static final long serialVersionUID = 1L;
-				private Image image = ImageIO.read(Main.class.getResource("/login.png"));
-				
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					g.drawImage(image, 0, 0, this);
-				}
-			};
+			button = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/login.png")));
 		} catch(IOException e2) {
 			throw new AssertionError(e2);
 		}
@@ -118,44 +102,13 @@ public class Main {
 		button.setPreferredSize(new Dimension(253, 31));
 		JPanel cross = null;
 		try {
-			cross = new JPanel() {
-				private static final long serialVersionUID = 1L;
-				private Image image = ImageIO.read(Main.class.getResource("/cross.png"));
-				
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					g.drawImage(image, 6, 6, this);
-				}
-			};
+			cross = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/cross.png")));
 		} catch(IOException e2) {
 			throw new AssertionError(e2);
 		}
 		cross.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
 		cross.setPreferredSize(new Dimension(26, 26));
-		cross.addMouseListener(new MouseListener() {
-			// Вот бы можно было сделать это лучше...
-			@Override
-            public void mouseClicked(MouseEvent e) {
-				
-            }
-			@Override
-            public void mousePressed(MouseEvent e) {
-				System.exit(0);
-            }
-
-			@Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-			@Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-			@Override
-            public void mouseExited(MouseEvent e) {
-            }
-		});
+		cross.addMouseListener(this.launcher.closeMouseListener);
 		
 		/* Main Layer */
 		mainFrame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
@@ -616,10 +569,6 @@ public class Main {
 	
 	private String getLoginResult(String userName, String password) throws IOException {
 		return downloader.readURL("auth.php?name=" + URLEncoder.encode(userName, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8"));
-	}
-	
-	public static void main(String[] args) {
-		new Main();		
 	}
 	
 	static {
