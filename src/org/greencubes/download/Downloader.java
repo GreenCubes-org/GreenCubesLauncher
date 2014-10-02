@@ -1,4 +1,4 @@
-package org.greencubes.launcher;
+package org.greencubes.download;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.greencubes.util.Util;
 
 public class Downloader {
 

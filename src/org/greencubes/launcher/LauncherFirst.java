@@ -49,7 +49,11 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.greencubes.client.GameFile;
+import org.greencubes.download.Downloader;
 import org.greencubes.swing.JPanelBG;
+import org.greencubes.util.OperatingSystem;
+import org.greencubes.util.Util;
 
 
 public class LauncherFirst {
@@ -75,23 +79,23 @@ public class LauncherFirst {
 		mainFrame.setAlwaysOnTop(false);
 		try {
 			ArrayList<BufferedImage> icons = new ArrayList<BufferedImage>(5);
-			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico32x32.png")));
-			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico48x48.png")));
-			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico64x64.png")));
-			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico128x128.png")));
-			icons.add(ImageIO.read(LauncherFirst.class.getResource("/gcico256x256.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/res/gcico32x32.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/res/gcico48x48.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/res/gcico64x64.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/res/gcico128x128.png")));
+			icons.add(ImageIO.read(LauncherFirst.class.getResource("/res/gcico256x256.png")));
 			mainFrame.setIconImages(icons);
 		} catch(IOException e1) {
 			e1.printStackTrace();
 		}
 		mainFrame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
 		
-		JPanel background = new JPanelBG("/bg.png");
-		JPanel button = new JPanelBG("/login.png");
+		JPanel background = new JPanelBG("/res/bg.png");
+		JPanel button = new JPanelBG("/res/login.png");
 
 		button.setBackground(new Color(0, 0, 0, 1));
 		button.setPreferredSize(new Dimension(253, 31));
-		JPanel cross = new JPanelBG("/cross.png");
+		JPanel cross = new JPanelBG("/res/cross.png");
 		cross.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
 		cross.setPreferredSize(new Dimension(26, 26));
 		cross.addMouseListener(this.launcher.closeMouseListener);
@@ -214,7 +218,7 @@ public class LauncherFirst {
 		loginField.setOpaque(false);
 		loginField.setForeground(new Color(170, 255, 102));
 		loginField.setCaretColor(new Color(170, 255, 102));
-		loginField.setFont(loginField.getFont().deriveFont(Font.BOLD));
+		loginField.setFont(new Font("ClearSans", Font.BOLD, loginField.getFont().getSize()));
 		panel = new JPanel();
 		panel.setBackground(new Color(0.0F, 1.0F, 1.0F, 0F));
 		panel.setPreferredSize(new Dimension(30, 23));
@@ -405,7 +409,7 @@ public class LauncherFirst {
 	        throw new RuntimeException(e1);
         }
 		List<String> command = new ArrayList<String>();
-		command.add(OperatingSystem.getCurrentPlatform().getJavaDir());
+		command.add(OperatingSystem.getJavaExecutable(false));
 		command.add("-Xincgc");
 		command.add("-Djava.net.preferIPv4Stack=true");
 		command.add("-Xms1024M");

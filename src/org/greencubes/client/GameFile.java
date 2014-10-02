@@ -1,4 +1,4 @@
-package org.greencubes.launcher;
+package org.greencubes.client;
 
 import java.io.File;
 

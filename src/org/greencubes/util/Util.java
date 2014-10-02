@@ -1,4 +1,4 @@
-package org.greencubes.launcher;
+package org.greencubes.util;
 
 import java.io.Closeable;
 import java.io.File;

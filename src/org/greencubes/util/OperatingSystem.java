@@ -1,10 +1,16 @@
-package org.greencubes.launcher;
+package org.greencubes.util;
 
 import java.io.File;
 
 public enum OperatingSystem {
-	LINUX("linux",new String[]{"linux", "unix"}), WINDOWS("windows", new String[]{"win"}), OSX("osx", new String[]{"mac"}), UNKNOWN("unknown",new String[0]);
-
+	
+	//@formatter:off
+	LINUX("linux", new String[]{"linux", "unix"}),
+	WINDOWS("windows", new String[]{"win"}),
+	OSX("osx", new String[]{"mac"}),
+	UNKNOWN("unknown", new String[0]);
+	//@fomatter: on
+	
 	private final String[] aliases;
 	public final String name;
 
@@ -13,11 +19,11 @@ public enum OperatingSystem {
 		this.name = name;
 	}
 
-	public String getJavaDir() {
+	public static String getJavaExecutable(boolean forceConsole) {
 		String separator = System.getProperty("file.separator");
 		String path = System.getProperty("java.home") + separator + "bin" + separator;
 
-		if((getCurrentPlatform() == WINDOWS) && (new File(path + "javaw.exe").isFile()))
+		if(!forceConsole && getCurrentPlatform() == WINDOWS && new File(path + "javaw.exe").isFile())
 			return path + "javaw.exe";
 
 		return path + "java";

@@ -10,7 +10,7 @@
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
-  <stayAlive>true</stayAlive>
+  <stayAlive>false</stayAlive>
   <manifest></manifest>
   <icon>C:\_Greencubes\Git\GreenCubesLauncher\install\icon.ico</icon>
   <jre>
@@ -20,7 +20,7 @@
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
-    <opt>-Dlaunch4j.exedir=&quot;%EXEDIR%&quot;</opt>
-    <opt>-Dlaunch4j.exefile=&quot;%EXEFILE%&quot;</opt>
+    <initialHeapSize>32</initialHeapSize>
+    <maxHeapSize>64</maxHeapSize>
   </jre>
 </launch4jConfig>

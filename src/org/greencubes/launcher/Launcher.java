@@ -3,6 +3,8 @@ package org.greencubes.launcher;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import org.greencubes.download.Downloader;
+
 public class Launcher {
 	
 	public Downloader downloader = new Downloader("https://auth.greencubes.org/mc/");
@@ -31,7 +33,7 @@ public class Launcher {
             public void mouseExited(MouseEvent e) {
             }
 		};
-		new LauncherSecond(this);
+		new LauncherFirst(this);
 	}
 	
 	protected void close() {

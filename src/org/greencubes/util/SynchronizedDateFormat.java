@@ -1,4 +1,4 @@
-package org.greencubes.launcher;
+package org.greencubes.util;
 
 import java.text.DateFormat;
 import java.text.FieldPosition;
