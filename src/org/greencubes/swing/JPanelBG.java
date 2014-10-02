@@ -2,17 +2,28 @@ package org.greencubes.swing;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+/**
+ * JPanel with image background
+ * @author Rena
+ *
+ */
 public class JPanelBG extends JPanel {
 
 	private static final long serialVersionUID = -8003041052208046109L;
 	
 	private Image bg;
 	
-	public JPanelBG(Image bg) {
-		this.bg = bg;
+	public JPanelBG(String bg) {
+		try {
+			this.bg = ImageIO.read(JPanel.class.getResource(bg));
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override

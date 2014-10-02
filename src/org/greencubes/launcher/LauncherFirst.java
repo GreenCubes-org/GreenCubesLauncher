@@ -86,26 +86,12 @@ public class LauncherFirst {
 		}
 		mainFrame.setBackground(new Color(1.0F, 1.0F, 1.0F, 0.0F));
 		
-		JPanel background = null;
-		try {
-			background = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/bg.png")));
-		} catch(IOException e2) {
-			throw new AssertionError(e2);
-		}
-		JPanel button = null;
-		try {
-			button = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/login.png")));
-		} catch(IOException e2) {
-			throw new AssertionError(e2);
-		}
+		JPanel background = new JPanelBG("/bg.png");
+		JPanel button = new JPanelBG("/login.png");
+
 		button.setBackground(new Color(0, 0, 0, 1));
 		button.setPreferredSize(new Dimension(253, 31));
-		JPanel cross = null;
-		try {
-			cross = new JPanelBG(ImageIO.read(LauncherFirst.class.getResource("/cross.png")));
-		} catch(IOException e2) {
-			throw new AssertionError(e2);
-		}
+		JPanel cross = new JPanelBG("/cross.png");
 		cross.setBackground(new Color(1.0F, 1.0F, 1.0F, 0F));
 		cross.setPreferredSize(new Dimension(26, 26));
 		cross.addMouseListener(this.launcher.closeMouseListener);
@@ -280,11 +266,11 @@ public class LauncherFirst {
 			// Вот бы можно было сделать это лучше...
 			@Override
             public void mouseClicked(MouseEvent e) {
-				
+				doLogin();
             }
 			@Override
             public void mousePressed(MouseEvent e) {
-				doLogin();
+				
             }
 
 			@Override

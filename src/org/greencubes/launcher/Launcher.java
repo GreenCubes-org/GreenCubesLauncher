@@ -13,11 +13,10 @@ public class Launcher {
 		closeMouseListener = new MouseListener() {
 			@Override
             public void mouseClicked(MouseEvent e) {
-				
+				Launcher.this.close();
             }
 			@Override
             public void mousePressed(MouseEvent e) {
-				Launcher.this.close();
             }
 
 			@Override
@@ -32,7 +31,7 @@ public class Launcher {
             public void mouseExited(MouseEvent e) {
             }
 		};
-		new LauncherFirst(this);
+		new LauncherSecond(this);
 	}
 	
 	protected void close() {
