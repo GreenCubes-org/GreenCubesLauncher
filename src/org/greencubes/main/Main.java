@@ -2,13 +2,19 @@ package org.greencubes.main;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 
-import org.greencubes.launcher.Launcher;
 import org.greencubes.launcher.LauncherOptions;
-import org.greencubes.launcher.LauncherUpdate;
+import org.greencubes.util.Util;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class Main {
+	
+	private static JSONObject config;
 	
 	public static void main(String[] args) {
 		for(String arg : args) {
@@ -40,9 +46,28 @@ public class Main {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		if(!LauncherOptions.noUpdateLauncher)
-			new LauncherUpdate();
-		else
-			new Launcher();
+		InputStream is = null;
+		try {
+			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
+			config = new JSONObject(new JSONTokener(is));
+		} catch(Exception e) {
+			config = new JSONObject();
+		} finally {
+			Util.close(is);
+		}
+		// TODO : Start launcher
+	}
+	
+	public static JSONObject getConfig() {
+		return config;
+	}
+	
+	public static void close() {
+		try {
+			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
+			config.write(fw);
+			fw.close();
+		} catch(Exception e) {}
+		System.exit(0);
 	}
 }

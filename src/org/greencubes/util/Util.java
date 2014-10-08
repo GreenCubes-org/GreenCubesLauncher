@@ -14,10 +14,14 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public final class Util {
 
@@ -319,5 +323,156 @@ public final class Util {
 		} catch(UnsupportedEncodingException e) {
 			throw new AssertionError(e);
 		}
+	}
+	
+	/**
+	 * <p>Performs a deep toString of provided object. It shows
+	 * content of arrays and collections. Maps are not supported yet.</p>
+	 * <p><b>Highly ineffective, use only for debug.</b></p>
+	 * @param object
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String toStirng(Object object) {
+		if(object == null)
+			return "null";
+		StringBuilder buf = new StringBuilder();
+		Class<?> eClass = object.getClass();
+		
+		if(eClass.isArray()) {
+			if(eClass == byte[].class)
+				buf.append(Arrays.toString((byte[]) object));
+			else if(eClass == short[].class)
+				buf.append(Arrays.toString((short[]) object));
+			else if(eClass == int[].class)
+				buf.append(Arrays.toString((int[]) object));
+			else if(eClass == long[].class)
+				buf.append(Arrays.toString((long[]) object));
+			else if(eClass == char[].class)
+				buf.append(Arrays.toString((char[]) object));
+			else if(eClass == float[].class)
+				buf.append(Arrays.toString((float[]) object));
+			else if(eClass == double[].class)
+				buf.append(Arrays.toString((double[]) object));
+			else if(eClass == boolean[].class)
+				buf.append(Arrays.toString((boolean[]) object));
+			else // element is an array of object references
+				deepToString((Object[]) object, buf, new HashSet<Object>());
+		} else { // element is non-null and not an array
+			if(object instanceof Collection)
+				deepToString((Collection <Object>) object, buf, new HashSet<Object>());
+			else
+				buf.append(object.toString());
+		}
+		return buf.toString();
+	}
+	
+	private static void deepToString(Collection<Object> list, StringBuilder buf, Set<Object> dejaVu) {
+		Object[] array = list.toArray();
+		deepToString(array, buf, dejaVu);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void deepToString(Object[] a, StringBuilder buf, Set<Object> dejaVu) {
+		if(a == null) {
+			buf.append("null");
+			return;
+		}
+		int iMax = a.length - 1;
+		if(iMax == -1) {
+			buf.append("[]");
+			return;
+		}
+		
+		dejaVu.add(a);
+		buf.append('[');
+		for(int i = 0;; i++) {
+			Object element = a[i];
+			if(element == null) {
+				buf.append("null");
+			} else {
+				Class<?> eClass = element.getClass();
+				
+				if(eClass.isArray()) {
+					if(eClass == byte[].class)
+						buf.append(Arrays.toString((byte[]) element));
+					else if(eClass == short[].class)
+						buf.append(Arrays.toString((short[]) element));
+					else if(eClass == int[].class)
+						buf.append(Arrays.toString((int[]) element));
+					else if(eClass == long[].class)
+						buf.append(Arrays.toString((long[]) element));
+					else if(eClass == char[].class)
+						buf.append(Arrays.toString((char[]) element));
+					else if(eClass == float[].class)
+						buf.append(Arrays.toString((float[]) element));
+					else if(eClass == double[].class)
+						buf.append(Arrays.toString((double[]) element));
+					else if(eClass == boolean[].class)
+						buf.append(Arrays.toString((boolean[]) element));
+					else { // element is an array of object references
+						if(dejaVu.contains(element))
+							buf.append("[...]");
+						else
+							deepToString((Object[]) element, buf, dejaVu);
+					}
+				} else { // element is non-null and not an array
+					if(element instanceof Collection)
+						deepToString((Collection <Object>) element, buf, dejaVu);
+					else
+						buf.append(element.toString());
+				}
+			}
+			if(i == iMax)
+				break;
+			buf.append(',');
+		}
+		buf.append(']');
+		dejaVu.remove(a);
+	}
+	
+	public static File getAppDir(String appName) {
+		File baseDir = getAppDir();
+		File f;
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case LINUX:
+		case WINDOWS:
+			f = new File(baseDir, appName + "/");
+			break;
+		case OSX:
+			f = new File(baseDir, appName + "/");
+			break;
+		default:
+			f = new File(baseDir, appName + "/");
+			break;
+		}
+		if(!f.exists() && !f.mkdirs())
+			throw new RuntimeException("The working directory could not be created: " + f.getPath());
+		return f;
+	}
+
+	private static File getAppDir() {
+		String userHome = System.getProperty("user.home", ".");
+		File workingDirectory;
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case LINUX:
+			workingDirectory = new File(userHome);
+			break;
+		case WINDOWS:
+			String applicationData = System.getenv("APPDATA");
+			if(applicationData != null)
+				workingDirectory = new File(applicationData);
+			else
+				workingDirectory = new File(userHome);
+			break;
+		case OSX:
+			workingDirectory = new File(userHome, "Library/Application Support/");
+			break;
+		default:
+			workingDirectory = new File(userHome);
+		}
+		if(!workingDirectory.exists() && !workingDirectory.mkdirs())
+			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
+		return workingDirectory;
 	}
 }
