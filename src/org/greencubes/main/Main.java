@@ -14,6 +14,9 @@ import org.json.JSONTokener;
 
 public class Main {
 	
+	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
+	public static final boolean TEST = false;
+	
 	private static JSONObject config;
 	
 	public static void main(String[] args) {
@@ -55,6 +58,9 @@ public class Main {
 		} finally {
 			Util.close(is);
 		}
+		if(config.optBoolean("debug"))
+			LauncherOptions.debug = true;
+		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		// TODO : Start launcher
 	}
 	
