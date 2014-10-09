@@ -42,7 +42,7 @@ public class LauncherOptions {
 	public static Downloader getDownloader() {
 		if(downloader == null) {
 			if(Main.TEST) {
-				downloader = new Downloader("https://greencubes.org/launcher_dev_lc17e22/"); // For test purposes
+				downloader = new Downloader("https://greencubes.org/"); // For test purposes
 			} else {
 				downloader = new Downloader("https://auth.greencubes.org/client/");
 				downloader.addServer("https://auth1.greencubes.org/client/");

@@ -355,7 +355,7 @@ public final class Util {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static String toStirng(Object object) {
+	public static String toString(Object object) {
 		if(object == null)
 			return "null";
 		StringBuilder buf = new StringBuilder();

@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
 
@@ -58,7 +59,7 @@ public class Main {
 		Util.getUnsafe();
 		Encryption.init();
 		LauncherOptions.init();
-
+		
 		/*
 		try {
 			BufferedImage bi = ImageIO.read(new File("grid.png"));

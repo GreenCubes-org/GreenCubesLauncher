@@ -17,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.greencubes.util.Util;
@@ -282,9 +283,10 @@ public class Downloader {
 					EntityUtils.consumeQuietly(response.getEntity());
 					throw new HTTPResponseError(code + " " + response.getStatusLine().getReasonPhrase() + " for " + u.getPath());
 				}
+				ContentType ct = ContentType.get(entity);
 				is = entity.getContent();
 				bytesToDownload = (int) entity.getContentLength();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				BufferedReader reader = new BufferedReader(ct != null ? new InputStreamReader(is, ct.getCharset()) : new InputStreamReader(is));
 				StringBuilder sb = new StringBuilder();
 				String s;
 				while((s = reader.readLine()) != null) {

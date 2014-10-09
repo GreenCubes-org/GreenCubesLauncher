@@ -88,7 +88,7 @@ public class I18n {
 		Iterator<Entry<String,Object>> iterator = jo.getMap().entrySet().iterator();
 		while(iterator.hasNext()) {
 			Entry<String,Object> e = iterator.next();
-			langMap.put(e.getKey(), Util.toStirng(e.getValue()));
+			langMap.put(e.getKey(), Util.toString(e.getValue()));
 		}
 		currentLocale = new Locale(currentLanguage.substring(0, 2), currentLanguage.substring(2, 4));
 		localizedDateFormat = new SimpleDateFormat("d MMMM yyyy", currentLocale);
