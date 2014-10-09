@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.security.Security;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
@@ -27,6 +29,7 @@ public class Main {
 			if(arg.equals("-noupdate"))
 				LauncherOptions.noUpdateLauncher = true;
 		}
+		Security.addProvider(new BouncyCastleProvider());
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		try {
 			InputStream is = Main.class.getResource("/res/font/ClearSans-Medium.ttf").openStream();

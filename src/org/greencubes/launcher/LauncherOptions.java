@@ -172,17 +172,23 @@ public class LauncherOptions {
 			@Override
 			public void checkPermission(Permission perm) {
 				try {
-					if(LauncherOptions.class.getDeclaredField("sessionKeyAddress").isAccessible())
-						throw new RuntimeException();
 					if(!Class.forName("java.lang.Thread").getMethod("getStackTrace").equals(Thread.currentThread().getClass().getMethod("getStackTrace")))
 						throw new RuntimeException();
 				} catch(Exception e) {
-					System.err.println("Current thread: " + Thread.currentThread().getClass());
 					Encryption.throwMajicError();
 					return;
 				}
 				if(perm.getName().equals("setSecurityManager"))
 					Encryption.throwMajicError();
+			}
+			
+			@Override
+			public void checkMemberAccess(Class<?> clazz, int which) {
+				if(clazz == LauncherOptions.class) {
+					StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+					if(!stes[3].getClassName().equals(LauncherOptions.class.getName()))
+						Encryption.throwMajicError();
+				}
 			}
 		};
 		System.setSecurityManager(sm);
