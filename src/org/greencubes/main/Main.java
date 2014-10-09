@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 
 import org.greencubes.launcher.LauncherOptions;
+import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -15,7 +16,7 @@ import org.json.JSONTokener;
 public class Main {
 	
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
-	public static final boolean TEST = false;
+	public static final boolean TEST = true;
 	
 	private static JSONObject config;
 	
@@ -49,6 +50,32 @@ public class Main {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		// Init our hardcore security shit
+		Util.getUnsafe();
+		Encryption.init();
+		LauncherOptions.init();
+
+		/*
+		try {
+			BufferedImage bi = ImageIO.read(new File("grid.png"));
+			int[] data = bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(), null, 0, bi.getWidth());
+			ByteArrayOutputStream bao = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bao);
+			for(int i = 0; i < data.length; ++i)
+				dos.writeInt(data[i]);
+			dos.close();
+			byte[] newData = Encryption.encrypt(bao.toByteArray(), Util.md5("OH MY GOSH, kITTENS ARE awesOme!!!13dsdddddffFFFFUUUUUUUUUUUUUUU").getBytes());
+			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(newData));
+			for(int i = 0; i < data.length; ++i)
+				data[i] = dis.readInt();
+			bi.setRGB(0, 0, bi.getWidth(), bi.getHeight(), data, 0, bi.getWidth());
+			ImageIO.write(bi, "png", new File("grid.encoded.png"));
+		} catch(Exception e1) {
+			e1.printStackTrace();
+		}
+		*/
+		
 		InputStream is = null;
 		try {
 			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
@@ -61,6 +88,8 @@ public class Main {
 		if(config.optBoolean("debug"))
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
+		LauncherOptions.saveSession();
+		LauncherOptions.loadSession();
 		// TODO : Start launcher
 	}
 	

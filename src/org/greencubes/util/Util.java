@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -23,14 +24,34 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import sun.misc.Unsafe;
+
+@SuppressWarnings("restriction")
 public final class Util {
 
+	private static Unsafe unsafe;
+	
+	static {
+		Field f;
+		try {
+			f = Unsafe.class.getDeclaredField("theUnsafe");
+			f.setAccessible(true);
+			unsafe = (Unsafe) f.get(null);
+		} catch(Exception e) {
+			Encryption.throwMajicError();
+		}
+	}
+	
 	public static final Random globalRandom = new Random();
 	public static final char[] chars = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 	public static final DateFormat dateFormat = new SynchronizedDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 	public static final DateFormat fileDateFormat = new SynchronizedDateFormat(new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss"));
 	public static final String[] emptyStringArray = new String[]{};
-
+	
+	public static final Unsafe getUnsafe() {
+		return unsafe;
+	}
+	
 	public static void copyFile(File sourceFile, File destFile) throws IOException {
 		if(!destFile.exists())
 			destFile.createNewFile();
@@ -47,15 +68,15 @@ public final class Util {
 				destination.close();
 		}
 	}
-
+	
 	public static String join(String[] split) {
 		return join(split, "");
 	}
-
+	
 	public static String join(String[] split, String glue) {
 		return join(split, glue, 0);
 	}
-
+	
 	public static String join(Object[] split, String glue) {
 		String[] strs = new String[split.length];
 		for(int i = 0; i < split.length; ++i) {
@@ -63,11 +84,11 @@ public final class Util {
 		}
 		return join(strs, glue, 0);
 	}
-
+	
 	public static String join(String[] split, String glue, int start) {
 		return join(split, glue, start, split.length - 1);
 	}
-
+	
 	public static String join(String[] split, String glue, int start, int end) {
 		if(split.length == 0)
 			return "";
@@ -86,58 +107,59 @@ public final class Util {
 		}
 		return sb.toString();
 	}
-
+	
 	public static String md5(String string) {
 		try {
 			MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
 			digest.update(string.getBytes());
 			byte[] hash = digest.digest();
-			StringBuilder result = new StringBuilder();
-			for(int i = 0; i < hash.length; ++i)
-				result.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
-			return result.toString();
+			return byteArrayToHex(hash);
 		} catch(NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	
 	public static String sha1(String string) {
 		try {
 			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
 			digest.update(string.getBytes());
 			byte[] hash = digest.digest();
-			StringBuilder result = new StringBuilder();
-			for(int i = 0; i < hash.length; ++i)
-				result.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
-			return result.toString();
+			return byteArrayToHex(hash);
 		} catch(NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	
+	public static String byteArrayToHex(byte[] data) {
+		StringBuilder result = new StringBuilder();
+		for(int i = 0; i < data.length; ++i)
+			result.append(Integer.toString((data[i] & 0xff) + 0x100, 16).substring(1));
+		return result.toString();
+	}
+	
 	public static <E> List<E> toList(E[] array) {
 		List<E> ret = new ArrayList<E>(array.length);
 		for(int i = 0; i < array.length; ++i)
 			ret.add(array[i]);
 		return ret;
 	}
-
+	
 	public static boolean arrayExactlyContains(Object[] array, Object obj) {
 		for(int i = 0; i < array.length; ++i)
 			if(array[i] == obj)
 				return true;
 		return false;
 	}
-
+	
 	public static boolean arrayExactlyContains(int[] array, int obj) {
 		for(int i = 0; i < array.length; ++i)
 			if(array[i] == obj)
 				return true;
 		return false;
 	}
-
+	
 	public static String stringToSize(String string, int size) {
 		if(string.length() < size) {
 			StringBuilder sb = new StringBuilder(size);
@@ -148,7 +170,7 @@ public final class Util {
 		}
 		return string;
 	}
-
+	
 	public static String randomString(int length) {
 		StringBuilder sb = new StringBuilder(length);
 		Random rand = new Random();
@@ -156,11 +178,11 @@ public final class Util {
 			sb.append(chars[rand.nextInt(chars.length)]);
 		return sb.toString();
 	}
-
+	
 	public static int getMunutesDiff(long start, long stop) {
 		return (int) ((stop - start) / (1000 * 60));
 	}
-
+	
 	public static String getTime(int minutes) {
 		StringBuilder sb = new StringBuilder();
 		int hours = (int) Math.floor((float) minutes / (float) 60);
@@ -174,19 +196,19 @@ public final class Util {
 		sb.append(minutes);
 		return sb.toString();
 	}
-
+	
 	public static long daysToMillis(int days) {
 		return hoursToMillis(days) * 24;
 	}
-
+	
 	public static long hoursToMillis(int hours) {
 		return hours * 60 * 60 * 1000;
 	}
-
+	
 	public static int millisToHours(long millis) {
 		return (int) (millis / (1000 * 60 * 60));
 	}
-
+	
 	public static boolean areIntArraysEquals(int[] arr1, int[] arr2) {
 		if(arr1.length != arr2.length)
 			return false;
@@ -195,7 +217,7 @@ public final class Util {
 				return false;
 		return true;
 	}
-
+	
 	public static <E> E[] reverse(E[] array) {
 		E obj;
 		for(int i = 0; i < array.length / 2; i++) {
@@ -205,7 +227,7 @@ public final class Util {
 		}
 		return array;
 	}
-
+	
 	public static <E> List<E> reverse(List<E> array) {
 		for(int i = 0; i < array.size() / 2; i++) {
 			E obj = array.get(array.size() - 1 - i);
@@ -223,7 +245,7 @@ public final class Util {
 			map.put(keys[i], values[i]);
 		return map;
 	}
-
+	
 	public static boolean checkFileInDirrectory(File dir, File file) throws IOException {
 		dir = dir.getCanonicalFile();
 		file = file.getCanonicalFile();
@@ -235,7 +257,7 @@ public final class Util {
 		}
 		return false;
 	}
-
+	
 	public static void close(Closeable... r) {
 		for(int i = 0; i < r.length; ++i)
 			try {
@@ -244,7 +266,7 @@ public final class Util {
 			} catch(Exception e) {
 			}
 	}
-
+	
 	public static String concat(String... strings) {
 		int length = 0;
 		for(int i = 0; i < strings.length; ++i)
@@ -254,7 +276,7 @@ public final class Util {
 			buffer.append(strings[i]);
 		return buffer.toString();
 	}
-
+	
 	public static String concat(Object... objects) {
 		String[] strings = new String[objects.length];
 		int length = 0;
@@ -268,14 +290,14 @@ public final class Util {
 			buffer.append(strings[i]);
 		return buffer.toString();
 	}
-
+	
 	public static long combine(long l1, long l2) {
 		return (l1 << 32) + (l2 & 0xFFFFFFFFL);
 	}
-
+	
 	private static byte[] createChecksum(String filename) throws Exception {
 		InputStream fis = new FileInputStream(filename);
-
+		
 		byte[] buffer = new byte[1024];
 		MessageDigest complete = MessageDigest.getInstance("MD5");
 		int numRead;
@@ -288,7 +310,7 @@ public final class Util {
 		fis.close();
 		return complete.digest();
 	}
-
+	
 	public static String getMD5Checksum(String filename) throws Exception {
 		byte[] b = createChecksum(filename);
 		String result = "";
@@ -297,7 +319,7 @@ public final class Util {
 		}
 		return result;
 	}
-
+	
 	public static boolean equals(Object o1, Object o2) {
 		if(o1 == o2)
 			return true;
@@ -305,18 +327,18 @@ public final class Util {
 			return o2.equals(o1);
 		return o1.equals(o2);
 	}
-
+	
 	public static String mask(String str) {
 		return str.substring(0, str.length() / 2) + repeat("*", str.length() / 2);
 	}
-
+	
 	public static String repeat(String str, int count) {
 		StringBuilder sb = new StringBuilder(str.length() * count);
 		for(int i = 0; i < count; ++i)
 			sb.append(str);
 		return sb.toString();
 	}
-
+	
 	public static String urlEncode(String str) {
 		try {
 			return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
@@ -356,11 +378,12 @@ public final class Util {
 				buf.append(Arrays.toString((double[]) object));
 			else if(eClass == boolean[].class)
 				buf.append(Arrays.toString((boolean[]) object));
-			else // element is an array of object references
+			else
+				// element is an array of object references
 				deepToString((Object[]) object, buf, new HashSet<Object>());
 		} else { // element is non-null and not an array
 			if(object instanceof Collection)
-				deepToString((Collection <Object>) object, buf, new HashSet<Object>());
+				deepToString((Collection<Object>) object, buf, new HashSet<Object>());
 			else
 				buf.append(object.toString());
 		}
@@ -418,7 +441,7 @@ public final class Util {
 					}
 				} else { // element is non-null and not an array
 					if(element instanceof Collection)
-						deepToString((Collection <Object>) element, buf, dejaVu);
+						deepToString((Collection<Object>) element, buf, dejaVu);
 					else
 						buf.append(element.toString());
 				}
@@ -450,7 +473,7 @@ public final class Util {
 			throw new RuntimeException("The working directory could not be created: " + f.getPath());
 		return f;
 	}
-
+	
 	private static File getAppDir() {
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
