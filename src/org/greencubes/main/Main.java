@@ -5,7 +5,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
 
@@ -60,9 +59,9 @@ public class Main {
 		Encryption.init();
 		LauncherOptions.init();
 		
-		/*
-		try {
-			BufferedImage bi = ImageIO.read(new File("grid.png"));
+		
+		/*try {
+			BufferedImage bi = ImageIO.read(new File("screenshot-2014-10-02_99-99-99_1.png"));
 			int[] data = bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(), null, 0, bi.getWidth());
 			ByteArrayOutputStream bao = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(bao);
@@ -74,11 +73,11 @@ public class Main {
 			for(int i = 0; i < data.length; ++i)
 				data[i] = dis.readInt();
 			bi.setRGB(0, 0, bi.getWidth(), bi.getHeight(), data, 0, bi.getWidth());
-			ImageIO.write(bi, "png", new File("grid.encoded.png"));
+			ImageIO.write(bi, "png", new File("screenshot-2014-10-02_99-99-99_1.encoded.png"));
 		} catch(Exception e1) {
 			e1.printStackTrace();
-		}
-		*/
+		}*/
+		
 		
 		InputStream is = null;
 		try {

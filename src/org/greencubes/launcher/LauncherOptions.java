@@ -93,8 +93,8 @@ public class LauncherOptions {
 			ByteArrayOutputStream decodedData = new ByteArrayOutputStream();
 			DataOutputStream decodedOs = new DataOutputStream(decodedData);
 			decodedOs.writeUTF(sessionUser);
-			byte[] sessionKey = new byte[512];
-			for(int i = 0; i < 512; ++i)
+			byte[] sessionKey = new byte[128];
+			for(int i = 0; i < 128; ++i)
 				sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
 			decodedOs.write(sessionKey);
 			decodedOs.writeInt(1028 ^ 1);
@@ -104,7 +104,7 @@ public class LauncherOptions {
 			byte[] encodedData = Encryption.encrypt(decodedDataArray, Encryption.multiSha1(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
 			os.write(encodedData);
 			Random r = new Random(sessionUserId ^ Integer.parseInt("100011001111010001111010001", 2));
-			byte[] shitload = new byte[20];
+			byte[] shitload = new byte[Math.max(0, 1024 - os.size())];
 			r.nextBytes(shitload);
 			os.write(shitload);
 		} catch(Exception e) {
@@ -138,8 +138,8 @@ public class LauncherOptions {
 			DataInputStream decodedIs = new DataInputStream(new ByteArrayInputStream(decodedData));
 			sessionUser = decodedIs.readUTF();
 			if(sessionKeyAddress == -1)
-				sessionKeyAddress = Util.getUnsafe().allocateMemory(512);
-			byte[] sessionKey = new byte[512];
+				sessionKeyAddress = Util.getUnsafe().allocateMemory(128);
+			byte[] sessionKey = new byte[128];
 			decodedIs.readFully(sessionKey);
 			if((decodedIs.readInt() ^ 1) != 1028)
 				throw new IOException();
