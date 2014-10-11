@@ -111,7 +111,7 @@ public class LauncherOptions {
 			decodedOs.close(); // It is just polite to close streams
 			byte[] decodedDataArray = decodedData.toByteArray();
 			byte[] encodedData = Encryption.encrypt(decodedDataArray, Encryption.multiSha1(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
-			os.writeShort(encodedData.length ^ 256);
+			os.writeShort(encodedData.length ^ ~256);
 			os.write(encodedData);
 			byte[] shitload = new byte[Math.max(0, 1024 - os.size())];
 			byte[] shad = encodedData;
@@ -158,7 +158,7 @@ public class LauncherOptions {
 			DataInputStream is = new DataInputStream(bis);
 			File f = new File("user.dat");
 			sessionUserId = is.readInt() ^ Integer.parseInt("111011001110011101011010101", 2);
-			byte[] encodedData = new byte[is.readShort() ^ 256];
+			byte[] encodedData = new byte[is.readShort() ^ ~256];
 			is.readFully(encodedData);
 			byte[] decodedData = Encryption.decrypt(encodedData, Encryption.multiSha1(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
 			ByteArrayInputStream decodedBis = new ByteArrayInputStream(decodedData);
