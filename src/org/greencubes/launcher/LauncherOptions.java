@@ -6,9 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Member;
+import java.nio.ByteBuffer;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import org.bouncycastle.util.Arrays;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.util.Encryption;
@@ -61,10 +60,22 @@ public class LauncherOptions {
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico128x128.png")));
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico256x256.png")));
 			} catch(IOException e) {
-				e.printStackTrace();
+				if(Main.TEST)
+					e.printStackTrace();
 			}
 		}
 		return icons;
+	}
+	
+	public static void setSession(int userId, String userName, byte[] key) {
+		if(sessionKeyAddress == -1)
+			sessionKeyAddress = Util.getUnsafe().allocateMemory(128);
+		for(int i = 0; i < key.length; ++i) {
+			Util.getUnsafe().putByte(sessionKeyAddress + i, key[i]);
+			key[i] = -1;
+		}
+		sessionUser = userName;
+		sessionUserId = userId;
 	}
 	
 	public static void saveSession() {
@@ -79,16 +90,11 @@ public class LauncherOptions {
 		}
 		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null)
 			return;
-		DataOutputStream os = null;
+		
 		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream os = new DataOutputStream(bos);
 			File f = new File("user.dat");
-			if(!f.exists()) {
-				if(!f.createNewFile())
-					throw new IOException("Unable to save session");
-			} else if(!f.isFile()) {
-				throw new IOException("Session file is not a file");
-			}
-			os = new DataOutputStream(new FileOutputStream(f));
 			os.writeInt(sessionUserId ^ Integer.parseInt("111011001110011101011010101", 2));
 			ByteArrayOutputStream decodedData = new ByteArrayOutputStream();
 			DataOutputStream decodedOs = new DataOutputStream(decodedData);
@@ -99,19 +105,33 @@ public class LauncherOptions {
 			decodedOs.write(sessionKey);
 			decodedOs.writeInt(1028 ^ 1);
 			decodedOs.writeUTF("dd");
+			Random r = new Random(sessionUserId ^ Integer.parseInt("100011001111010001111010001", 2) * sessionUser.hashCode() + sessionKey[0] * sessionKey[1] - sessionKey[12] ^ sessionKey[100]);
+			while(decodedOs.size() < 256)
+				decodedOs.write(r.nextInt());
 			decodedOs.close(); // It is just polite to close streams
-			byte[] decodedDataArray = Arrays.copyOf(decodedData.toByteArray(), 1000);
+			byte[] decodedDataArray = decodedData.toByteArray();
 			byte[] encodedData = Encryption.encrypt(decodedDataArray, Encryption.multiSha1(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
+			os.writeShort(encodedData.length ^ 256);
 			os.write(encodedData);
-			Random r = new Random(sessionUserId ^ Integer.parseInt("100011001111010001111010001", 2));
 			byte[] shitload = new byte[Math.max(0, 1024 - os.size())];
-			r.nextBytes(shitload);
+			byte[] shad = encodedData;
+			for(int i = 0; i < shitload.length;) {
+				shad = Encryption.sha1(shad);
+				for(int i1 = 0; i1 < shad.length && i < shitload.length; ++i1) {
+					shitload[i++] = (byte) (shad[i1]);
+				}
+			}
 			os.write(shitload);
+			Main.userFileChannel.position(0);
+			ByteBuffer buf = ByteBuffer.wrap(bos.toByteArray());
+			while(buf.hasRemaining()) {
+				Main.userFileChannel.write(buf);
+			}
 		} catch(Exception e) {
 			if(Main.TEST)
 				e.printStackTrace();
 		} finally {
-			Util.close(os);
+			
 		}
 	}
 	
@@ -125,17 +145,24 @@ public class LauncherOptions {
 			Encryption.throwMajicError();
 			return;
 		}
-		DataInputStream is = null;
 		try {
-			File f = new File("user.dat");
-			if(!f.isFile())
+			if(Main.userFileChannel.size() < 1024)
 				return;
-			is = new DataInputStream(new FileInputStream(f));
+			Main.userFileChannel.position(0);
+			ByteBuffer buf = ByteBuffer.allocate((int) Main.userFileChannel.size());
+			while(Main.userFileChannel.read(buf) > 0);
+			buf.flip();
+			byte[] file = new byte[(int) Main.userFileChannel.size()];
+			buf.get(file);
+			ByteArrayInputStream bis = new ByteArrayInputStream(file);
+			DataInputStream is = new DataInputStream(bis);
+			File f = new File("user.dat");
 			sessionUserId = is.readInt() ^ Integer.parseInt("111011001110011101011010101", 2);
-			byte[] encodedData = new byte[1008];
+			byte[] encodedData = new byte[is.readShort() ^ 256];
 			is.readFully(encodedData);
 			byte[] decodedData = Encryption.decrypt(encodedData, Encryption.multiSha1(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
-			DataInputStream decodedIs = new DataInputStream(new ByteArrayInputStream(decodedData));
+			ByteArrayInputStream decodedBis = new ByteArrayInputStream(decodedData);
+			DataInputStream decodedIs = new DataInputStream(decodedBis);
 			sessionUser = decodedIs.readUTF();
 			if(sessionKeyAddress == -1)
 				sessionKeyAddress = Util.getUnsafe().allocateMemory(128);
@@ -145,7 +172,22 @@ public class LauncherOptions {
 				throw new IOException();
 			if(!decodedIs.readUTF().equals("dd"))
 				throw new IOException();
+			Random r = new Random(sessionUserId ^ Integer.parseInt("100011001111010001111010001", 2) * sessionUser.hashCode() + sessionKey[0] * sessionKey[1] - sessionKey[12] ^ sessionKey[100]);
+			for(int i = 0; i < 256 - 128 - 8 - 2 - sessionUser.length(); ++i) {
+				if((r.nextInt() & 0xFF) != decodedIs.read())
+					throw new IOException();
+			}
 			Util.close(decodedIs); // It is just polite to close streams
+			int shitloadLen = Math.max(0, 1024 - encodedData.length - 6);
+			byte[] shad = encodedData;
+			for(int i = 0; i < shitloadLen;) {
+				shad = Encryption.sha1(shad);
+				for(int i1 = 0; i1 < shad.length && i < shitloadLen; ++i1) {
+					if(is.readByte() != shad[i1])
+						throw new IOException();
+					i++;
+				}
+			}
 			if(Main.TEST) {
 				System.out.println("~~~ Session loaded. ~~~");
 				System.out.println("Userid: " + sessionUserId + ", user: " + sessionUser + ", key: ");
@@ -162,8 +204,6 @@ public class LauncherOptions {
 			}
 			sessionUser = null;
 			sessionUserId = 0;
-		} finally {
-			Util.close(is);
 		}
 	}
 	
@@ -184,6 +224,17 @@ public class LauncherOptions {
 			
 			@Override
 			public void checkMemberAccess(Class<?> clazz, int which) {
+				// Do not check thread class access because it causes stack owerflow
+				if(clazz == Thread.class || which == Member.PUBLIC)
+					return;
+				try {
+					// Ensure that Thread class is not fake
+					if(!Class.forName("java.lang.Thread").getMethod("getStackTrace").equals(Thread.currentThread().getClass().getMethod("getStackTrace")))
+						throw new RuntimeException();
+				} catch(Exception e) {
+					Encryption.throwMajicError();
+					return;
+				}
 				if(clazz == LauncherOptions.class) {
 					StackTraceElement[] stes = Thread.currentThread().getStackTrace();
 					if(!stes[3].getClassName().equals(LauncherOptions.class.getName()))

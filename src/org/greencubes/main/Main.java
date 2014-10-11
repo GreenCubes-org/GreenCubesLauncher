@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.security.Security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -22,14 +25,18 @@ public class Main {
 	
 	private static JSONObject config;
 	
+	public static RandomAccessFile userFile;
+	public static FileChannel userFileChannel;
+	
 	public static void main(String[] args) {
+		// Check arguments
 		for(String arg : args) {
 			if(arg.equals("-debug"))
 				LauncherOptions.debug = true;
 			if(arg.equals("-noupdate"))
 				LauncherOptions.noUpdateLauncher = true;
 		}
-		Security.addProvider(new BouncyCastleProvider());
+		// Load fonts
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		try {
 			InputStream is = Main.class.getResource("/res/font/ClearSans-Medium.ttf").openStream();
@@ -53,14 +60,14 @@ public class Main {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 		// Init our hardcore security shit
 		Util.getUnsafe();
 		Encryption.init();
 		LauncherOptions.init();
-		
-		
-		/*try {
+		Security.addProvider(new BouncyCastleProvider());
+		/*
+		// Some debug stuff
+		try {
 			BufferedImage bi = ImageIO.read(new File("screenshot-2014-10-02_99-99-99_1.png"));
 			int[] data = bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(), null, 0, bi.getWidth());
 			ByteArrayOutputStream bao = new ByteArrayOutputStream();
@@ -76,9 +83,22 @@ public class Main {
 			ImageIO.write(bi, "png", new File("screenshot-2014-10-02_99-99-99_1.encoded.png"));
 		} catch(Exception e1) {
 			e1.printStackTrace();
-		}*/
-		
-		
+		}
+		*/
+		// Prevent launching of more than one launcher
+		try {
+			userFile = new RandomAccessFile("user.dat", "rw");
+			FileLock fileLock = null;
+			userFileChannel = userFile.getChannel();
+			fileLock = userFileChannel.tryLock();
+			if(fileLock == null) {
+				System.err.println("Only one instance of launcher can be started");
+				return;
+			}
+		} catch(Exception e) {
+			return;
+		}
+		// Read config
 		InputStream is = null;
 		try {
 			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
@@ -88,12 +108,22 @@ public class Main {
 		} finally {
 			Util.close(is);
 		}
+		// Apply config
 		if(config.optBoolean("debug"))
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
-		LauncherOptions.saveSession();
+		
+		// Generate session for debug
+		/*Random rand = new Random(812);
+		byte[] key = new byte[128];
+		rand.nextBytes(key);
+		LauncherOptions.setSession(rand.nextInt(1000000), "Rena4ka", key);
+		LauncherOptions.saveSession();*/
+		
+		// Load saved session
 		LauncherOptions.loadSession();
 		// TODO : Start launcher
+
 	}
 	
 	public static JSONObject getConfig() {
@@ -101,6 +131,7 @@ public class Main {
 	}
 	
 	public static void close() {
+		Util.close(userFileChannel, userFile);
 		try {
 			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
 			config.write(fw);
