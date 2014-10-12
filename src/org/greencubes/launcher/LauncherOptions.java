@@ -26,16 +26,19 @@ import org.json.JSONObject;
 @SuppressWarnings("restriction")
 public class LauncherOptions {
 	
+	private static List<BufferedImage> icons;
+	private static Downloader downloader;
+	
 	public static boolean debug = false;
 	public static boolean noUpdateLauncher = false;
 	public static OnStartAction onClientStart = OnStartAction.NO;
-	private static List<BufferedImage> icons;
-	private static Downloader downloader;
+	public static boolean autoLogin = false;
 	
 	private static long sessionKeyAddress = -1;
 	public static String sessionId;
 	public static String sessionUser;
 	public static int sessionUserId;
+	public static JSONObject userInfo;
 	
 	public static enum OnStartAction {
 		CLOSE, MINIMIZE, HIDE, NO;
@@ -248,7 +251,6 @@ public class LauncherOptions {
 				Util.getUnsafe().freeMemory(sessionKeyAddress);
 				sessionKeyAddress = -1;
 			}
-			sessionUser = null;
 			sessionUserId = 0;
 		}
 	}
