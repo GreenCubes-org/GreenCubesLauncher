@@ -286,7 +286,7 @@ public class Downloader {
 				ContentType ct = ContentType.get(entity);
 				is = entity.getContent();
 				bytesToDownload = (int) entity.getContentLength();
-				BufferedReader reader = new BufferedReader(ct != null ? new InputStreamReader(is, ct.getCharset()) : new InputStreamReader(is));
+				BufferedReader reader = new BufferedReader(ct != null && ct.getCharset() != null ? new InputStreamReader(is, ct.getCharset()) : new InputStreamReader(is));
 				StringBuilder sb = new StringBuilder();
 				String s;
 				while((s = reader.readLine()) != null) {

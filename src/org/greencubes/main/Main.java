@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -12,7 +13,9 @@ import java.nio.channels.FileLock;
 import java.security.Security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.greencubes.launcher.AuthError;
 import org.greencubes.launcher.LauncherOptions;
+import org.greencubes.launcher.LauncherUtil;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
 import org.json.JSONObject;
@@ -120,8 +123,20 @@ public class Main {
 		LauncherOptions.setSession(rand.nextInt(1000000), "Rena4ka", key);
 		LauncherOptions.saveSession();*/
 		
+		//LauncherOptions.setSession(1, "Rena4ka", "9t7tji4vu9f9c8bgl4h71cc3eaofduvd26dfjvvlbfzkxwn7uc0a4enlfr4roeqv7sm4hab1ycw9qscuhncb3ka79fa3o49kv9sn8rlkb35vj4041bg2lorrjz21xtw1".getBytes());
+		//LauncherOptions.saveSession();
 		// Load saved session
 		LauncherOptions.loadSession();
+		try {
+			LauncherOptions.authSession();
+			System.out.println(LauncherUtil.sessionRequest("action=info"));
+		} catch(IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch(AuthError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO : Start launcher
 
 	}

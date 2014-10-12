@@ -20,6 +20,8 @@ import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @SuppressWarnings("restriction")
 public class LauncherOptions {
@@ -31,6 +33,7 @@ public class LauncherOptions {
 	private static Downloader downloader;
 	
 	private static long sessionKeyAddress = -1;
+	public static String sessionId;
 	public static String sessionUser;
 	public static int sessionUserId;
 	
@@ -43,8 +46,8 @@ public class LauncherOptions {
 			if(Main.TEST) {
 				downloader = new Downloader("https://greencubes.org/"); // For test purposes
 			} else {
-				downloader = new Downloader("https://auth.greencubes.org/client/");
-				downloader.addServer("https://auth1.greencubes.org/client/");
+				downloader = new Downloader("https://auth.greencubes.org/");
+				downloader.addServer("https://auth1.greencubes.org/");
 			}
 		}
 		return downloader;
@@ -78,6 +81,50 @@ public class LauncherOptions {
 		sessionUserId = userId;
 	}
 	
+	public static void auth(String userName, String password) throws IOException, AuthError {
+		String answer = getDownloader().readURL("login/login.php?user=" + userName + "&password=" + password);
+		JSONObject jo;
+		try {
+			jo = new JSONObject(answer);
+		} catch(JSONException e) {
+			throw new IOException("Wrong response: " + answer, e);
+		}
+		if(jo.optInt("response", -1) != 0)
+			throw new AuthError(jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
+		setSession(jo.optInt("userid"), jo.optString("username"), jo.optString("key").getBytes());
+		sessionId = jo.optString("session");
+		saveSession();
+	}
+	
+	public static void authSession() throws IOException, AuthError {
+		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null)
+			return;
+		try {
+			// Ensure no one replaced current threads class and security manager is in place
+			if(!Class.forName("java.lang.Thread").getMethod("getStackTrace").equals(Thread.currentThread().getClass().getMethod("getStackTrace")))
+				throw new RuntimeException();
+			Encryption.getSecurityManager();
+		} catch(Exception e) {
+			Encryption.throwMajicError();
+			return;
+		}
+		byte[] sessionKey = new byte[128];
+		for(int i = 0; i < 128; ++i)
+			sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
+		String answer = getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + new String(sessionKey));
+		JSONObject jo;
+		try {
+			jo = new JSONObject(answer);
+		} catch(JSONException e) {
+			throw new IOException("Wrong response: " + answer, e);
+		}
+		if(jo.optInt("response", -1) != 0)
+			throw new AuthError(jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
+		setSession(jo.optInt("userid"), jo.optString("username"), jo.optString("key").getBytes());
+		sessionId = jo.optString("session");
+		saveSession();
+	}
+	
 	public static void saveSession() {
 		try {
 			// Ensure no one replaced current threads class and security manager is in place
@@ -90,7 +137,6 @@ public class LauncherOptions {
 		}
 		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null)
 			return;
-		
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream os = new DataOutputStream(bos);
