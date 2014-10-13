@@ -240,7 +240,7 @@ public class LauncherOptions {
 			if(Main.TEST) {
 				System.out.println("~~~ Session loaded. ~~~");
 				System.out.println("Userid: " + sessionUserId + ", user: " + sessionUser + ", key: ");
-				System.out.println(Util.byteArrayToHex(sessionKey));
+				System.out.println(new String(sessionKey));
 			}
 			for(int i = 0; i < sessionKey.length; ++i)
 				Util.getUnsafe().putByte(sessionKeyAddress + i, sessionKey[i]);

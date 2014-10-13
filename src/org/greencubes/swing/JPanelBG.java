@@ -20,7 +20,7 @@ public class JPanelBG extends JPanel {
 	
 	public JPanelBG(String bg) {
 		try {
-			this.bg = ImageIO.read(JPanel.class.getResource(bg));
+			this.bg = ImageIO.read(JPanelBG.class.getResource(bg));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
