@@ -13,5 +13,19 @@
 "client.start": "Начать играть",
 "client.loading": "Загрузка",
 
+"login.login": "Логин:",
+"login.password": "Пароль:",
+"login.forgot": "Забыли пароль?",
+"login.register": "Зарегистрироваться",
+"login.dologin": "Войти",
+"login.autologin": "Входить автоматически",
+"login.autologin.tip": "Помните, что хранить пароль на компьютере не безопасно. Пароль всё равно может потребоваться при входе.",
+
+"login.authorization": "Авторизация...",
+"login.loading": "Загрузка...",
+
+"login.exception": "Ошибка: %s",
+
+"login.error.3": "Неверный логин/пароль",
 
 }

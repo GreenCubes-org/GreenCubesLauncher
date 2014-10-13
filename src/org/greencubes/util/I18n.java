@@ -51,7 +51,7 @@ public class I18n {
 	
 	public static String get(String key, Object ... args) {
 		String s = langMap.get(key);
-		return s == null ? key : String.format(key, args);
+		return s == null ? key : String.format(s, args);
 	}
 	
 	private static boolean isSupportedLang(String lang) {

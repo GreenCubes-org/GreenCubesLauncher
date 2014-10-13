@@ -84,8 +84,8 @@ public class LauncherOptions {
 		sessionUserId = userId;
 	}
 	
-	public static void auth(String userName, String password) throws IOException, AuthError {
-		String answer = getDownloader().readURL("login/login.php?user=" + userName + "&password=" + password);
+	public static void auth(String userName, char[] password) throws IOException, AuthError {
+		String answer = getDownloader().readURL(new StringBuilder().append("login/login.php?user=").append(userName).append("&password=").append(password).toString());
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);
@@ -93,7 +93,7 @@ public class LauncherOptions {
 			throw new IOException("Wrong response: " + answer, e);
 		}
 		if(jo.optInt("response", -1) != 0)
-			throw new AuthError(jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
+			throw new AuthError(jo.optInt("response", -1), jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
 		setSession(jo.optInt("userid"), jo.optString("username"), jo.optString("key").getBytes());
 		sessionId = jo.optString("session");
 		saveSession();
@@ -122,7 +122,7 @@ public class LauncherOptions {
 			throw new IOException("Wrong response: " + answer, e);
 		}
 		if(jo.optInt("response", -1) != 0)
-			throw new AuthError(jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
+			throw new AuthError(jo.optInt("response", -1), jo.optString("message") + " (" + jo.optInt("response", -1) + ")");
 		setSession(jo.optInt("userid"), jo.optString("username"), jo.optString("key").getBytes());
 		sessionId = jo.optString("session");
 		saveSession();
@@ -138,7 +138,7 @@ public class LauncherOptions {
 			Encryption.throwMajicError();
 			return;
 		}
-		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null)
+		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null || !autoLogin)
 			return;
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

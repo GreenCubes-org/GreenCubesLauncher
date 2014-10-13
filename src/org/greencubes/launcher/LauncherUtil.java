@@ -1,11 +1,30 @@
 package org.greencubes.launcher;
 
+import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.io.IOException;
+import java.net.URI;
 
+import org.greencubes.main.Main;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LauncherUtil {
+	
+	public static boolean canOpenBrowser() {
+		return Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE);
+	}
+	
+	public static void onenURLInBrowser(String url) {
+		if(canOpenBrowser()) {
+			try {
+				Desktop.getDesktop().browse(URI.create(url));
+			} catch(IOException e) {
+				if(Main.TEST)
+					e.printStackTrace();
+			}
+		}
+	}
 	
 	public static JSONObject sessionRequest(String args) throws IOException, AuthError {
 		JSONObject answer;
@@ -30,7 +49,7 @@ public class LauncherUtil {
 			LauncherOptions.authSession();
 			return false;
 		}
-		throw new AuthError(answer.optString("message") + " (" + answer.optInt("response", -1));
+		throw new AuthError(answer.optInt("response", -1), answer.optString("message") + " (" + answer.optInt("response", -1));
 	}
 	
 }

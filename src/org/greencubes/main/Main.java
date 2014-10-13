@@ -21,6 +21,8 @@ import org.json.JSONTokener;
 
 public class Main {
 	
+	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
+	public static final String REGISTRATION_URL = "https://greencubes.org/?action=start";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
 	public static final boolean TEST = true;
 	
