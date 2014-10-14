@@ -167,8 +167,7 @@ public class LauncherLogin {
 	private void displayProgress(final String progressString) {
 		centerPanel.removeAll();
 		centerPanel.invalidate();
-		centerPanel.add(new JTextPane() {
-			{
+		centerPanel.add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -179,8 +178,7 @@ public class LauncherLogin {
 				setEditable(false);
 				setText(progressString);
 				setFont(new Font("ClearSans", Font.BOLD, 30));
-			}
-		}, gbc(1, 1, 0, 0));
+			}}, gbc(1, 1, 0, 0));
 		centerPanel.revalidate();
 		frame.repaint();
 	}
@@ -189,28 +187,21 @@ public class LauncherLogin {
 	//@formatter:off
 	private void displayLogin() {
 		centerPanel.removeAll();
-		centerPanel.add(new JPanel() {
-			{ // GC LOGO
+		centerPanel.add(new JPanel() {{ // GC LOGO
 				setPreferredSize(new Dimension(305, 42));
 				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}
-		}, gbc(4, 1, 0, 0));
-		centerPanel.add(new JPanel() {
-			{ // Left height column
+			}}, gbc(4, 1, 0, 0));
+		centerPanel.add(new JPanel() {{ // Left height column
 				setPreferredSize(new Dimension(10, 245));
 				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}
-		}, gbc(1, 7, 0, 1));
-		centerPanel.add(new JPanel() {
-			{ // Right height column
+			}}, gbc(1, 7, 0, 1));
+		centerPanel.add(new JPanel() {{ // Right height column
 				setPreferredSize(new Dimension(10, 245));
 				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}
-		}, gbc(1, 7, 3, 1));
+			}}, gbc(1, 7, 3, 1));
 		
 		// Login and password captions
-		centerPanel.add(new JTextPane() {
-			{
+		centerPanel.add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -221,16 +212,12 @@ public class LauncherLogin {
 				setEditable(false);
 				setText(I18n.get("login.login"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}
-		}, new GridBagConstraints() {
-			{
+			}}, new GridBagConstraints() {{
 				gridx = 1;
 				gridy = 1;
 				anchor = GridBagConstraints.LINE_END;
-			}
-		});
-		centerPanel.add(new JTextPane() {
-			{
+			}});
+		centerPanel.add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -241,14 +228,11 @@ public class LauncherLogin {
 				setEditable(false);
 				setText(I18n.get("login.password"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}
-		}, new GridBagConstraints() {
-			{
+			}}, new GridBagConstraints() {{
 				gridx = 1;
 				gridy = 2;
 				anchor = GridBagConstraints.LINE_END;
-			}
-		});
+			}});
 		
 		final String savedUser = userField != null ? userField.getText() : LauncherOptions.sessionUser;
 		
@@ -275,8 +259,7 @@ public class LauncherLogin {
 			public void paintComponent(Graphics g) {
 				g.drawImage(bg, 0, 0, this);
 				super.paintComponent(g);
-			}
-		}, gbc(1, 1, 2, 1));
+			}}, gbc(1, 1, 2, 1));
 		centerPanel.add(passwordField = new JPasswordField(0) {
 			Image bg;
 			{
@@ -297,12 +280,10 @@ public class LauncherLogin {
 			public void paintComponent(Graphics g) {
 				g.drawImage(bg, 0, 0, this);
 				super.paintComponent(g);
-			}
-		}, gbc(1, 1, 2, 2));
+			}}, gbc(1, 1, 2, 2));
 		
 		// Forgot password and registration
-		centerPanel.add(new JTextPane() {
-			{
+		centerPanel.add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -323,17 +304,13 @@ public class LauncherLogin {
 						}
 					});
 				}
-			}
-		}, new GridBagConstraints() {
-			{
+			}}, new GridBagConstraints() {{
 				gridx = 1;
 				gridwidth = 2;
 				gridy = 3;
 				anchor = GridBagConstraints.LINE_END;
-			}
-		});
-		centerPanel.add(new JTextPane() {
-			{
+			}});
+		centerPanel.add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -355,24 +332,19 @@ public class LauncherLogin {
 						}
 					});
 				}
-			}
-		}, new GridBagConstraints() {
-			{
+			}}, new GridBagConstraints() {{
 				gridx = 1;
 				gridwidth = 2;
 				gridy = 4;
 				anchor = GridBagConstraints.LINE_END;
-			}
-		});
+			}});
 		
-		centerPanel.add(new JPanel() {
-			{
+		centerPanel.add(new JPanel() {{
 				setOpaque(false);
 				setBackground(new Color(0.1f, 0.2f, 0.3f, 0));
 				setPreferredSize(new Dimension(285, 50));
 				if(errorString != null) {
-					add(new JTextPane() {
-						{
+					add(new JTextPane() {{
 							setOpaque(false);
 							StyledDocument doc = getStyledDocument();
 							SimpleAttributeSet center = new SimpleAttributeSet();
@@ -387,8 +359,7 @@ public class LauncherLogin {
 					});
 					errorString = null;
 				}
-			}
-		}, gbc(2, 1, 1, 5));
+			}}, gbc(2, 1, 1, 5));
 		
 		// Checkboxes
 		ImageIcon icon = null;
@@ -402,8 +373,7 @@ public class LauncherLogin {
 		} catch(IOException e) {
 		}
 		final ImageIcon iconChecked = icon;
-		centerPanel.add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), LauncherOptions.autoLogin ? iconChecked : iconUnchecked, LauncherOptions.autoLogin) {
-			{
+		centerPanel.add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), LauncherOptions.autoLogin ? iconChecked : iconUnchecked, LauncherOptions.autoLogin) {{
 				setBackground(new Color(0, 0, 0, 0));
 				setOpaque(false);
 				setFont(new Font("ClearSans", Font.PLAIN, 16));
@@ -418,12 +388,10 @@ public class LauncherLogin {
 					}
 				});
 				setToolTipText(I18n.get("login.autologin.tip"));
-			}
-		}, gbc(2, 1, 1, 6));
+			}}, gbc(2, 1, 1, 6));
 		
 		// Login button
-		centerPanel.add(new JPanelBG("/res/button.png") {
-			{
+		centerPanel.add(new JPanelBG("/res/button.png") {{
 				paddingTop = 5;
 				setPreferredSize(new Dimension(253, 40));
 				setBackground(new Color(0.13f, 0.4f, 0.6f, 0));
@@ -434,8 +402,7 @@ public class LauncherLogin {
 						doLogin();
 					}
 				});
-				add(new JTextPane() {
-					{
+				add(new JTextPane() {{
 						setOpaque(false);
 						StyledDocument doc = getStyledDocument();
 						SimpleAttributeSet center = new SimpleAttributeSet();
@@ -452,10 +419,8 @@ public class LauncherLogin {
 								doLogin();
 							}
 						});
-					}
-				}, BorderLayout.PAGE_START);
-			}
-		}, gbc(2, 1, 1, 7));
+					}}, BorderLayout.PAGE_START);
+			}}, gbc(2, 1, 1, 7));
 		
 		passwordField.setActionCommand("OK");
 		passwordField.addActionListener(new ActionListener() {
@@ -491,5 +456,4 @@ public class LauncherLogin {
 		c.gridy = y;
 		return c;
 	}
-	
 }

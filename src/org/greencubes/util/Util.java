@@ -1,5 +1,6 @@
 package org.greencubes.util;
 
+import java.awt.Color;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -497,5 +498,11 @@ public final class Util {
 		if(!workingDirectory.exists() && !workingDirectory.mkdirs())
 			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
 		return workingDirectory;
+	}
+	
+	private static Random debugColorRandom = new Random();
+	
+	public static Color debugColor() {
+		return new Color(debugColorRandom.nextFloat(), debugColorRandom.nextFloat(), debugColorRandom.nextFloat(), 0.3f);
 	}
 }

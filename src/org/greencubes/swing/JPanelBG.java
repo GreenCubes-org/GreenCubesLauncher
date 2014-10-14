@@ -17,7 +17,8 @@ public class JPanelBG extends JPanel {
 	private static final long serialVersionUID = -8003041052208046109L;
 	
 	public int paddingTop = 0;
-	public int paddintLeft = 0;
+	public int paddingLeft = 0;
+	public boolean fill = false;
 	public Image bg;
 	
 	public JPanelBG(String bg) {
@@ -31,7 +32,10 @@ public class JPanelBG extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(bg, paddintLeft, paddingTop, this);
+		if(fill)
+			g.drawImage(bg, paddingLeft, paddingTop, g.getClipBounds().width, g.getClipBounds().height, this);
+		else
+			g.drawImage(bg, paddingLeft, paddingTop, this);
 	}
 	
 }
