@@ -287,6 +287,10 @@ public class LauncherOptions {
 					StackTraceElement[] stes = Thread.currentThread().getStackTrace();
 					if(!stes[3].getClassName().equals(LauncherOptions.class.getName()))
 						Encryption.throwMajicError();
+				} else if(clazz == Encryption.class) {
+					StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+					if(!stes[3].getClassName().equals(Encryption.class.getName()))
+						Encryption.throwMajicError();
 				}
 			}
 		};

@@ -113,6 +113,8 @@ public class Main {
 				return;
 			}
 		} catch(Exception e) {
+			if(Main.TEST)
+				e.printStackTrace();
 			return;
 		}
 		// Read config

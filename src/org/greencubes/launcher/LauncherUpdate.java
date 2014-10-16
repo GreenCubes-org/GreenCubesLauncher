@@ -11,6 +11,7 @@ public class LauncherUpdate {
 			launcherLoad();
 		} else {
 			// TODO : Do update
+			launcherLoad();
 		}
 	}
 	

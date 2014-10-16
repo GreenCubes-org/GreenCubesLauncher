@@ -1,7 +1,9 @@
 package org.greencubes.util;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +82,7 @@ public class I18n {
 		try {
 			URL langUrl = I18n.class.getResource("/res/lang/" + currentLanguage + ".js");
 			InputStream is = langUrl.openStream();
-			jo = new JSONObject(new JSONTokener(is));
+			jo = new JSONObject(new JSONTokener(new InputStreamReader(is, Charset.forName("UTF-8"))));
 			is.close();
 		} catch(Exception e) {
 			throw new AssertionError(e);
