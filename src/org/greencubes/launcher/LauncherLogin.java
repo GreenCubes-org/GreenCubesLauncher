@@ -1,5 +1,6 @@
 package org.greencubes.launcher;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -33,6 +34,7 @@ import javax.swing.text.StyledDocument;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
+import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
 
@@ -412,7 +414,8 @@ public class LauncherLogin {
 						doLogin();
 					}
 				});
-				add(new JTextPane() {{
+				JTextPane pane;
+				add(pane = new JTextPane() {{
 						setOpaque(false);
 						StyledDocument doc = getStyledDocument();
 						SimpleAttributeSet center = new SimpleAttributeSet();
@@ -423,13 +426,9 @@ public class LauncherLogin {
 						setEditable(false);
 						setText(I18n.get("login.dologin"));
 						setFont(new Font("ClearSans", Font.PLAIN, 16));
-						addMouseListener(new AbstractMouseListener() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								doLogin();
-							}
-						});
+						disableEvents(AWTEvent.MOUSE_EVENT_MASK);
 					}}, BorderLayout.PAGE_START);
+				GAWTUtil.removeMouseListeners(pane);
 			}}, gbc(2, 1, 1, 7));
 		
 		passwordField.setActionCommand("OK");

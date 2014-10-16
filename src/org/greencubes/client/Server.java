@@ -9,4 +9,8 @@ public class Server {
 		this.address = address;
 		this.port = port;
 	}
+	
+	public String getFullAddress() {
+		return address + ":" + port;
+	}
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cef.browser.CefBrowser;
+
 public abstract class Client {
 	
 	public static final List<Client> clients = new ArrayList<Client>();
@@ -19,10 +21,19 @@ public abstract class Client {
 	
 	public abstract File getWorkingDirectory();
 	
-	public abstract String getLaunchParameters(String username, String session, Server server);
+	/**
+	 * All parameters can be null!
+	 * @param username
+	 * @param session
+	 * @param server
+	 * @return
+	 */
+	public abstract List<String> getLaunchParameters(String username, String session, Server server);
 	
 	public abstract List<Server> getServers();
 	
 	public abstract boolean isSinglePlayerModeAllowed();
+	
+	public abstract void openBrowserPage(CefBrowser browser);
 	
 }
