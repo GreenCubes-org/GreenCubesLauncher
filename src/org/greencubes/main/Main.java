@@ -2,6 +2,8 @@ package org.greencubes.main;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -11,7 +13,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.security.Security;
 
+import javax.swing.Timer;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.cef.CefApp;
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.launcher.LauncherUpdate;
 import org.greencubes.util.Encryption;
@@ -104,7 +109,7 @@ public class Main {
 		// Read config
 		InputStream is = null;
 		try {
-			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
+			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"), "launch.conf"));
 			config = new JSONObject(new JSONTokener(is));
 			LauncherOptions.sessionUser = config.optString("user");
 			LauncherOptions.autoLogin = config.optBoolean("login");
@@ -118,15 +123,6 @@ public class Main {
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		
-		// Generate session for debug
-		/*Random rand = new Random(812);
-		byte[] key = new byte[128];
-		rand.nextBytes(key);
-		LauncherOptions.setSession(rand.nextInt(1000000), "Rena4ka", key);
-		LauncherOptions.saveSession();*/
-		
-		//LauncherOptions.setSession(1, "Rena4ka", "9t7tji4vu9f9c8bgl4h71cc3eaofduvd26dfjvvlbfzkxwn7uc0a4enlfr4roeqv7sm4hab1ycw9qscuhncb3ka79fa3o49kv9sn8rlkb35vj4041bg2lorrjz21xtw1".getBytes());
-		//LauncherOptions.saveSession();
 		// Load saved session
 		new LauncherUpdate();
 	}
@@ -138,10 +134,16 @@ public class Main {
 	public static void close() {
 		Util.close(userFileChannel, userFile);
 		try {
-			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"),"launch.conf"));
+			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"), "launch.conf"));
 			config.write(fw);
 			fw.close();
-		} catch(Exception e) {}
-		System.exit(0);
+		} catch(Exception e) {
+		}
+		CefApp.getInstance().dispose();
+		new Timer(3000, new ActionListener() {
+			public void actionPerformed(ActionEvent paramAnonymous2ActionEvent) {
+				System.exit(0);
+			}
+		}).start();
 	}
 }

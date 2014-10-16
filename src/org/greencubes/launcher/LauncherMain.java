@@ -3,40 +3,43 @@ package org.greencubes.launcher;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
+import org.cef.CefApp;
+import org.cef.CefClient;
+import org.cef.browser.CefBrowser;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
-import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LauncherMain {
 	
-	private JFrame frame;
+	private CefClient cefClient;
 	
-	//@formatter:off
-	public LauncherMain(JFrame previousFrame) {
-		frame = new JFrame(I18n.get("title")) {
+	private Frame frame;
+	private JPanel mainPanel;
+	
+	//@formatter:on
+	public LauncherMain(Window previousFrame) {
+		frame = new Frame(I18n.get("title")) { // We use not jframe as we need to render canvas
 			@Override
             public void paint(Graphics g) {
 				// Hack to make maximum size work
@@ -60,81 +63,93 @@ public class LauncherMain {
 		frame.setUndecorated(!Main.TEST);
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
-		frame.add(new JPanelBG("/res/main.bg.png") {{
+		JPanel innerPanel;
+		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {{
 			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
 			setPreferredSize(d);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(0, 1, 1, 0));
-			setMaximumSize(new Dimension(1440, 960));
+			setBackground(new Color(0, 0, 0, 0));
 			
 			// Top line
 			add(new JPanel() {{
-				setBackground(Util.debugColor());
-				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-				add(Box.createHorizontalGlue());
+				//setOpaque(false);
+				setBackground(new Color(0, 0, 0, 0));
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 				add(new JPanel() {{
-					s(this, 25, 25);
 					setBackground(new Color(0, 0, 0, 0));
-					add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
-						s(this, 14, 14);
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(Box.createHorizontalGlue());
+					add(new JPanel() {{
+						s(this, 25, 25);
 						setBackground(new Color(0, 0, 0, 0));
+						add(new JPanel() {{ // TODO : Minimize button
+							s(this, 14, 14);
+							setBackground(new Color(0, 0, 0, 0));
+						}});
+						addMouseListener(new AbstractMouseListener() {
+							// TODO : Can add cross animation
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								frame.setState(Frame.ICONIFIED);
+							}
+						});
 					}});
-					addMouseListener(new AbstractMouseListener() {
-						// TODO : Can add cross animation
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							frame.setState(JFrame.ICONIFIED);
-						}
-					});
+					add(new JPanel() {{
+						s(this, 25, 25);
+						setBackground(new Color(0, 0, 0, 0));
+						add(new JPanelBG("/res/cross.png") {{
+							s(this, 14, 14);
+							setBackground(new Color(0, 0, 0, 0));
+						}});
+						addMouseListener(new AbstractMouseListener() {
+							// TODO : Can add cross animation
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								frame.dispose();
+								Main.close();
+							}
+						});
+					}});
 				}});
 				add(new JPanel() {{
-					s(this, 25, 25);
 					setBackground(new Color(0, 0, 0, 0));
-					add(new JPanelBG("/res/cross.png") {{
-						s(this, 14, 14);
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
 						setBackground(new Color(0, 0, 0, 0));
+						s(this, 100, 50);
+						paddingTop = 1;
+						// TODO : Add popout panel
 					}});
-					addMouseListener(new AbstractMouseListener() {
-						// TODO : Can add cross animation
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							Main.close();
-						}
-					});
+					
+					add(new JPanelBG("/res/main.play.ruRU.png") {{
+						s(this, 110, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 15;
+						paddingTop = 15;
+					}});
+					add(new JPanelBG("/res/main.shop.ruRU.png") {{
+						s(this, 120, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 10;
+						paddingTop = 15;
+					}});
+					add(new JPanelBG("/res/main.news.ruRU.png") {{
+						s(this, 130, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 15;
+						paddingTop = 15;
+					}});
+					
+					add(Box.createHorizontalGlue());
+				}});
+				add(new JPanel() {{
+					s(this, 5, 5);
+					setBackground(new Color(0, 0, 0, 0));
 				}});
 			}});
-			
-			add(new JPanel() {{
-				setBackground(Util.debugColor());
-				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-					setBackground(new Color(0, 0, 0, 0));
-					s(this, 100, 50);
-					paddingTop = 1;
-					// TODO : Add popout panel
-				}});
-				
-				add(new JPanel() {{
-					s(this, 120, 50);
-					setBackground(Util.debugColor());
-					add(new JTextPane() {{
-						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
-						setBackground(new Color(0, 0, 0, 0));
-						setForeground(new Color(25, 97, 14, 255));
-						setEditable(false);
-						setText("ИГРАТЬ");
-						setFont(new Font("ClearSans", Font.BOLD, 30));
-					}});
-				}});
-				
-				add(Box.createHorizontalGlue());
+			add(mainPanel = new JPanel() {{
+				setBackground(new Color(0, 0, 0, 0));
 			}});
-
-			add(Box.createVerticalGlue());
 		}});
 		
 		frame.pack();
@@ -144,7 +159,7 @@ public class LauncherMain {
 		} else
 			frame.setLocationRelativeTo(null);
 		// Resize and close listeners to save position and size betwen launcher starts
-		frame.addComponentListener(new AbstractComponentListener() {
+		innerPanel.addComponentListener(new AbstractComponentListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				save();
@@ -169,6 +184,7 @@ public class LauncherMain {
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				frame.dispose();
 				Main.close();
 			}
 		});
@@ -176,9 +192,38 @@ public class LauncherMain {
 		if(previousFrame != null)
 			previousFrame.dispose();
 		frame.setVisible(true);
+		displayPlayPanel();
 	}
 	//@formatter:on
 
+	//@formatter:off
+	private void displayPlayPanel() {
+		CefClient cefClient = getCefClient();
+		CefBrowser browser = cefClient.createBrowser("https://greencubes.org/", false, true);
+		Component c = browser.getUIComponent();
+		mainPanel.setLayout(new GridBagLayout());
+		mainPanel.add(c, new GridBagConstraints() {{
+			gridx = 1;
+			gridy = 1;
+			weightx = 1;
+			weighty = 1;
+			fill = GridBagConstraints.BOTH;
+		}});
+		frame.revalidate();
+	}
+	
+	private CefClient getCefClient() {
+		synchronized(this) {
+			if(cefClient == null) {
+				CefApp cefApp = CefApp.getInstance();
+				cefClient = cefApp.createClient();
+			}
+			return cefClient;
+		}
+	}
+	
+	//@formatter:on
+	
 	private static void s(Component c, int width, int height) {
 		c.setSize(width, height);
 		Dimension d = new Dimension(width, height);
@@ -186,6 +231,5 @@ public class LauncherMain {
 		c.setMaximumSize(d);
 		c.setMinimumSize(d);
 	}
-	
 	
 }

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -31,6 +32,7 @@ import javax.swing.text.StyledDocument;
 
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
+import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
 
@@ -101,7 +103,12 @@ public class LauncherLogin {
 				setLayout(new GridBagLayout());
 			}}, gbc(1, 1, 1, 2));
 		}}, BorderLayout.CENTER);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new AbstractWindowListener() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Main.close();
+			}
+		});
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		if(previousFrame != null)
