@@ -78,6 +78,7 @@ public class LauncherLogin {
 					// TODO : Can add cross animation
 					@Override
 					public void mouseClicked(MouseEvent e) {
+						frame.dispose();
 						Main.close();
 					}
 				});
@@ -106,6 +107,7 @@ public class LauncherLogin {
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				frame.dispose();
 				Main.close();
 			}
 		});
@@ -128,7 +130,8 @@ public class LauncherLogin {
 					launcherMain();
 					return;
 				} catch(Exception e) {
-					e.printStackTrace();
+					if(Main.TEST)
+						e.printStackTrace();
 				}
 			}
 		}

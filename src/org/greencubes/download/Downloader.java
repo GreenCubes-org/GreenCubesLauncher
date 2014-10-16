@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.greencubes.main.Main;
 import org.greencubes.util.Util;
 
 public class Downloader {
@@ -97,7 +98,9 @@ public class Downloader {
 			try {
 				headRequest = new HttpHead(u.toURI());
 			} catch(URISyntaxException e2) {
-				throw new IOException(e2);
+				if(Main.TEST)
+					e2.printStackTrace();
+				throw new IOException("URL Syntax exception");
 			}
 			try {
 				HttpResponse response = httpClient.execute(headRequest);
@@ -151,7 +154,9 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				throw new IOException(e2);
+				if(Main.TEST)
+					e2.printStackTrace();
+				throw new IOException("URL Syntax exception");
 			}
 			InputStream is = null;
 			FileOutputStream os = null;
@@ -218,7 +223,9 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				throw new IOException(e2);
+				if(Main.TEST)
+					e2.printStackTrace();
+				throw new IOException("URL Syntax exception");
 			}
 			InputStream is = null;
 			try {
@@ -269,7 +276,9 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				throw new IOException(e2);
+				if(Main.TEST)
+					e2.printStackTrace();
+				throw new IOException("URL Syntax exception");
 			}
 			InputStream is = null;
 			FileOutputStream os = null;

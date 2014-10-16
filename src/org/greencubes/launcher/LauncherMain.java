@@ -36,6 +36,7 @@ public class LauncherMain {
 	
 	private Frame frame;
 	private JPanel mainPanel;
+	private JPanel innerPanel;
 	
 	//@formatter:on
 	public LauncherMain(Window previousFrame) {
@@ -63,7 +64,6 @@ public class LauncherMain {
 		frame.setUndecorated(!Main.TEST);
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
-		JPanel innerPanel;
 		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {{
 			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
 			setPreferredSize(d);
@@ -162,23 +162,18 @@ public class LauncherMain {
 		innerPanel.addComponentListener(new AbstractComponentListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				save();
+				saveFrameInfo();
 			}
 			
 			@Override
 			public void componentMoved(ComponentEvent e) {
-				save();
+				saveFrameInfo();
 			}
-			
-			protected void save() {
-				JSONObject config = Main.getConfig();
-				Rectangle b = frame.getBounds();
-				try {
-					config.put("posx", b.x);
-					config.put("posy", b.y);
-					config.put("width", b.width);
-					config.put("height", b.height);
-				} catch(JSONException e) {}
+		});
+		frame.addComponentListener(new AbstractComponentListener() {
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				saveFrameInfo();
 			}
 		});
 		frame.addWindowListener(new AbstractWindowListener() {
@@ -195,6 +190,18 @@ public class LauncherMain {
 		displayPlayPanel();
 	}
 	//@formatter:on
+	
+	private void saveFrameInfo() {
+		JSONObject config = Main.getConfig();
+		Rectangle b = frame.getBounds();
+		Rectangle b2 = innerPanel.getBounds();
+		try {
+			config.put("posx", b.x);
+			config.put("posy", b.y);
+			config.put("width", b2.width);
+			config.put("height", b2.height);
+		} catch(JSONException e) {}
+	}
 
 	//@formatter:off
 	private void displayPlayPanel() {

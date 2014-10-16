@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -12,7 +13,14 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.security.Security;
+import java.util.Random;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 import javax.swing.Timer;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -29,6 +37,7 @@ public class Main {
 	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
 	public static final String REGISTRATION_URL = "https://greencubes.org/?action=start";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
+	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = true;
 	
 	private static JSONObject config;
@@ -118,6 +127,24 @@ public class Main {
 		} finally {
 			Util.close(is);
 		}
+		if(LauncherOptions.sessionUser == null && new File("launcher.dat").exists()) {
+			// Try pick user login from old launcher configs
+			// And hope some idiot will try to decrypt this code not the real session load/save one
+			DataInputStream dis = null;
+			try {
+				Cipher cipher = getCipher(2, "c8d3563578b9264ee7fc86d44bbb9a79");
+				if(cipher == null)
+					return;
+				dis = new DataInputStream(new CipherInputStream(new FileInputStream(new File("launcher.dat")), cipher));
+				LauncherOptions.sessionUser = dis.readUTF().substring(5);
+				dis.close();
+				new File("launcher.dat").delete();
+			} catch(Throwable t) {
+				// Ignore any exception as this is not important
+			} finally {
+				Util.close(dis);
+			}
+		}
 		// Apply config
 		if(config.optBoolean("debug"))
 			LauncherOptions.debug = true;
@@ -145,5 +172,29 @@ public class Main {
 				System.exit(0);
 			}
 		}).start();
+	}
+	
+	private static Cipher getCipher(int mode, String password) throws Exception {
+		Random random = new Random(43287234L);
+		byte[] salt = new byte[8];
+		random.nextBytes(salt);
+		PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
+		SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
+		Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
+		cipher.init(mode, pbeKey, pbeParamSpec);
+		return cipher;
+	}
+	
+	static {
+		String[] opts = new String[]{"sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch"};
+		boolean is64bit = false;
+		for(String opt : opts) {
+			String val = System.getProperty(opt);
+			if(val != null && val.contains("64")) {
+				is64bit = true;
+				break;
+			}
+		}
+		IS_64_BIT_JAVA = is64bit;
 	}
 }
