@@ -52,5 +52,11 @@ public class ClientNew extends Client {
 	public void openBrowserPage(CefBrowser browser) {
 		browser.loadURL("https://greencubes.org");
 	}
+
+	@Override
+	public IClientStatus getStatus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

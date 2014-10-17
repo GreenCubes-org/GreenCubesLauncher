@@ -99,6 +99,30 @@ public class LauncherOptions {
 		saveSession();
 	}
 	
+	public static void logOff() {
+		try {
+			// Ensure no one replaced current threads class and security manager is in place
+			if(!Class.forName("java.lang.Thread").getMethod("getStackTrace").equals(Thread.currentThread().getClass().getMethod("getStackTrace")))
+				throw new RuntimeException();
+			Encryption.getSecurityManager();
+		} catch(Exception e) {
+			Encryption.throwMajicError();
+			return;
+		}
+		if(sessionKeyAddress != -1) {
+			Util.getUnsafe().freeMemory(sessionKeyAddress);
+			sessionKeyAddress = -1;
+		}
+		sessionUserId = 0;
+		try {
+			Main.userFileChannel.position(0);
+			Main.userFileChannel.write(ByteBuffer.allocate(0));
+		} catch(IOException e) {
+			if(Main.TEST)
+				e.printStackTrace();
+		}
+	}
+	
 	public static void authSession() throws IOException, AuthError {
 		if(sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null)
 			return;
@@ -179,8 +203,6 @@ public class LauncherOptions {
 		} catch(Exception e) {
 			if(Main.TEST)
 				e.printStackTrace();
-		} finally {
-			
 		}
 	}
 	
@@ -259,6 +281,8 @@ public class LauncherOptions {
 		SecurityManager sm = new SecurityManager() {
 			@Override
 			public void checkPermission(Permission perm) {
+				if(perm.getName().startsWith("accessClassInPackage"))
+					return;
 				try {
 					if(!Class.forName("java.lang.Thread").getMethod("getStackTrace").equals(Thread.currentThread().getClass().getMethod("getStackTrace")))
 						throw new RuntimeException();

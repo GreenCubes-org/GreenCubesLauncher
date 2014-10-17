@@ -1,8 +1,8 @@
 package org.greencubes.launcher;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -19,6 +20,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -34,9 +37,9 @@ import javax.swing.text.StyledDocument;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
-import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
+import org.greencubes.util.Util;
 
 public class LauncherLogin {
 	
@@ -46,6 +49,7 @@ public class LauncherLogin {
 	private JPasswordField passwordField;
 	private JCheckBox autoLoginCheckBox;
 	private String errorString;
+	private JTextPane errorPane;
 	
 	//@formatter:off
 	public LauncherLogin(JFrame previousFrame) {
@@ -103,7 +107,7 @@ public class LauncherLogin {
 				setPreferredSize(new Dimension(305, 287));
 				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
 				setOpaque(false);
-				setLayout(new GridBagLayout());
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			}}, gbc(1, 1, 1, 2));
 		}}, BorderLayout.CENTER);
 		frame.addWindowListener(new AbstractWindowListener() {
@@ -131,6 +135,9 @@ public class LauncherLogin {
 					displayProgress(I18n.get("login.loading"));
 					launcherMain();
 					return;
+				} catch(IOException e) {
+					if(Main.TEST)
+						e.printStackTrace();
 				} catch(Exception e) {
 					if(Main.TEST)
 						e.printStackTrace();
@@ -146,32 +153,63 @@ public class LauncherLogin {
 		new LauncherMain(frame); // Send current frame so next window can destroy it when ready
 	}
 	
-	private void doLogin() {
-		if(userField != null && passwordField != null && userField.getText().length() > 0 && passwordField.getPassword().length > 0) {
-			// goLogin() runs in window thread, so we need to start new thread to allow progress update
-			new Thread() {
-				public void run() {
-					displayProgress(I18n.get("login.authorization"));
-					try {
-						LauncherOptions.auth(userField.getText(), passwordField.getPassword());
-						LauncherOptions.userInfo = LauncherUtil.sessionRequest("action=info");
-						if(Main.TEST)
-							System.out.println(LauncherOptions.userInfo);
+	private void joinOffline() {
+		if(userField != null) {
+			if(userField.getText().length() > 0) {
+				// joinOffline() runs in window thread, so we need to start new thread to allow progress update
+				new Thread() {
+					public void run() {
 						displayProgress(I18n.get("login.loading"));
+						if(LauncherOptions.sessionUser != null && !LauncherOptions.sessionUser.equals(userField.getText()))
+							LauncherOptions.logOff();
+						LauncherOptions.sessionUser = userField.getText();
 						launcherMain();
-						return;
-					} catch(IOException e) {
-						errorString = I18n.get("login.exception", e.getLocalizedMessage());
-						if(Main.TEST)
-							e.printStackTrace();
-					} catch(AuthError e) {
-						errorString = I18n.get("login.exception", I18n.get("login.error." + e.errorCode));
-						if(Main.TEST)
-							e.printStackTrace();
 					}
-					displayLogin();
-				}
-			}.start();
+				}.start();				
+			} else {
+				if(errorPane != null)
+					errorPane.setText(I18n.get("login.nousername"));
+			}
+		}
+	}
+	
+	private void doLogin() {
+		if(userField != null && passwordField != null) {
+			if(userField.getText().length() > 0 && passwordField.getPassword().length > 0) {
+				// goLogin() runs in window thread, so we need to start new thread to allow progress update
+				new Thread() {
+					public void run() {
+						displayProgress(I18n.get("login.authorization"));
+						try {
+							LauncherOptions.auth(userField.getText(), passwordField.getPassword());
+							LauncherOptions.userInfo = LauncherUtil.sessionRequest("action=info");
+							if(Main.TEST)
+								System.out.println(LauncherOptions.userInfo);
+							displayProgress(I18n.get("login.loading"));
+							launcherMain();
+							return;
+						} catch(IOException e) {
+							errorString = I18n.get("login.exception", e.getLocalizedMessage());
+							if(Main.TEST)
+								e.printStackTrace();
+						} catch(AuthError e) {
+							errorString = I18n.get("login.exception", I18n.get("login.error." + e.errorCode));
+							if(Main.TEST)
+								e.printStackTrace();
+						}
+						displayLogin();
+					}
+				}.start();
+			} else if(userField.getText().length() == 0 && passwordField.getPassword().length == 0) {
+				if(errorPane != null)
+					errorPane.setText(I18n.get("login.nousernamepassword"));
+			} else if(userField.getText().length() == 0) {
+				if(errorPane != null)
+					errorPane.setText(I18n.get("login.nousername"));
+			} else if(passwordField.getPassword().length == 0) {
+				if(errorPane != null)
+					errorPane.setText(I18n.get("login.nopassword"));
+			}
 		}
 	}
 	
@@ -179,7 +217,10 @@ public class LauncherLogin {
 	private void displayProgress(final String progressString) {
 		centerPanel.removeAll();
 		centerPanel.invalidate();
-		centerPanel.add(new JTextPane() {{
+		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setLayout(new GridBagLayout());
+			add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -190,7 +231,10 @@ public class LauncherLogin {
 				setEditable(false);
 				setText(progressString);
 				setFont(new Font("ClearSans", Font.BOLD, 30));
-			}}, gbc(1, 1, 0, 0));
+			}}, new GridBagConstraints() {{
+				weighty = 1.0d;
+			}});
+		}});
 		centerPanel.revalidate();
 		frame.repaint();
 	}
@@ -200,178 +244,183 @@ public class LauncherLogin {
 	private void displayLogin() {
 		centerPanel.removeAll();
 		centerPanel.add(new JPanel() {{ // GC LOGO
-				setPreferredSize(new Dimension(305, 42));
-				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}}, gbc(4, 1, 0, 0));
-		centerPanel.add(new JPanel() {{ // Left height column
-				setPreferredSize(new Dimension(10, 245));
-				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}}, gbc(1, 7, 0, 1));
-		centerPanel.add(new JPanel() {{ // Right height column
-				setPreferredSize(new Dimension(10, 245));
-				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-			}}, gbc(1, 7, 3, 1));
-		
-		// Login and password captions
-		centerPanel.add(new JTextPane() {{
+			s(this, 305, 42);
+			setBackground(new Color(0, 0, 0, 0));
+		}});
+		final String savedUser = userField != null ? userField.getText() : LauncherOptions.sessionUser;
+		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setLayout(new GridBagLayout());
+			setBackground(Util.debugColor());
+			add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
 				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(new Color(0, 0, 0, 0));
+				setBackground(Util.debugColor());
 				setForeground(new Color(25, 97, 14, 255));
 				setEditable(false);
 				setText(I18n.get("login.login"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}}, new GridBagConstraints() {{
-				gridx = 1;
-				gridy = 1;
-				anchor = GridBagConstraints.LINE_END;
-			}});
-		centerPanel.add(new JTextPane() {{
+			}}, gbc(1, 1, 0, 0));
+			add(userField = new JTextField(0) {
+				Image bg;
+				{
+					try {
+						bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
+					} catch(Exception e) {
+					}
+					setBackground(Util.debugColor());
+					s(this, 158, 23);
+					setBorder(new EmptyBorder(0, 5, 0, 0));
+					setOpaque(false);
+					setForeground(new Color(170, 255, 102));
+					setCaretColor(new Color(170, 255, 102));
+					setFont(new Font("ClearSans", Font.PLAIN, 16));
+					if(savedUser != null)
+						setText(savedUser);
+				}
+				
+				@Override
+				public void paintComponent(Graphics g) {
+					g.drawImage(bg, 0, 0, this);
+					super.paintComponent(g);
+			}}, gbc(1, 1, 1, 0));
+			add(new JTextPane() {{
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
 				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(new Color(0, 0, 0, 0));
+				setBackground(Util.debugColor());
 				setForeground(new Color(25, 97, 14, 255));
 				setEditable(false);
 				setText(I18n.get("login.password"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}}, new GridBagConstraints() {{
-				gridx = 1;
-				gridy = 2;
-				anchor = GridBagConstraints.LINE_END;
-			}});
-		
-		final String savedUser = userField != null ? userField.getText() : LauncherOptions.sessionUser;
-		
-		// Login and password fields
-		centerPanel.add(userField = new JTextField(0) {
-			Image bg;
-			{
-				try {
-					bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
-				} catch(Exception e) {
+			}}, gbc(1, 1, 0, 1));
+			add(passwordField = new JPasswordField(0) {
+				Image bg;
+				{
+					try {
+						bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
+					} catch(Exception e) {
+					}
+					setBackground(Util.debugColor());
+					s(this, 158, 23);
+					setBorder(new EmptyBorder(0, 5, 0, 0));
+					setOpaque(false);
+					setForeground(new Color(170, 255, 102));
+					setCaretColor(new Color(170, 255, 102));
+					setFont(new Font("ClearSans", Font.PLAIN, 16));
 				}
-				setBackground(new Color(0, 0, 0, 0));
-				setPreferredSize(new Dimension(158, 23));
-				setBorder(new EmptyBorder(0, 5, 0, 0));
-				setOpaque(false);
-				setForeground(new Color(170, 255, 102));
-				setCaretColor(new Color(170, 255, 102));
-				setFont(new Font("ClearSans", Font.PLAIN, 16));
-				if(savedUser != null)
-					setText(savedUser);
-			}
-			
-			@Override
-			public void paintComponent(Graphics g) {
-				g.drawImage(bg, 0, 0, this);
-				super.paintComponent(g);
-			}}, gbc(1, 1, 2, 1));
-		centerPanel.add(passwordField = new JPasswordField(0) {
-			Image bg;
-			{
-				try {
-					bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
-				} catch(Exception e) {
-				}
-				setBackground(new Color(0, 0, 0, 0));
-				setPreferredSize(new Dimension(158, 23));
-				setBorder(new EmptyBorder(0, 5, 0, 0));
-				setOpaque(false);
-				setForeground(new Color(170, 255, 102));
-				setCaretColor(new Color(170, 255, 102));
-				setFont(new Font("ClearSans", Font.PLAIN, 16));
-			}
-			
-			@Override
-			public void paintComponent(Graphics g) {
-				g.drawImage(bg, 0, 0, this);
-				super.paintComponent(g);
-			}}, gbc(1, 1, 2, 2));
-		
-		// Forgot password and registration
-		centerPanel.add(new JTextPane() {{
-				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				StyleConstants.setUnderline(center, true);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(new Color(0, 0, 0, 0));
-				setForeground(new Color(0, 18, 255, 255));
-				setEditable(false);
-				setFont(new Font("ClearSans", Font.PLAIN, 12));
-				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				if(LauncherUtil.canOpenBrowser()) {
-					setText(I18n.get("login.forgot"));
-					addMouseListener(new AbstractMouseListener() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
-						}
-					});
-				}
-			}}, new GridBagConstraints() {{
-				gridx = 1;
-				gridwidth = 2;
-				gridy = 3;
-				anchor = GridBagConstraints.LINE_END;
-			}});
-		centerPanel.add(new JTextPane() {{
-				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				StyleConstants.setUnderline(center, true);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(new Color(0, 0, 0, 0));
-				setForeground(new Color(0, 18, 255, 255));
-				setEditable(false);
-				setFont(new Font("ClearSans", Font.PLAIN, 12));
-				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				
-				if(LauncherUtil.canOpenBrowser()) {
-					setText(I18n.get("login.register"));
-					addMouseListener(new AbstractMouseListener() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
-						}
-					});
-				}
-			}}, new GridBagConstraints() {{
-				gridx = 1;
-				gridwidth = 2;
-				gridy = 4;
-				anchor = GridBagConstraints.LINE_END;
+				@Override
+				public void paintComponent(Graphics g) {
+					g.drawImage(bg, 0, 0, this);
+					super.paintComponent(g);
+			}}, gbc(1, 1, 1, 1));
+		}});
+
+		// Forgot password and registration
+		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setBackground(Util.debugColor());
+			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+			add(Box.createHorizontalGlue());
+			add(new JPanel() {{
+				setLayout(new BorderLayout());
+				setOpaque(false);
+				setBackground(new Color(0, 0, 0, 0));
+				add(new JTextPane() {{
+					setOpaque(false);
+					StyledDocument doc = getStyledDocument();
+					SimpleAttributeSet center = new SimpleAttributeSet();
+					StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+					StyleConstants.setUnderline(center, true);
+					StyleConstants.setLineSpacing(center, -1f);
+					doc.setParagraphAttributes(0, doc.getLength(), center, false);
+					setBackground(new Color(0, 0, 0, 0));
+					setForeground(new Color(0, 18, 255, 255));
+					setEditable(false);
+					setFont(new Font("ClearSans", Font.PLAIN, 12));
+					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					if(LauncherUtil.canOpenBrowser()) {
+						setText(I18n.get("login.forgot"));
+						addMouseListener(new AbstractMouseListener() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
+							}
+						});
+					}
+				}}, BorderLayout.LINE_END);	
 			}});
+			add(new JPanel() {{
+				s(this, 10, 10);
+				setBackground(new Color(0, 0, 0, 0));
+			}});
+		}});
 		
 		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setBackground(Util.debugColor());
+			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+			add(Box.createHorizontalGlue());
+			add(new JPanel() {{
+				setLayout(new BorderLayout());
 				setOpaque(false);
-				setBackground(new Color(0.1f, 0.2f, 0.3f, 0));
-				setPreferredSize(new Dimension(285, 50));
+				setBackground(new Color(0, 0, 0, 0));
+				add(new JTextPane() {{
+					setOpaque(false);
+					StyledDocument doc = getStyledDocument();
+					SimpleAttributeSet center = new SimpleAttributeSet();
+					StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+					StyleConstants.setUnderline(center, true);
+					StyleConstants.setLineSpacing(center, -1f);
+					doc.setParagraphAttributes(0, doc.getLength(), center, false);
+					setBackground(new Color(0, 0, 0, 0));
+					setForeground(new Color(0, 18, 255, 255));
+					setEditable(false);
+					setFont(new Font("ClearSans", Font.PLAIN, 12));
+					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					if(LauncherUtil.canOpenBrowser()) {
+						setText(I18n.get("login.register"));
+						addMouseListener(new AbstractMouseListener() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
+							}
+						});
+					}
+					setMargin(new Insets(0, 0, 0, 0));
+				}}, BorderLayout.LINE_END);
+			}});
+			add(new JPanel() {{
+				s(this, 10, 10);
+				setBackground(new Color(0, 0, 0, 0));
+			}});
+		}});
+		
+		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setBackground(Util.debugColor());
+			add(errorPane = new JTextPane() {{
+				setOpaque(false);
+				StyledDocument doc = getStyledDocument();
+				SimpleAttributeSet center = new SimpleAttributeSet();
+				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setBackground(Util.debugColor());
+				setForeground(new Color(0, 0, 0, 255));
+				setEditable(false);
 				if(errorString != null) {
-					add(new JTextPane() {{
-							setOpaque(false);
-							StyledDocument doc = getStyledDocument();
-							SimpleAttributeSet center = new SimpleAttributeSet();
-							StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-							doc.setParagraphAttributes(0, doc.getLength(), center, false);
-							setBackground(new Color(0, 0, 0, 0));
-							setForeground(new Color(0, 0, 0, 255));
-							setEditable(false);
-							setText(errorString);
-							setFont(new Font("ClearSans", Font.PLAIN, 12));
-						}
-					});
+					setText(errorString);
 					errorString = null;
 				}
-			}}, gbc(2, 1, 1, 5));
+				setFont(new Font("ClearSans", Font.PLAIN, 12));
+			}});
+		}});
 		
 		// Checkboxes
 		ImageIcon icon = null;
@@ -385,8 +434,16 @@ public class LauncherLogin {
 		} catch(IOException e) {
 		}
 		final ImageIcon iconChecked = icon;
-		centerPanel.add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), LauncherOptions.autoLogin ? iconChecked : iconUnchecked, LauncherOptions.autoLogin) {{
+		centerPanel.add(new JPanel() {{
+			setOpaque(false);
+			setBackground(new Color(0, 0, 0, 0));
+			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+			add(new JPanel() {{
+				s(this, 25, 5);
 				setBackground(new Color(0, 0, 0, 0));
+			}});
+			add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), LauncherOptions.autoLogin ? iconChecked : iconUnchecked, LauncherOptions.autoLogin) {{
+				setBackground(Util.debugColor());
 				setOpaque(false);
 				setFont(new Font("ClearSans", Font.PLAIN, 16));
 				setForeground(new Color(25, 97, 14, 255));
@@ -399,37 +456,75 @@ public class LauncherLogin {
 							setIcon(iconUnchecked);
 					}
 				});
+				setMargin(new Insets(2, 0, 2, 0));
 				setToolTipText(I18n.get("login.autologin.tip"));
-			}}, gbc(2, 1, 1, 6));
+			}});
+			add(Box.createHorizontalGlue());
+		}});
+		
 		
 		// Login button
 		centerPanel.add(new JPanelBG("/res/button.png") {{
-				paddingTop = 5;
-				setPreferredSize(new Dimension(253, 40));
-				setBackground(new Color(0.13f, 0.4f, 0.6f, 0));
-				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			paddingTop = 5;
+			s(this, 253, 35);
+			setBackground(new Color(0, 0, 0, 0));
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			addMouseListener(new AbstractMouseListener() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					doLogin();
+				}
+			});
+			add(new JTextPane() {{
+				setOpaque(false);
+				StyledDocument doc = getStyledDocument();
+				SimpleAttributeSet center = new SimpleAttributeSet();
+				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setBackground(Util.debugColor());
+				setForeground(new Color(170, 255, 102));
+				setEditable(false);
+				setText(I18n.get("login.dologin"));
+				setFont(new Font("ClearSans", Font.PLAIN, 16));
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						doLogin();
 					}
 				});
-				JTextPane pane;
-				add(pane = new JTextPane() {{
-						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
-						setBackground(new Color(0.13f, 0.2f, 0.1f, 0));
-						setForeground(new Color(170, 255, 102));
-						setEditable(false);
-						setText(I18n.get("login.dologin"));
-						setFont(new Font("ClearSans", Font.PLAIN, 16));
-						disableEvents(AWTEvent.MOUSE_EVENT_MASK);
-					}}, BorderLayout.PAGE_START);
-				GAWTUtil.removeMouseListeners(pane);
-			}}, gbc(2, 1, 1, 7));
+			}}, BorderLayout.PAGE_START);
+		}});
+		// Login button
+		centerPanel.add(new JPanelBG("/res/button.png") {{
+			paddingTop = 5;
+			s(this, 253, 35);
+			setBackground(new Color(0, 0, 0, 0));
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			addMouseListener(new AbstractMouseListener() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					joinOffline();
+				}
+			});
+			add(new JTextPane() {{
+				setOpaque(false);
+				StyledDocument doc = getStyledDocument();
+				SimpleAttributeSet center = new SimpleAttributeSet();
+				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setBackground(Util.debugColor());
+				setForeground(new Color(170, 255, 102));
+				setEditable(false);
+				setText(I18n.get("login.dologinoffline"));
+				setFont(new Font("ClearSans", Font.PLAIN, 16));
+				addMouseListener(new AbstractMouseListener() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						joinOffline();
+					}
+				});
+			}}, BorderLayout.PAGE_START);
+		}});
 		
 		passwordField.setActionCommand("OK");
 		passwordField.addActionListener(new ActionListener() {
@@ -464,5 +559,13 @@ public class LauncherLogin {
 		c.gridx = x;
 		c.gridy = y;
 		return c;
+	}
+	
+	private static void s(Component c, int width, int height) {
+		c.setSize(width, height);
+		Dimension d = new Dimension(width, height);
+		c.setPreferredSize(d);
+		c.setMaximumSize(d);
+		c.setMinimumSize(d);
 	}
 }

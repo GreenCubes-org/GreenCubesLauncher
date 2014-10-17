@@ -28,6 +28,7 @@ import javax.swing.text.StyledDocument;
 import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
+import org.greencubes.client.Client;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
@@ -45,14 +46,16 @@ public class LauncherMain {
 	private Frame frame;
 	private JPanel mainPanel;
 	private JPanel innerPanel;
+	private JPanel clientPanel;
+	private Client currentClient;
 	
-	//@formatter:on
+	//@formatter:off
 	public LauncherMain(Window previousFrame) {
 		frame = new Frame(I18n.get("title")) { // We use not jframe as we need to render canvas
 			@Override
 			public void paint(Graphics g) {
 				// Hack to make maximum size work
-				// TODO : Finde better solution
+				// TODO : Find better solution
 				Dimension d = getSize();
 				Dimension m1 = getMaximumSize();
 				boolean resize = d.width > m1.width || d.height > m1.height;
@@ -72,30 +75,24 @@ public class LauncherMain {
 		frame.setUndecorated(!Main.TEST);
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
-		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {
-			{
+		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {{
 				Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
 				setPreferredSize(d);
 				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 				setBackground(new Color(0, 0, 0, 0));
-				
 				// Top line
-				add(new JPanel() {
-					{
+				add(new JPanel() {{
 						//setOpaque(false);
 						setBackground(new Color(0, 0, 0, 0));
 						setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-						add(new JPanel() {
-							{
+						add(new JPanel() {{
 								setBackground(new Color(0, 0, 0, 0));
 								setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 								add(Box.createHorizontalGlue());
-								add(new JPanel() {
-									{
+								add(new JPanel() {{
 										s(this, 25, 25);
 										setBackground(new Color(0, 0, 0, 0));
-										add(new JPanel() {
-											{ // TODO : Minimize button
+										add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
 												s(this, 14, 14);
 												setBackground(new Color(0, 0, 0, 0));
 											}
@@ -109,12 +106,10 @@ public class LauncherMain {
 										});
 									}
 								});
-								add(new JPanel() {
-									{
+								add(new JPanel() {{
 										s(this, 25, 25);
 										setBackground(new Color(0, 0, 0, 0));
-										add(new JPanelBG("/res/cross.png") {
-											{
+										add(new JPanelBG("/res/cross.png") {{
 												s(this, 14, 14);
 												setBackground(new Color(0, 0, 0, 0));
 											}
@@ -131,12 +126,10 @@ public class LauncherMain {
 								});
 							}
 						});
-						add(new JPanel() {
-							{
+						add(new JPanel() {{
 								setBackground(new Color(0, 0, 0, 0));
 								setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-								add(new JPanelBG("/res/main.logo.png") {
-									{ // GreenCubes logo
+								add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
 										setBackground(new Color(0, 0, 0, 0));
 										s(this, 100, 50);
 										paddingTop = 1;
@@ -144,24 +137,21 @@ public class LauncherMain {
 									}
 								});
 								
-								add(new JPanelBG("/res/main.play.ruRU.png") {
-									{
+								add(new JPanelBG("/res/main.play.ruRU.png") {{
 										s(this, 110, 50);
 										setBackground(new Color(0, 0, 0, 0));
 										paddingLeft = 15;
 										paddingTop = 15;
 									}
 								});
-								add(new JPanelBG("/res/main.shop.ruRU.png") {
-									{
+								add(new JPanelBG("/res/main.shop.ruRU.png") {{
 										s(this, 120, 50);
 										setBackground(new Color(0, 0, 0, 0));
 										paddingLeft = 10;
 										paddingTop = 15;
 									}
 								});
-								add(new JPanelBG("/res/main.news.ruRU.png") {
-									{
+								add(new JPanelBG("/res/main.news.ruRU.png") {{
 										s(this, 130, 50);
 										setBackground(new Color(0, 0, 0, 0));
 										paddingLeft = 15;
@@ -172,16 +162,14 @@ public class LauncherMain {
 								add(Box.createHorizontalGlue());
 							}
 						});
-						add(new JPanel() {
-							{
+						add(new JPanel() {{
 								s(this, 5, 8);
 								setBackground(new Color(0, 0, 0, 0));
 							}
 						});
 					}
 				});
-				add(mainPanel = new JPanel() {
-					{
+				add(mainPanel = new JPanel() {{
 						setOpaque(false);
 						setBackground(new Color(0, 0, 0, 0));
 					}
@@ -226,7 +214,6 @@ public class LauncherMain {
 		frame.setVisible(true);
 		displayPlayPanel();
 	}
-	
 	//@formatter:on
 	
 	private void saveFrameInfo() {
@@ -245,7 +232,7 @@ public class LauncherMain {
 	//@formatter:off
 	private void displayPlayPanel() {
 		CefClient cefClient = getCefClient();
-		final CefBrowser browser = cefClient.createBrowser("https://greencubes.org/", false, true);
+		final CefBrowser browser = cefClient.createBrowser("https://greencubes.org/", false, false);
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
 		mainPanel.add(new JPanel() {{
 			setOpaque(false);
@@ -383,16 +370,31 @@ public class LauncherMain {
 			
 			add(Box.createVerticalGlue());
 		}});
-		mainPanel.add(new JPanel() {{
-			setLayout(new GridBagLayout());
-			add(browser.getUIComponent(), new GridBagConstraints() {{
-				weightx = 1;
-				weighty = 1;
-				fill = GridBagConstraints.BOTH;
+		mainPanel.add(clientPanel = new JPanel() {{
+			setOpaque(false);
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			setBackground(new Color(0, 0, 0, 0));
+			add(new JPanel() {{
+				setOpaque(false);
+				setLayout(new GridBagLayout());
+				Component c = browser.getUIComponent();
+				add(c, new GridBagConstraints() {{
+					weightx = 1;
+					weighty = 1;
+					fill = GridBagConstraints.BOTH;
+				}});
+				s(c, 100, 100);
+			}});
+			add(new JPanel() {{
+				setOpaque(false);
+				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+				s(this, 10, 150);
+				setBackground(new Color(0, 0, 0, 0));
 			}});
 		}});
-		//frame.repaint();
 		frame.revalidate();
+		currentClient = null;
+		// TODO : Display client
 	}
 	//@formatter:on
 	

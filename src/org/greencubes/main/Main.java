@@ -25,6 +25,7 @@ import javax.swing.Timer;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.cef.CefApp;
+import org.greencubes.launcher.LauncherInstanceError;
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.launcher.LauncherUpdate;
 import org.greencubes.util.Encryption;
@@ -102,21 +103,6 @@ public class Main {
 			e1.printStackTrace();
 		}
 		*/
-		// Prevent launching of more than one launcher
-		try {
-			userFile = new RandomAccessFile("user.dat", "rw");
-			FileLock fileLock = null;
-			userFileChannel = userFile.getChannel();
-			fileLock = userFileChannel.tryLock();
-			if(fileLock == null) {
-				System.err.println("Only one instance of launcher can be started");
-				return;
-			}
-		} catch(Exception e) {
-			if(Main.TEST)
-				e.printStackTrace();
-			return;
-		}
 		// Read config
 		InputStream is = null;
 		try {
@@ -129,6 +115,23 @@ public class Main {
 		} finally {
 			Util.close(is);
 		}
+		
+		// Prevent launching of more than one launcher
+		try {
+			userFile = new RandomAccessFile("user.dat", "rw");
+			FileLock fileLock = null;
+			userFileChannel = userFile.getChannel();
+			fileLock = userFileChannel.tryLock();
+			if(fileLock == null) {
+				LauncherInstanceError.showError();
+				return;
+			}
+		} catch(Exception e) {
+			if(Main.TEST)
+				e.printStackTrace();
+			return;
+		}
+		
 		if(LauncherOptions.sessionUser == null && new File("launcher.dat").exists()) {
 			// Try pick user login from old launcher configs
 			// And hope some idiot will try to decrypt this code not the real session load/save one
@@ -151,8 +154,8 @@ public class Main {
 		if(config.optBoolean("debug"))
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
-		
-		// Load saved session
+
+		// Start launcher from updating
 		new LauncherUpdate();
 	}
 	
@@ -168,8 +171,14 @@ public class Main {
 			fw.close();
 		} catch(Exception e) {
 		}
-		CefApp.getInstance().dispose();
+		new Thread() {
+			@Override
+			public void run() {
+				CefApp.getInstance().dispose();
+			}
+		}.start();
 		new Timer(3000, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent paramAnonymous2ActionEvent) {
 				System.exit(0);
 			}

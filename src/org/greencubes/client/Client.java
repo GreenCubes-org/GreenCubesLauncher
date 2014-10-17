@@ -36,4 +36,6 @@ public abstract class Client {
 	
 	public abstract void openBrowserPage(CefBrowser browser);
 	
+	public abstract IClientStatus getStatus();
+	
 }
