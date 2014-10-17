@@ -19,6 +19,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.SimpleAttributeSet;
@@ -36,6 +39,7 @@ import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
+import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,106 +80,127 @@ public class LauncherMain {
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
 		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {{
-				Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
-				setPreferredSize(d);
-				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
+			setPreferredSize(d);
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			setBackground(new Color(0, 0, 0, 0));
+			// Top line
+			add(new JPanel() {{
+				setOpaque(false);
 				setBackground(new Color(0, 0, 0, 0));
-				// Top line
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 				add(new JPanel() {{
-						//setOpaque(false);
+					setBackground(new Color(0, 0, 0, 0));
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(Box.createHorizontalGlue());
+					add(new JPanel() {{
+						s(this, 25, 25);
 						setBackground(new Color(0, 0, 0, 0));
+						add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
+							s(this, 14, 14);
+							setBackground(new Color(0, 0, 0, 0));
+						}});
+						addMouseListener(new AbstractMouseListener() {
+							// TODO : Can add cross animation
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								frame.setState(Frame.ICONIFIED);
+							}
+						});
+					}});
+					add(new JPanel() {{
+						s(this, 25, 25);
+						setBackground(new Color(0, 0, 0, 0));
+						add(new JPanelBG("/res/cross.png") {{
+							s(this, 14, 14);
+							setBackground(new Color(0, 0, 0, 0));
+						}});
+						addMouseListener(new AbstractMouseListener() {
+							// TODO : Can add cross animation
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								frame.dispose();
+								Main.close();
+							}
+						});
+					}});
+				}});
+				add(new JPanel() {{
+					setOpaque(false);
+					setBackground(new Color(0, 0, 0, 0));
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
+						setBackground(new Color(0, 0, 0, 0));
+						s(this, 100, 50);
+						paddingTop = 1;
+						// TODO : Add popout panel
+					}});
+					
+					add(new JPanelBG("/res/main.play.ruRU.png") {{
+						s(this, 110, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 15;
+						paddingTop = 15;
+					}});
+					add(new JPanelBG("/res/main.shop.ruRU.png") {{
+						s(this, 120, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 10;
+						paddingTop = 15;
+					}});
+					add(new JPanelBG("/res/main.news.ruRU.png") {{
+						s(this, 130, 50);
+						setBackground(new Color(0, 0, 0, 0));
+						paddingLeft = 15;
+						paddingTop = 15;
+					}});
+					
+					add(Box.createHorizontalGlue());
+					
+					add(new JPanel() {{
 						setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-						add(new JPanel() {{
-								setBackground(new Color(0, 0, 0, 0));
-								setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-								add(Box.createHorizontalGlue());
-								add(new JPanel() {{
-										s(this, 25, 25);
-										setBackground(new Color(0, 0, 0, 0));
-										add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
-												s(this, 14, 14);
-												setBackground(new Color(0, 0, 0, 0));
-											}
-										});
-										addMouseListener(new AbstractMouseListener() {
-											// TODO : Can add cross animation
-											@Override
-											public void mouseClicked(MouseEvent e) {
-												frame.setState(Frame.ICONIFIED);
-											}
-										});
-									}
-								});
-								add(new JPanel() {{
-										s(this, 25, 25);
-										setBackground(new Color(0, 0, 0, 0));
-										add(new JPanelBG("/res/cross.png") {{
-												s(this, 14, 14);
-												setBackground(new Color(0, 0, 0, 0));
-											}
-										});
-										addMouseListener(new AbstractMouseListener() {
-											// TODO : Can add cross animation
-											@Override
-											public void mouseClicked(MouseEvent e) {
-												frame.dispose();
-												Main.close();
-											}
-										});
-									}
-								});
-							}
-						});
-						add(new JPanel() {{
-								setBackground(new Color(0, 0, 0, 0));
-								setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-								add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-										setBackground(new Color(0, 0, 0, 0));
-										s(this, 100, 50);
-										paddingTop = 1;
-										// TODO : Add popout panel
-									}
-								});
-								
-								add(new JPanelBG("/res/main.play.ruRU.png") {{
-										s(this, 110, 50);
-										setBackground(new Color(0, 0, 0, 0));
-										paddingLeft = 15;
-										paddingTop = 15;
-									}
-								});
-								add(new JPanelBG("/res/main.shop.ruRU.png") {{
-										s(this, 120, 50);
-										setBackground(new Color(0, 0, 0, 0));
-										paddingLeft = 10;
-										paddingTop = 15;
-									}
-								});
-								add(new JPanelBG("/res/main.news.ruRU.png") {{
-										s(this, 130, 50);
-										setBackground(new Color(0, 0, 0, 0));
-										paddingLeft = 15;
-										paddingTop = 15;
-									}
-								});
-								
-								add(Box.createHorizontalGlue());
-							}
-						});
-						add(new JPanel() {{
-								s(this, 5, 8);
-								setBackground(new Color(0, 0, 0, 0));
-							}
-						});
-					}
-				});
-				add(mainPanel = new JPanel() {{
 						setOpaque(false);
-						setBackground(new Color(0, 0, 0, 0));
-					}
-				});
-			}
-		});
+						setBackground(Util.debugColor());
+						add(new JPanel() {{
+							setOpaque(false);
+							add(new JTextPane() {{
+								setOpaque(false);
+								StyledDocument doc = getStyledDocument();
+								SimpleAttributeSet center = new SimpleAttributeSet();
+								StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+								doc.setParagraphAttributes(0, doc.getLength(), center, false);
+								setBackground(Util.debugColor());
+								setForeground(new Color(0, 0, 0, 255));
+								setEditable(false);
+								setText(LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser);
+								setFont(new Font("ClearSans", Font.PLAIN, 14));
+								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							}});
+						}});
+						
+						add(new JMenuBar() {{
+							add(new JMenu("Online") {{
+								add(new JMenuItem("Cats"));
+								add(new JMenuItem("Cats 2"));
+								add(new JMenuItem("Cats 3"));
+							}});
+						}});
+							
+					}});
+					add(new JPanel() {{
+						s(this, 20, 0);
+					}});
+				}});
+				add(new JPanel() {{
+					s(this, 5, 8);
+					setBackground(new Color(0, 0, 0, 0));
+				}});
+			}});
+			add(mainPanel = new JPanel() {{
+				setOpaque(false);
+				setBackground(new Color(0, 0, 0, 0));
+			}});
+		}});
 		
 		frame.pack();
 		// Load position from config

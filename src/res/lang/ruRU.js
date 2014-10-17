@@ -35,4 +35,9 @@
 
 "client.new.name": "Новый клиент",
 
+"main.online": "Онлайн",
+"main.offline": "Оффлайн",
+"main.goonline": "Войти",
+"main.gooffline": "Выйти",
+
 }
