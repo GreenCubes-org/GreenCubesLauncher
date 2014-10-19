@@ -54,6 +54,8 @@ public class Main {
 				LauncherOptions.debug = true;
 			if(arg.equals("-noupdate"))
 				LauncherOptions.noUpdateLauncher = true;
+			if(arg.equals("-local"))
+				LauncherOptions.showLocalServer = true;
 		}
 		// Load fonts
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

@@ -15,16 +15,20 @@ import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -33,6 +37,7 @@ import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
 import org.greencubes.client.Client;
+import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
@@ -52,10 +57,20 @@ public class LauncherMain {
 	private JPanel mainPanel;
 	private JPanel innerPanel;
 	private JPanel clientPanel;
+	
+	private Map<Client,CefBrowser> clientBrowsers = new HashMap<Client, CefBrowser>();
+	private CefBrowser shopBrowser;
+	private CefBrowser newsBrowser;
+	
 	private Client currentClient;
+	private JTextPane clientButtonText;
+	private JComponent clientButton;
+	private JTextPane clientStatusLine;
+	private JComponent clientStatusPanel;
 	
 	//@formatter:off
 	public LauncherMain(Window previousFrame) {
+		getCefClient(); // Fisr of all - load client
 		frame = new JFrame(I18n.get("title")) { // We use not jframe as we need to render canvas
 			@Override
 			public void paint(Graphics g) {
@@ -189,9 +204,7 @@ public class LauncherMain {
 						
 						add(new JMenuBar() {{
 							add(new JMenu("Online") {{
-								add(new JMenuItem("Cats"));
-								add(new JMenuItem("Cats 2"));
-								add(new JMenuItem("Cats 3"));
+								add(new JMenuItem("Log Out"));
 							}});
 						}});
 							
@@ -246,7 +259,12 @@ public class LauncherMain {
 		if(previousFrame != null)
 			previousFrame.dispose();
 		frame.setVisible(true);
-		displayPlayPanel();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				displayPlayPanel();
+			}
+		});	
 	}
 	//@formatter:on
 	
@@ -265,8 +283,6 @@ public class LauncherMain {
 	
 	//@formatter:off
 	private void displayPlayPanel() {
-		CefClient cefClient = getCefClient();
-		final CefBrowser browser = cefClient.createBrowser("https://greencubes.org/", false, false);
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
 		mainPanel.add(new JPanel() {{
 			setOpaque(false);
@@ -299,91 +315,7 @@ public class LauncherMain {
 						setBackground(new Color(0, 0, 0, 100));
 						setForeground(new Color(93, 43, 94, 255));
 						setEditable(false);
-						setText(I18n.get("client.new.name"));
-						setFont(new Font("ClearSans", Font.PLAIN, 14));
-						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-					}});
-					GAWTUtil.removeMouseListeners(pane);
-				}});
-				addMouseListener(new AbstractMouseListener() {
-					@Override
-					public void mouseEntered(MouseEvent e) {
-						inner.setBorder(BorderFactory.createLineBorder(new Color(21, 54, 20, 255), 1));
-					}
-					
-					@Override
-					public void mouseExited(MouseEvent e) {
-						inner.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-					}
-				});
-			}});
-			
-			add(new JPanel() {{ // Old client button
-				setOpaque(false);
-				s(this, 101, 101);
-				setBackground(new Color(0, 0, 0, 0));
-				final JPanel inner;
-				add(inner = new JPanel() {{ // Inner
-					s(this, 95, 95);
-					setOpaque(false);
-					setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-					setBackground(new Color(0, 0, 0, 0));
-					add(new JPanelBG("/res/main.oldclient.logo.png") {{
-						s(this, 48, 48);
-					}});
-					JTextPane pane;
-					add(pane = new JTextPane() {{
-						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
-						setBackground(new Color(0, 0, 0, 100));
-						setForeground(new Color(63, 76, 63, 255));
-						setEditable(false);
-						setText("Старый\nклиент");
-						setFont(new Font("ClearSans", Font.PLAIN, 14));
-						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-					}});
-					GAWTUtil.removeMouseListeners(pane);
-				}});
-				addMouseListener(new AbstractMouseListener() {
-					@Override
-					public void mouseEntered(MouseEvent e) {
-						inner.setBorder(BorderFactory.createLineBorder(new Color(21, 54, 20, 255), 1));
-					}
-					
-					@Override
-					public void mouseExited(MouseEvent e) {
-						inner.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-					}
-				});
-			}});
-			
-			add(new JPanel() {{ // Test client button
-				setOpaque(false);
-				s(this, 101, 101);
-				setBackground(new Color(0, 0, 0, 0));
-				final JPanel inner;
-				add(inner = new JPanel() {{ // Inner
-					s(this, 95, 95);
-					setOpaque(false);
-					setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-					setBackground(new Color(0, 0, 0, 0));
-					add(new JPanelBG("/res/main.testclient.logo.png") {{
-						s(this, 48, 48);
-					}});
-					JTextPane pane;
-					add(pane = new JTextPane() {{
-						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
-						setBackground(new Color(0, 0, 0, 100));
-						setForeground(new Color(139, 83, 0, 255));
-						setEditable(false);
-						setText("Тестовый\nклиент");
+						setText(I18n.get("client.main.name"));
 						setFont(new Font("ClearSans", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 					}});
@@ -408,7 +340,26 @@ public class LauncherMain {
 			setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			setBackground(new Color(0, 0, 0, 0));
-			add(new JPanel() {{
+		}});
+		frame.revalidate();
+		currentClient = null;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				displayClient(Client.MAIN);
+			}
+		});
+	}
+	//@formatter:on
+	
+	private void displayClient(Client client) {
+		if(client == currentClient)
+			return;
+		synchronized(client) {
+			currentClient = client;
+			final CefBrowser browser = getClientBrowser(client);
+			
+			clientPanel.add(new JPanel() {{
 				setOpaque(false);
 				setLayout(new GridBagLayout());
 				Component c = browser.getUIComponent();
@@ -419,18 +370,111 @@ public class LauncherMain {
 				}});
 				s(c, 100, 100);
 			}});
-			add(new JPanel() {{
+			clientPanel.add(new JPanel() {{
+				//s(this, -1, 100);
 				setOpaque(false);
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-				s(this, 10, 150);
-				setBackground(new Color(0, 0, 0, 0));
+				add(new JPanel() {{
+					s(this, 10, 100);
+					setBackground(new Color(0, 0, 0, 0));
+				}});
+				add(new JPanel() {{
+					setLayout(new GridBagLayout());
+					s(this, 170, 100);
+					setBackground(new Color(0, 0, 0, 0));
+					add(clientButton = new JPanel() {{
+						s(this, 150, 80);
+						setBackground(new Color(52, 53, 50, 255));
+						setLayout(new GridBagLayout());
+						add(clientButtonText = new JTextPane() {{
+							setOpaque(false);
+							StyledDocument doc = getStyledDocument();
+							SimpleAttributeSet center = new SimpleAttributeSet();
+							StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+							doc.setParagraphAttributes(0, doc.getLength(), center, false);
+							setBackground(new Color(0, 0, 0, 0));
+							setForeground(new Color(25, 97, 14, 255));
+							setEditable(false);
+							Status s = currentClient.getStatus().getStatus();
+							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
+							setFont(new Font("ClearSans", Font.BOLD, 25));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}}, new GridBagConstraints() {{
+							weightx = 1;
+							weighty = 1;
+						}});
+						GAWTUtil.removeMouseListeners(clientButtonText);
+						addMouseListener(new AbstractMouseListener() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								pressTheBigButton();
+							}
+						});
+					}}, new GridBagConstraints() {{
+						weightx = 1;
+						weighty = 1;
+					}});
+					
+				}});
+				add(new JPanel() {{
+					setOpaque(false);
+					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+					add(new JPanel() {{
+						setBackground(new Color(0, 0, 0, 0));
+						s(this, 10, 10);
+					}});
+					add(new JPanel() {{
+						setOpaque(false);
+						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+						add(clientStatusPanel = new JPanel() {{
+							
+							setBackground(Util.debugColor());
+							setMaximumSize(new Dimension(800, 9999));
+						}});
+						setMaximumSize(new Dimension(9999, 9999));
+					}});
+					add(clientStatusLine = new JTextPane() {{
+						setMaximumSize(new Dimension(9999, 25));
+						setOpaque(false);
+						StyledDocument doc = getStyledDocument();
+						SimpleAttributeSet center = new SimpleAttributeSet();
+						StyleConstants.setAlignment(center, StyleConstants.ALIGN_LEFT);
+						doc.setParagraphAttributes(0, doc.getLength(), center, false);
+						setBackground(Util.debugColor());
+						setForeground(new Color(0, 0, 0, 255));
+						setEditable(false);
+						setText(currentClient.getStatus().getStatusTitle());
+						setFont(new Font("ClearSans", Font.PLAIN, 14));
+						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+					}});
+					add(new JPanel() {{
+						setBackground(new Color(0, 0, 0, 0));
+						s(this, 10, 10);
+					}});
+				}});
 			}});
-		}});
-		frame.revalidate();
-		currentClient = null;
-		// TODO : Display client
+			frame.revalidate();
+			
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					currentClient.openBrowserPage(browser);
+				}
+			});
+			currentClient.load(this);
+		}
 	}
-	//@formatter:on
+	
+	/**
+	 * Press "Play" or other big button on clinet page.
+	 */
+	private void pressTheBigButton() {
+		
+	}
+	
+	public void clientStatusUpdate(Client client) {
+		
+	}
 	
 	private CefClient getCefClient() {
 		synchronized(this) {
@@ -439,6 +483,33 @@ public class LauncherMain {
 				cefClient = cefApp.createClient();
 			}
 			return cefClient;
+		}
+	}
+	
+	private CefBrowser getClientBrowser(Client client) {
+		synchronized(clientBrowsers) {
+			CefBrowser b = clientBrowsers.get(client);
+			if(b == null) {
+				b = getCefClient().createBrowser("", false, true);
+				clientBrowsers.put(client, b);
+			}
+			return b;
+		}
+	}
+	
+	private CefBrowser getNewsBrowser() {
+		synchronized(clientBrowsers) {
+			if(newsBrowser == null)
+				newsBrowser = getCefClient().createBrowser("", false, true);
+			return newsBrowser;
+		}
+	}
+	
+	private CefBrowser getShopBrowser() {
+		synchronized(clientBrowsers) {
+			if(shopBrowser == null)
+				shopBrowser = getCefClient().createBrowser("", false, true);
+			return shopBrowser;
 		}
 	}
 	

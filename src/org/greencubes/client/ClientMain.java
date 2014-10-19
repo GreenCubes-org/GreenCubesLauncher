@@ -5,11 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cef.browser.CefBrowser;
+import org.greencubes.launcher.LauncherMain;
+import org.greencubes.launcher.LauncherOptions;
+import org.greencubes.main.Main;
 
-public class ClientNew extends Client {
+public class ClientMain extends Client {
 	
-	public ClientNew(String name, String localizedName) {
+	private final IClientStatus status;
+	private final List<Server> servers = new ArrayList<Server>();
+	
+	public ClientMain(String name, String localizedName) {
 		super(name, localizedName);
+		status = new MainClinetStatus();
+		if(LauncherOptions.showLocalServer || Main.TEST)
+			servers.add(new Server("Local", "127.0.0.1", 25565));
+		servers.add(new Server("GreenCubes", "5.9.22.202", 25565));
 	}
 	
 	@Override
@@ -38,8 +48,6 @@ public class ClientNew extends Client {
 	
 	@Override
 	public List<Server> getServers() {
-		List<Server> servers = new ArrayList<Server>();
-	
 		return servers;
 	}
 	
@@ -55,8 +63,29 @@ public class ClientNew extends Client {
 
 	@Override
 	public IClientStatus getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return status;
 	}
 	
+	@Override
+	public void load(LauncherMain launcherWindow) {
+		super.load(launcherWindow);
+	}
+	
+	public class MainClinetStatus implements IClientStatus {
+
+		@Override
+		public Status getStatus() {
+			return Status.CHECK;
+		}
+
+		@Override
+		public String getStatusTitle() {
+			return "Требуется обновление";
+		}
+
+		@Override
+		public float getStatusProgress() {
+			return 0;
+		}
+	}
 }

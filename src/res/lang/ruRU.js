@@ -33,7 +33,16 @@
 "login.exception": "Ошибка: %s",
 "login.error.3": "Неверный логин/пароль",
 
-"client.new.name": "Новый клиент",
+"client.main.name": "GreenCubes",
+"client.status.check": "Проверка",
+"client.status.ready": "Готово",
+"client.status.start": "ИГРАТЬ",
+"client.status.needupdate": "Необходимо обновление",
+"client.status.update": "ОБНОВИТЬ",
+"client.status.updating": "Обновление",
+"client.status.abort": "ПРЕРВАТЬ",
+"client.status.loading": "Загрузка",
+"client.status.running": "Запущено",
 
 "main.online": "Онлайн",
 "main.offline": "Оффлайн",

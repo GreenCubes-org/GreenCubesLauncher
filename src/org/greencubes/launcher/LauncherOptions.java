@@ -33,6 +33,7 @@ public class LauncherOptions {
 	public static boolean noUpdateLauncher = false;
 	public static OnStartAction onClientStart = OnStartAction.NO;
 	public static boolean autoLogin = false;
+	public static boolean showLocalServer = false;
 	
 	private static long sessionKeyAddress = -1;
 	public static String sessionId;
@@ -110,6 +111,15 @@ public class LauncherOptions {
 			return;
 		}
 		if(sessionKeyAddress != -1) {
+			if(sessionUserId > 0) {
+				byte[] sessionKey = new byte[128];
+				for(int i = 0; i < 128; ++i)
+					sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
+				try {
+					getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + new String(sessionKey) + "&drop=1");
+					// We are not so interested in answer
+				} catch(IOException e) {}
+			}
 			Util.getUnsafe().freeMemory(sessionKeyAddress);
 			sessionKeyAddress = -1;
 		}
