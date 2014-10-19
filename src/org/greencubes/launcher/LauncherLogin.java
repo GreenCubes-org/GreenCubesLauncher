@@ -79,6 +79,14 @@ public class LauncherLogin {
 				add(new JPanelBG("/res/cross.png") {{
 					setPreferredSize(new Dimension(14, 14));
 					setBackground(new Color(0, 0, 0, 0));
+					addMouseListener(new AbstractMouseListener() {
+						// TODO : Can add cross animation
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							frame.dispose();
+							Main.close();
+						}
+					});
 				}});
 				addMouseListener(new AbstractMouseListener() {
 					// TODO : Can add cross animation

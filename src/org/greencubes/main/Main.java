@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -126,10 +127,10 @@ public class Main {
 				LauncherInstanceError.showError();
 				return;
 			}
-		} catch(Exception e) {
+		} catch(IOException e) { // Somehow MAC does not supports file locking
 			if(Main.TEST)
 				e.printStackTrace();
-			return;
+			//return;
 		}
 		
 		if(LauncherOptions.sessionUser == null && new File("launcher.dat").exists()) {

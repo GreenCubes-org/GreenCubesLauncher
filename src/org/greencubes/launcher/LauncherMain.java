@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -47,7 +48,7 @@ public class LauncherMain {
 	
 	private CefClient cefClient;
 	
-	private Frame frame;
+	private JFrame frame;
 	private JPanel mainPanel;
 	private JPanel innerPanel;
 	private JPanel clientPanel;
@@ -55,7 +56,7 @@ public class LauncherMain {
 	
 	//@formatter:off
 	public LauncherMain(Window previousFrame) {
-		frame = new Frame(I18n.get("title")) { // We use not jframe as we need to render canvas
+		frame = new JFrame(I18n.get("title")) { // We use not jframe as we need to render canvas
 			@Override
 			public void paint(Graphics g) {
 				// Hack to make maximum size work
@@ -114,6 +115,14 @@ public class LauncherMain {
 						add(new JPanelBG("/res/cross.png") {{
 							s(this, 14, 14);
 							setBackground(new Color(0, 0, 0, 0));
+							addMouseListener(new AbstractMouseListener() {
+								// TODO : Can add cross animation
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									frame.dispose();
+									Main.close();
+								}
+							});
 						}});
 						addMouseListener(new AbstractMouseListener() {
 							// TODO : Can add cross animation
