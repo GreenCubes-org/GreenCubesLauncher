@@ -35,15 +35,6 @@ public abstract class Client {
 	
 	public abstract File getWorkingDirectory();
 	
-	/**
-	 * All parameters can be null!
-	 * @param username
-	 * @param session
-	 * @param server
-	 * @return
-	 */
-	public abstract List<String> getLaunchParameters(String username, String session, Server server);
-	
 	public abstract List<Server> getServers();
 	
 	public abstract boolean isSinglePlayerModeAllowed();

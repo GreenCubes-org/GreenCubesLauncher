@@ -52,8 +52,7 @@ public class ClientMain extends Client {
 		return new File("").getAbsoluteFile();
 	}
 	
-	@Override
-	public List<String> getLaunchParameters(String username, String session, Server server) {
+	protected List<String> getLaunchParameters(String username, String session, Server server) {
 		List<String> params = new ArrayList<String>();
 		params.add("--fullscreen");
 		if(username != null) {
