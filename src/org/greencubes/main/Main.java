@@ -157,7 +157,8 @@ public class Main {
 		if(config.optBoolean("debug"))
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
-
+		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);
+		
 		// Start launcher from updating
 		new LauncherUpdate();
 	}

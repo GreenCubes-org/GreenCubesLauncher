@@ -29,7 +29,7 @@ import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
 public final class Util {
-
+	
 	private static Unsafe unsafe;
 	
 	static {
@@ -138,6 +138,14 @@ public final class Util {
 		for(int i = 0; i < data.length; ++i)
 			result.append(Integer.toString((data[i] & 0xff) + 0x100, 16).substring(1));
 		return result.toString();
+	}
+	
+	public static byte[] hexStringToByteArray(String s) {
+		int len = s.length();
+		byte[] data = new byte[len / 2];
+		for(int i = 0; i < len; i += 2)
+			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+		return data;
 	}
 	
 	public static <E> List<E> toList(E[] array) {
@@ -296,24 +304,32 @@ public final class Util {
 		return (l1 << 32) + (l2 & 0xFFFFFFFFL);
 	}
 	
-	private static byte[] createChecksum(String filename) throws Exception {
-		InputStream fis = new FileInputStream(filename);
-		
-		byte[] buffer = new byte[1024];
-		MessageDigest complete = MessageDigest.getInstance("MD5");
-		int numRead;
-		do {
-			numRead = fis.read(buffer);
-			if(numRead > 0) {
-				complete.update(buffer, 0, numRead);
+	public static byte[] createChecksum(File file) throws IOException {
+		InputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			byte[] buffer = new byte[1024];
+			MessageDigest complete;
+			try {
+				complete = MessageDigest.getInstance("MD5");
+			} catch(NoSuchAlgorithmException e) {
+				throw new AssertionError(e);
 			}
-		} while(numRead != -1);
-		fis.close();
-		return complete.digest();
+			int numRead;
+			do {
+				numRead = fis.read(buffer);
+				if(numRead > 0) {
+					complete.update(buffer, 0, numRead);
+				}
+			} while(numRead != -1);
+			return complete.digest();
+		} finally {
+			Util.close(fis);
+		}
 	}
 	
-	public static String getMD5Checksum(String filename) throws Exception {
-		byte[] b = createChecksum(filename);
+	public static String getMD5Checksum(String filename) throws IOException {
+		byte[] b = createChecksum(new File(filename));
 		String result = "";
 		for(int i = 0; i < b.length; i++) {
 			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
@@ -346,6 +362,16 @@ public final class Util {
 		} catch(UnsupportedEncodingException e) {
 			throw new AssertionError(e);
 		}
+	}
+	
+	public static String getBytesAsString(long bytes) {
+		if(bytes < 1024)
+			return bytes + "B";
+		if(bytes < 1024 * 1024)
+			return (bytes / 1024) + "KB";
+		if(bytes < 1024 * 1024 * 1024)
+			return (bytes / 1024 / 1024) + "MB";
+		return (bytes / 1024 / 1024 / 1024) + "GB";
 	}
 	
 	/**

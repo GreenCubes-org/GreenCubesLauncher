@@ -11,11 +11,14 @@ import java.lang.reflect.Member;
 import java.nio.ByteBuffer;
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import org.greencubes.client.Client;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.util.Encryption;
@@ -27,13 +30,20 @@ import org.json.JSONObject;
 public class LauncherOptions {
 	
 	private static List<BufferedImage> icons;
-	private static Downloader downloader;
+	private static ThreadLocal<Downloader> threadLocalDownloader = new ThreadLocal<Downloader>() {
+		@Override
+		protected Downloader initialValue() {
+	        return newDownloader();
+	    }
+	};
+	private static Map<Client, Downloader> clientDownloaders = new HashMap<Client, Downloader>();
 	
 	public static boolean debug = false;
 	public static boolean noUpdateLauncher = false;
 	public static OnStartAction onClientStart = OnStartAction.NO;
 	public static boolean autoLogin = false;
 	public static boolean showLocalServer = false;
+	public static boolean autoUpdate = false;
 	
 	private static long sessionKeyAddress = -1;
 	public static String sessionId;
@@ -45,14 +55,28 @@ public class LauncherOptions {
 		CLOSE, MINIMIZE, HIDE, NO;
 	}
 	
-	public static Downloader getDownloader() {
-		if(downloader == null) {
-			if(Main.TEST) {
-				downloader = new Downloader("https://greencubes.org/"); // For test purposes
-			} else {
-				downloader = new Downloader("https://auth.greencubes.org/");
-				downloader.addServer("https://auth1.greencubes.org/");
+	public static Downloader getClientDownloder(Client client) {
+		synchronized(clientDownloaders) {
+			Downloader d = clientDownloaders.get(client);
+			if(d == null) {
+				d = newDownloader();
+				clientDownloaders.put(client, d);
 			}
+			return d;
+		}
+	}
+	
+	public static Downloader getDownloader() {
+		return threadLocalDownloader.get();
+	}
+	
+	private static Downloader newDownloader() {
+		Downloader downloader;
+		if(Main.TEST) {
+			downloader = new Downloader("https://greencubes.org/"); // For test purposes
+		} else {
+			downloader = new Downloader("https://auth.greencubes.org/");
+			downloader.addServer("https://auth1.greencubes.org/");
 		}
 		return downloader;
 	}
@@ -86,7 +110,7 @@ public class LauncherOptions {
 	}
 	
 	public static void auth(String userName, char[] password) throws IOException, AuthError {
-		String answer = getDownloader().readURL(new StringBuilder().append("login/login.php?user=").append(userName).append("&password=").append(password).toString());
+		String answer = getDownloader().readURL(new StringBuilder().append("login/login.php?user=").append(userName).append("&password=").append(Util.urlEncode(new String(password))).toString());
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);
@@ -116,7 +140,7 @@ public class LauncherOptions {
 				for(int i = 0; i < 128; ++i)
 					sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
 				try {
-					getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + new String(sessionKey) + "&drop=1");
+					getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)) + "&drop=1");
 					// We are not so interested in answer
 				} catch(IOException e) {}
 			}
@@ -148,7 +172,7 @@ public class LauncherOptions {
 		byte[] sessionKey = new byte[128];
 		for(int i = 0; i < 128; ++i)
 			sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
-		String answer = getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + new String(sessionKey));
+		String answer = getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)));
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);

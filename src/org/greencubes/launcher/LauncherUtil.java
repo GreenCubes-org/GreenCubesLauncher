@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.greencubes.main.Main;
+import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +30,7 @@ public class LauncherUtil {
 	public static JSONObject sessionRequest(String args) throws IOException, AuthError {
 		JSONObject answer;
 		do {
-			String read = LauncherOptions.getDownloader().readURL("login/login.php?user=" + LauncherOptions.sessionUserId + "&session=" + LauncherOptions.sessionId + "&" + args);
+			String read = LauncherOptions.getDownloader().readURL("login/login.php?user=" + LauncherOptions.sessionUserId + "&session=" + Util.urlEncode(LauncherOptions.sessionId) + "&" + args);
 			try {
 				answer = new JSONObject(read);
 			} catch(JSONException e) {
@@ -45,6 +46,8 @@ public class LauncherUtil {
 			return true;
 		if(r == -1)
 			throw new IOException("Wrong response: " + answer.optInt("response", -1));
+		if(r == 1)
+			throw new IOException("Server error: " + answer.optString("message") + " (" + answer.optInt("response", -1) + ")");
 		if(r == 4) {
 			LauncherOptions.authSession();
 			return false;

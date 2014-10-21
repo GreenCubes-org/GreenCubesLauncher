@@ -1,6 +1,7 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,11 +13,15 @@ import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,7 +41,9 @@ import javax.swing.text.StyledDocument;
 import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
+import org.cef.handler.CefLifeSpanHandler;
 import org.greencubes.client.Client;
+import org.greencubes.client.IClientStatus;
 import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
@@ -52,6 +59,7 @@ import org.json.JSONObject;
 public class LauncherMain {
 	
 	private CefClient cefClient;
+	private LocalCefLifeSpanHandler cefLifespanHandler;
 	
 	private JFrame frame;
 	private JPanel mainPanel;
@@ -67,6 +75,8 @@ public class LauncherMain {
 	private JComponent clientButton;
 	private JTextPane clientStatusLine;
 	private JComponent clientStatusPanel;
+	private JComponent progressBarContainer;
+	private JComponent progressBar;
 	
 	//@formatter:off
 	public LauncherMain(Window previousFrame) {
@@ -204,7 +214,14 @@ public class LauncherMain {
 						
 						add(new JMenuBar() {{
 							add(new JMenu("Online") {{
-								add(new JMenuItem("Log Out"));
+								add(new JMenuItem("Log Out"){{
+									addActionListener(new ActionListener() {
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											Client.MAIN.openBrowserPage(getClientBrowser(Client.MAIN));
+										}
+									});
+								}});
 							}});
 						}});
 							
@@ -352,13 +369,13 @@ public class LauncherMain {
 	}
 	//@formatter:on
 	
+	//@formatter:off
 	private void displayClient(Client client) {
 		if(client == currentClient)
 			return;
 		synchronized(client) {
 			currentClient = client;
 			final CefBrowser browser = getClientBrowser(client);
-			
 			clientPanel.add(new JPanel() {{
 				setOpaque(false);
 				setLayout(new GridBagLayout());
@@ -427,9 +444,9 @@ public class LauncherMain {
 						setOpaque(false);
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						add(clientStatusPanel = new JPanel() {{
-							
-							setBackground(Util.debugColor());
+							setBackground(new Color(0, 0, 0, 0));
 							setMaximumSize(new Dimension(800, 9999));
+							setLayout(new BorderLayout());
 						}});
 						setMaximumSize(new Dimension(9999, 9999));
 					}});
@@ -454,33 +471,87 @@ public class LauncherMain {
 				}});
 			}});
 			frame.revalidate();
-			
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
+			new Thread() { // We should wait while browser is loading to cnage page. The way CEF works...
 				public void run() {
+					try {
+						cefLifespanHandler.waitLoad(browser);
+					} catch(InterruptedException e) {}
 					currentClient.openBrowserPage(browser);
+					currentClient.load(LauncherMain.this);
 				}
-			});
-			currentClient.load(this);
+			}.start();
+			
 		}
 	}
+	//@formatter:on
 	
 	/**
 	 * Press "Play" or other big button on clinet page.
 	 */
 	private void pressTheBigButton() {
-		
+		if(currentClient != null)
+			currentClient.doJob();
 	}
 	
+	/**
+	 * Must be invoked from AWT Event thread
+	 * @param client
+	 */
 	public void clientStatusUpdate(Client client) {
-		
+		if(client == currentClient && clientPanel != null) {
+			IClientStatus clientStatus = client.getStatus();
+			Status s = clientStatus.getStatus();
+			clientButtonText.setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
+			clientStatusLine.setText(client.getStatus().getStatusTitle());
+			if(clientStatus.getStatusProgress() < 0 && progressBarContainer != null) {
+				clientStatusPanel.remove(progressBarContainer);
+				clientStatusPanel.revalidate();
+				progressBarContainer = null;
+			} else if(clientStatus.getStatusProgress() >= 0) {
+				if(progressBarContainer == null) {
+					clientStatusPanel.add(progressBarContainer = new JPanel() {{
+						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+						setMinimumSize(new Dimension(20, 20));
+						setMaximumSize(new Dimension(9999, 20));
+						setBackground(new Color(46, 94, 44, 255));
+						add(new JPanel() {{
+							setOpaque(true);
+							s(this, 2, 2);
+							setBackground(new Color(46, 94, 44, 255));
+						}});
+						add(new JPanel() {{
+							setBackground(new Color(46, 94, 44, 255));
+							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+							add(new JPanel() {{
+								s(this, 2, 2);
+								setBackground(new Color(46, 94, 44, 255));
+							}});
+							add(progressBar = new JPanel() {{
+								setBackground(new Color(94, 94, 94, 255));
+								s(this, 16, 16);
+							}});
+							add(new JPanel() {{
+								s(this, 2, 2);
+								setBackground(new Color(46, 94, 44, 255));
+							}});
+						}});
+						
+					}}, BorderLayout.PAGE_END);
+					clientStatusPanel.revalidate();
+				}
+				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 16);
+				clientStatusPanel.revalidate();
+			}
+		}
 	}
 	
 	private CefClient getCefClient() {
 		synchronized(this) {
 			if(cefClient == null) {
 				CefApp cefApp = CefApp.getInstance();
+				cefLifespanHandler = new LocalCefLifeSpanHandler();
 				cefClient = cefApp.createClient();
+				cefClient.addLifeSpanHandler(cefLifespanHandler);
 			}
 			return cefClient;
 		}
@@ -490,7 +561,7 @@ public class LauncherMain {
 		synchronized(clientBrowsers) {
 			CefBrowser b = clientBrowsers.get(client);
 			if(b == null) {
-				b = getCefClient().createBrowser("", false, true);
+				b = getCefClient().createBrowser("about:blank", false, true);
 				clientBrowsers.put(client, b);
 			}
 			return b;
@@ -519,5 +590,55 @@ public class LauncherMain {
 		c.setPreferredSize(d);
 		c.setMaximumSize(d);
 		c.setMinimumSize(d);
+	}
+	
+	public class LocalCefLifeSpanHandler implements CefLifeSpanHandler {
+		
+		private Set<CefBrowser> loadedBrowsers = new HashSet<>();
+
+		@Override
+		public boolean doClose(CefBrowser browser) {
+			synchronized(loadedBrowsers) {
+				loadedBrowsers.remove(browser);
+				loadedBrowsers.notifyAll();
+			}
+			return false;
+		}
+
+		@Override
+		public void onAfterCreated(CefBrowser browser) {
+			synchronized(loadedBrowsers) {
+				loadedBrowsers.add(browser);
+				loadedBrowsers.notifyAll();
+			}
+		}
+
+		@Override
+		public void onBeforeClose(CefBrowser browser) {
+		}
+
+		@Override
+		public boolean onBeforePopup(CefBrowser browser, String target_url, String target_frame_name) {
+			return false;
+		}
+
+		@Override
+		public boolean runModal(CefBrowser browser) {
+			return false;
+		}
+		
+		public void waitLoad(CefBrowser browser) throws InterruptedException {
+			synchronized(loadedBrowsers) {
+				while(!loadedBrowsers.contains(browser))
+					loadedBrowsers.wait();
+			}
+		}
+		
+		public boolean isLoaded(CefBrowser browser) {
+			synchronized(loadedBrowsers) {
+				return loadedBrowsers.contains(browser);
+			}
+		}
+		
 	}
 }

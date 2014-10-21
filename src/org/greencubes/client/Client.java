@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.cef.browser.CefBrowser;
 import org.greencubes.launcher.LauncherMain;
 
@@ -49,5 +51,16 @@ public abstract class Client {
 	public abstract void openBrowserPage(CefBrowser browser);
 	
 	public abstract IClientStatus getStatus();
+	
+	public abstract void doJob();
+	
+	protected void clientStatusUpdate() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				launcherWindow.clientStatusUpdate(Client.this);
+			}
+		});
+	}
 	
 }
