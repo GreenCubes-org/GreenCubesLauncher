@@ -7,10 +7,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -81,26 +79,7 @@ public class LauncherMain {
 	//@formatter:off
 	public LauncherMain(Window previousFrame) {
 		getCefClient(); // Fisr of all - load client
-		frame = new JFrame(I18n.get("title")) { // We use not jframe as we need to render canvas
-			@Override
-			public void paint(Graphics g) {
-				// Hack to make maximum size work
-				// TODO : Find better solution
-				Dimension d = getSize();
-				Dimension m1 = getMaximumSize();
-				boolean resize = d.width > m1.width || d.height > m1.height;
-				d.width = Math.min(m1.width, d.width);
-				d.height = Math.min(m1.height, d.height);
-				if(resize) {
-					Point p = getLocation();
-					setVisible(false);
-					setSize(d);
-					setLocation(p);
-					setVisible(true);
-				}
-				super.paint(g);
-			}
-		};
+		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(!Main.TEST);
 		frame.setMinimumSize(new Dimension(640, 320));
