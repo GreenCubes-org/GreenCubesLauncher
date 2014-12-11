@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 /**
  * JPanel with image background
  * @author Rena
- *
  */
 public class JPanelBG extends JPanel {
 
@@ -18,6 +17,9 @@ public class JPanelBG extends JPanel {
 	
 	public int paddingTop = 0;
 	public int paddingLeft = 0;
+	/**
+	 * Resize bg image to fit in panel boundaries
+	 */
 	public boolean fill = false;
 	public Image bg;
 	

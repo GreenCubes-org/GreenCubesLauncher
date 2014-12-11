@@ -1,6 +1,5 @@
 package org.greencubes.util;
 
-import java.lang.reflect.ReflectPermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -12,27 +11,29 @@ import org.greencubes.main.Main;
 
 public class Encryption {
 	
-	private static SecurityManager sm;
+	private static Object sm;
 	
 	public static void setSecurityManager(SecurityManager smNew) {
 		if(sm != null)
 			Encryption.throwMajicError();
-		try {
-			sm.checkPermission(new ReflectPermission("suppressAccessChecks"));
-			Encryption.throwMajicError();
-		} catch(Exception e) {
-			// There should be exception
-		}
+		// Here is a bit unprotected place >(
 		sm = smNew;
 	}
 	
 	public static SecurityManager getSecurityManager() {
 		if(sm == null)
 			Encryption.throwMajicError();
-		return sm;
+		return (SecurityManager) sm;
 	}
 	
-	public static byte[] decrypt(byte[] data, byte[] keyData) throws Exception {
+	/**
+	 * Decrypt data enrypted with Blowfish algorithm
+	 * @param data
+	 * @param keyData
+	 * @return
+	 * @throws Exception
+	 */
+	public static final byte[] decrypt(byte[] data, byte[] keyData) throws Exception {
 		BlowfishEngine engine = new BlowfishEngine();
 		PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(engine);
 		KeyParameter key = new KeyParameter(keyData);
@@ -43,7 +44,14 @@ public class Encryption {
 		return out2;
 	}
 	
-	public static byte[] encrypt(byte[] data, byte[] keyData) throws Exception {
+	/**
+	 * Encrypt data with Blowfish algorithm
+	 * @param data
+	 * @param keyData
+	 * @return
+	 * @throws Exception
+	 */
+	public static final byte[] encrypt(byte[] data, byte[] keyData) throws Exception {
 		BlowfishEngine engine = new BlowfishEngine();
 		PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(engine);
 		KeyParameter key = new KeyParameter(keyData);
@@ -59,14 +67,23 @@ public class Encryption {
 		return out;
 	}
 	
-	public static void throwMajicError() {
-		// Throw error without stacktrace
+	/**
+	 * Throw error without stach trace
+	 */
+	public static final void throwMajicError() {
 		Throwable t = new Error();
 		if(!Main.TEST)
 			t.setStackTrace(new StackTraceElement[]{new StackTraceElement("Native", "Unknown", "NativeHandler.java", -2)});
 		throw (Error) t;
 	}
 	
+	/**
+	 * Compute recursive sha1 hash
+	 * @param data - data to hash
+	 * @param count - number of sha1 repeats
+	 * @return result of applying <i>count</i> of sha1 functions
+	 * to <i>data</i>. 40 bytes exactly.
+	 */
 	public static byte[] multiSha1(byte[] data, int count) {
 		try {
 			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
@@ -82,6 +99,12 @@ public class Encryption {
 		return null;
 	}
 	
+	/**
+	 * Compute recursive sha1 hash
+	 * @param data - data to hash
+	 * @return result of applying sha1 function
+	 * to <i>data</i>. 40 bytes exactly.
+	 */
 	public static byte[] sha1(byte[] data) {
 		try {
 			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");

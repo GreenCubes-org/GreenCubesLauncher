@@ -77,8 +77,11 @@ public class LauncherMain {
 	private JComponent progressBar;
 	
 	//@formatter:off
+	/**
+	 * Should not be invoked in AWT thread
+	 */
 	public LauncherMain(Window previousFrame) {
-		getCefClient(); // Fisr of all - load client
+		getCefClient(); // Load cef client earlier
 		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(!Main.TEST);
@@ -98,7 +101,7 @@ public class LauncherMain {
 					setBackground(new Color(0, 0, 0, 0));
 					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 					add(Box.createHorizontalGlue());
-					add(new JPanel() {{
+					add(new JPanel() {{ // Minimize button
 						s(this, 25, 25);
 						setBackground(new Color(0, 0, 0, 0));
 						add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
@@ -113,7 +116,7 @@ public class LauncherMain {
 							}
 						});
 					}});
-					add(new JPanel() {{
+					add(new JPanel() {{ // Close button
 						s(this, 25, 25);
 						setBackground(new Color(0, 0, 0, 0));
 						add(new JPanelBG("/res/cross.png") {{

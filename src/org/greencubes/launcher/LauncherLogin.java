@@ -52,6 +52,9 @@ public class LauncherLogin {
 	private JTextPane errorPane;
 	
 	//@formatter:off
+	/**
+	 * Should not be invoked in AWT thread
+	 */
 	public LauncherLogin(JFrame previousFrame) {
 		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
@@ -156,8 +159,10 @@ public class LauncherLogin {
 	}
 	//@formatter:on
 	
+	/**
+	 * Should not be invoked in AWT thread
+	 */
 	private void launcherMain() {
-		// It is already in other thread
 		new LauncherMain(frame); // Send current frame so next window can destroy it when ready
 	}
 	

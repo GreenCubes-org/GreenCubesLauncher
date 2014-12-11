@@ -47,6 +47,8 @@ public class Main {
 	public static RandomAccessFile userFile;
 	public static FileChannel userFileChannel;
 	
+	public static File launcherFile = null;
+	
 	public static void main(String[] args) {
 		// Check arguments
 		for(String arg : args) {
@@ -86,26 +88,6 @@ public class Main {
 		Encryption.init();
 		LauncherOptions.init();
 		Security.addProvider(new BouncyCastleProvider());
-		/*
-		// Some debug stuff
-		try {
-			BufferedImage bi = ImageIO.read(new File("screenshot-2014-10-02_99-99-99_1.png"));
-			int[] data = bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(), null, 0, bi.getWidth());
-			ByteArrayOutputStream bao = new ByteArrayOutputStream();
-			DataOutputStream dos = new DataOutputStream(bao);
-			for(int i = 0; i < data.length; ++i)
-				dos.writeInt(data[i]);
-			dos.close();
-			byte[] newData = Encryption.encrypt(bao.toByteArray(), Util.md5("OH MY GOSH, kITTENS ARE awesOme!!!13dsdddddffFFFFUUUUUUUUUUUUUUU").getBytes());
-			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(newData));
-			for(int i = 0; i < data.length; ++i)
-				data[i] = dis.readInt();
-			bi.setRGB(0, 0, bi.getWidth(), bi.getHeight(), data, 0, bi.getWidth());
-			ImageIO.write(bi, "png", new File("screenshot-2014-10-02_99-99-99_1.encoded.png"));
-		} catch(Exception e1) {
-			e1.printStackTrace();
-		}
-		*/
 		// Read config
 		InputStream is = null;
 		try {
@@ -137,16 +119,16 @@ public class Main {
 		
 		if(LauncherOptions.sessionUser == null && new File("launcher.dat").exists()) {
 			// Try pick user login from old launcher configs
-			// And hope some idiot will try to decrypt this code not the real session load/save one
+			// And hope some idiot will try to decrypt this code not the real session load/save one :)
 			DataInputStream dis = null;
 			try {
 				Cipher cipher = getCipher(2, "c8d3563578b9264ee7fc86d44bbb9a79");
 				if(cipher == null)
 					return;
 				dis = new DataInputStream(new CipherInputStream(new FileInputStream(new File("launcher.dat")), cipher));
-				LauncherOptions.sessionUser = dis.readUTF().substring(5);
+				LauncherOptions.sessionUser = dis.readUTF().substring(5); // Pick only user name, password is useless for us
 				dis.close();
-				new File("launcher.dat").delete();
+				new File("launcher.dat").delete(); // Delete old dat file, we are not using this any more
 			} catch(Throwable t) {
 				// Ignore any exception as this is not important
 			} finally {
@@ -158,6 +140,18 @@ public class Main {
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);
+		
+		if(!LauncherOptions.noUpdateLauncher) {
+			String classPath = System.getProperty("java.class.path");
+			File f = new File(classPath);
+			if(!f.exists()) {
+				LauncherOptions.noUpdateLauncher = true;
+			} else {
+				launcherFile = f.getAbsoluteFile();
+				if(LauncherOptions.debug || Main.TEST)
+					System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
+			}
+		}
 		
 		// Start launcher from updating
 		new LauncherUpdate();
@@ -189,6 +183,9 @@ public class Main {
 		}).start();
 	}
 	
+	/**
+	 * Used for migration from old (not minecraft, but still old) launcher
+	 */
 	private static Cipher getCipher(int mode, String password) throws Exception {
 		Random random = new Random(43287234L);
 		byte[] salt = new byte[8];

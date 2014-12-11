@@ -5,7 +5,7 @@ public class AuthError extends Exception {
 	private static final long serialVersionUID = -4709793962272592369L;
 	
 	public int errorCode;
-
+	
 	public AuthError(int code) {
 		this.errorCode = code;
 	}
@@ -24,5 +24,4 @@ public class AuthError extends Exception {
 		super(message, cause);
 		this.errorCode = code;
 	}
-	
 }

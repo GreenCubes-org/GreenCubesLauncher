@@ -27,6 +27,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressWarnings("restriction")
+/**
+ * Most protected and encrypted class. Do not touch
+ * if you are not an author.
+ * 
+ * @author Rena
+ */
 public class LauncherOptions {
 	
 	private static List<BufferedImage> icons;
@@ -295,6 +301,7 @@ public class LauncherOptions {
 			}
 			if(Main.TEST) {
 				System.out.println("~~~ Session loaded. ~~~");
+				System.out.println("From " + new File("user.dat").getAbsolutePath());
 				System.out.println("Userid: " + sessionUserId + ", user: " + sessionUser + ", key: ");
 				System.out.println(new String(sessionKey));
 			}

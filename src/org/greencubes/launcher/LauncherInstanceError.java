@@ -19,5 +19,4 @@ public class LauncherInstanceError {
 		f.dispose();
 		Main.close();
 	}
-	
 }

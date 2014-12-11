@@ -22,10 +22,11 @@ public enum OperatingSystem {
 	public static String getJavaExecutable(boolean forceConsole) {
 		String separator = System.getProperty("file.separator");
 		String path = System.getProperty("java.home") + separator + "bin" + separator;
-		if(!forceConsole && getCurrentPlatform() == WINDOWS && new File(path + "javaw.exe").isFile())
-			return path + "javaw.exe";
-		if(getCurrentPlatform() == WINDOWS)
+		if(getCurrentPlatform() == WINDOWS) {
+			if(!forceConsole && new File(path + "javaw.exe").isFile())
+				return path + "javaw.exe";
 			return path + "java.exe";
+		}
 		return path + "java";
 	}
 
