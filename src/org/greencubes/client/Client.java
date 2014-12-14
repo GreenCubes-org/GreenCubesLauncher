@@ -4,9 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.web.WebEngine;
+
 import javax.swing.SwingUtilities;
 
-import org.cef.browser.CefBrowser;
 import org.greencubes.launcher.LauncherMain;
 
 public abstract class Client {
@@ -39,7 +40,7 @@ public abstract class Client {
 	
 	public abstract boolean isSinglePlayerModeAllowed();
 	
-	public abstract void openBrowserPage(CefBrowser browser);
+	public abstract void openBrowserPage(WebEngine browser);
 	
 	public abstract IClientStatus getStatus();
 	

@@ -16,10 +16,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,10 +38,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.cef.CefApp;
-import org.cef.CefClient;
-import org.cef.browser.CefBrowser;
-import org.cef.handler.CefLifeSpanHandler;
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
 import org.greencubes.client.IClientStatus.Status;
@@ -56,17 +54,12 @@ import org.json.JSONObject;
 
 public class LauncherMain {
 	
-	private CefClient cefClient;
-	private LocalCefLifeSpanHandler cefLifespanHandler;
-	
 	private JFrame frame;
 	private JPanel mainPanel;
 	private JPanel innerPanel;
 	private JPanel clientPanel;
 	
-	private Map<Client,CefBrowser> clientBrowsers = new HashMap<Client, CefBrowser>();
-	private CefBrowser shopBrowser;
-	private CefBrowser newsBrowser;
+	private WebView browser;
 	
 	private Client currentClient;
 	private JTextPane clientButtonText;
@@ -81,7 +74,6 @@ public class LauncherMain {
 	 * Should not be invoked in AWT thread
 	 */
 	public LauncherMain(Window previousFrame) {
-		getCefClient(); // Load cef client earlier
 		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(!Main.TEST);
@@ -200,7 +192,7 @@ public class LauncherMain {
 									addActionListener(new ActionListener() {
 										@Override
 										public void actionPerformed(ActionEvent e) {
-											Client.MAIN.openBrowserPage(getClientBrowser(Client.MAIN));
+											Client.MAIN.openBrowserPage(browser.getEngine());
 										}
 									});
 								}});
@@ -357,17 +349,17 @@ public class LauncherMain {
 			return;
 		synchronized(client) {
 			currentClient = client;
-			final CefBrowser browser = getClientBrowser(client);
 			clientPanel.add(new JPanel() {{
 				setOpaque(false);
 				setLayout(new GridBagLayout());
-				Component c = browser.getUIComponent();
-				add(c, new GridBagConstraints() {{
+				JFXPanel browserPanel = new JFXPanel();
+				add(browserPanel, new GridBagConstraints() {{
 					weightx = 1;
 					weighty = 1;
 					fill = GridBagConstraints.BOTH;
 				}});
-				s(c, 100, 100);
+				s(browserPanel, 100, 100);
+				openClientBrowser(currentClient, browserPanel);
 			}});
 			clientPanel.add(new JPanel() {{
 				//s(this, -1, 100);
@@ -453,16 +445,6 @@ public class LauncherMain {
 				}});
 			}});
 			frame.revalidate();
-			new Thread() { // We should wait while browser is loading to cnage page. The way CEF works...
-				public void run() {
-					try {
-						cefLifespanHandler.waitLoad(browser);
-					} catch(InterruptedException e) {}
-					currentClient.openBrowserPage(browser);
-					currentClient.load(LauncherMain.this);
-				}
-			}.start();
-			
 		}
 	}
 	//@formatter:on
@@ -527,43 +509,17 @@ public class LauncherMain {
 		}
 	}
 	
-	private CefClient getCefClient() {
-		synchronized(this) {
-			if(cefClient == null) {
-				CefApp cefApp = CefApp.getInstance();
-				cefLifespanHandler = new LocalCefLifeSpanHandler();
-				cefClient = cefApp.createClient();
-				cefClient.addLifeSpanHandler(cefLifespanHandler);
-			}
-			return cefClient;
-		}
-	}
-	
-	private CefBrowser getClientBrowser(Client client) {
-		synchronized(clientBrowsers) {
-			CefBrowser b = clientBrowsers.get(client);
-			if(b == null) {
-				b = getCefClient().createBrowser("about:blank", false, true);
-				clientBrowsers.put(client, b);
-			}
-			return b;
-		}
-	}
-	
-	private CefBrowser getNewsBrowser() {
-		synchronized(clientBrowsers) {
-			if(newsBrowser == null)
-				newsBrowser = getCefClient().createBrowser("", false, true);
-			return newsBrowser;
-		}
-	}
-	
-	private CefBrowser getShopBrowser() {
-		synchronized(clientBrowsers) {
-			if(shopBrowser == null)
-				shopBrowser = getCefClient().createBrowser("", false, true);
-			return shopBrowser;
-		}
+	private void openClientBrowser(final Client client, final JFXPanel panel) {
+		 Platform.runLater(new Runnable() {
+            @Override 
+            public void run() {
+ 
+                browser = new WebView();
+                WebEngine engine = browser.getEngine();
+                panel.setScene(new Scene(browser));
+                client.openBrowserPage(engine);
+            }
+        });
 	}
 	
 	private static void s(Component c, int width, int height) {
@@ -572,55 +528,5 @@ public class LauncherMain {
 		c.setPreferredSize(d);
 		c.setMaximumSize(d);
 		c.setMinimumSize(d);
-	}
-	
-	public class LocalCefLifeSpanHandler implements CefLifeSpanHandler {
-		
-		private Set<CefBrowser> loadedBrowsers = new HashSet<>();
-
-		@Override
-		public boolean doClose(CefBrowser browser) {
-			synchronized(loadedBrowsers) {
-				loadedBrowsers.remove(browser);
-				loadedBrowsers.notifyAll();
-			}
-			return false;
-		}
-
-		@Override
-		public void onAfterCreated(CefBrowser browser) {
-			synchronized(loadedBrowsers) {
-				loadedBrowsers.add(browser);
-				loadedBrowsers.notifyAll();
-			}
-		}
-
-		@Override
-		public void onBeforeClose(CefBrowser browser) {
-		}
-
-		@Override
-		public boolean onBeforePopup(CefBrowser browser, String target_url, String target_frame_name) {
-			return false;
-		}
-
-		@Override
-		public boolean runModal(CefBrowser browser) {
-			return false;
-		}
-		
-		public void waitLoad(CefBrowser browser) throws InterruptedException {
-			synchronized(loadedBrowsers) {
-				while(!loadedBrowsers.contains(browser))
-					loadedBrowsers.wait();
-			}
-		}
-		
-		public boolean isLoaded(CefBrowser browser) {
-			synchronized(loadedBrowsers) {
-				return loadedBrowsers.contains(browser);
-			}
-		}
-		
 	}
 }

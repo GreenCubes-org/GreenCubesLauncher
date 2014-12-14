@@ -2,8 +2,6 @@ package org.greencubes.main;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,10 +20,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.Timer;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.cef.CefApp;
 import org.greencubes.launcher.LauncherInstanceError;
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.launcher.LauncherUpdate;
@@ -169,18 +165,7 @@ public class Main {
 			fw.close();
 		} catch(Exception e) {
 		}
-		new Thread() {
-			@Override
-			public void run() {
-				CefApp.getInstance().dispose();
-			}
-		}.start();
-		new Timer(3000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent paramAnonymous2ActionEvent) {
-				System.exit(0);
-			}
-		}).start();
+		System.exit(0);
 	}
 	
 	/**

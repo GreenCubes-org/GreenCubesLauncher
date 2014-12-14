@@ -1,7 +1,6 @@
 package org.greencubes.launcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +13,8 @@ import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 
 public class LauncherUpdate {
-	
-	/**
-	 * Big delay, because stopping of launcher takes more than 3 seconds.
-	 */
-	private static final long RENAME_DELAY = 6000;
+
+	private static final long RENAME_DELAY = 2000;
 	
 	private JFrame frame;
 	

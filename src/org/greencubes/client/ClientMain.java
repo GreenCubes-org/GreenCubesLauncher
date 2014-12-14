@@ -13,7 +13,9 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.cef.browser.CefBrowser;
+import javafx.application.Platform;
+import javafx.scene.web.WebEngine;
+
 import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherMain;
@@ -81,8 +83,13 @@ public class ClientMain extends Client {
 	}
 	
 	@Override
-	public void openBrowserPage(CefBrowser browser) {
-		browser.loadURL("https://greencubes.org");
+	public void openBrowserPage(final WebEngine browser) {
+		Platform.runLater(new Runnable() {
+            @Override 
+            public void run() {
+                browser.load("https://greencubes.org");
+            }
+        });
 	}
 	
 	@Override
