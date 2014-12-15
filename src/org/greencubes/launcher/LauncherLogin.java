@@ -234,6 +234,7 @@ public class LauncherLogin {
 			setOpaque(false);
 			setLayout(new GridBagLayout());
 			add(new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -266,6 +267,7 @@ public class LauncherLogin {
 			setLayout(new GridBagLayout());
 			setBackground(Util.debugColor());
 			add(new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -301,6 +303,7 @@ public class LauncherLogin {
 					super.paintComponent(g);
 			}}, gbc(1, 1, 1, 0));
 			add(new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -346,6 +349,7 @@ public class LauncherLogin {
 				setOpaque(false);
 				setBackground(new Color(0, 0, 0, 0));
 				add(new JTextPane() {{
+					setHighlighter(null);
 					setOpaque(false);
 					StyledDocument doc = getStyledDocument();
 					SimpleAttributeSet center = new SimpleAttributeSet();
@@ -386,6 +390,7 @@ public class LauncherLogin {
 				setBackground(new Color(0, 0, 0, 0));
 				add(new JTextPane() {{
 					setOpaque(false);
+					setHighlighter(null);
 					StyledDocument doc = getStyledDocument();
 					SimpleAttributeSet center = new SimpleAttributeSet();
 					StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
@@ -419,6 +424,7 @@ public class LauncherLogin {
 			setOpaque(false);
 			setBackground(Util.debugColor());
 			add(errorPane = new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -489,6 +495,7 @@ public class LauncherLogin {
 				}
 			});
 			add(new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
@@ -520,6 +527,7 @@ public class LauncherLogin {
 				}
 			});
 			add(new JTextPane() {{
+				setHighlighter(null);
 				setOpaque(false);
 				StyledDocument doc = getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();

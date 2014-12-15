@@ -172,6 +172,7 @@ public class LauncherMain {
 						add(new JPanel() {{
 							setOpaque(false);
 							add(new JTextPane() {{
+								setHighlighter(null);
 								setOpaque(false);
 								StyledDocument doc = getStyledDocument();
 								SimpleAttributeSet center = new SimpleAttributeSet();
@@ -298,6 +299,7 @@ public class LauncherMain {
 					}});
 					JTextPane pane;
 					add(pane = new JTextPane() {{
+						setHighlighter(null);
 						setOpaque(false);
 						StyledDocument doc = getStyledDocument();
 						SimpleAttributeSet center = new SimpleAttributeSet();
@@ -378,6 +380,7 @@ public class LauncherMain {
 						setBackground(new Color(52, 53, 50, 255));
 						setLayout(new GridBagLayout());
 						add(clientButtonText = new JTextPane() {{
+							setHighlighter(null);
 							setOpaque(false);
 							StyledDocument doc = getStyledDocument();
 							SimpleAttributeSet center = new SimpleAttributeSet();
@@ -425,6 +428,7 @@ public class LauncherMain {
 						setMaximumSize(new Dimension(9999, 9999));
 					}});
 					add(clientStatusLine = new JTextPane() {{
+						setHighlighter(null);
 						setMaximumSize(new Dimension(9999, 25));
 						setOpaque(false);
 						StyledDocument doc = getStyledDocument();
