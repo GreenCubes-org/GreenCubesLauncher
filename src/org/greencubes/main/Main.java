@@ -58,10 +58,7 @@ public class Main {
 		// Load fonts
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		try {
-			InputStream is = Main.class.getResource("/res/font/ClearSans-Medium.ttf").openStream();
-			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, is));
-			is.close();
-			is = Main.class.getResource("/res/font/ClearSans-MediumItalic.ttf").openStream();
+			InputStream is = Main.class.getResource("/res/font/ClearSans-Light.ttf").openStream();
 			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, is));
 			is.close();
 			is = Main.class.getResource("/res/font/ClearSans-Bold.ttf").openStream();

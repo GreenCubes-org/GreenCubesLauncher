@@ -25,6 +25,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -58,7 +59,7 @@ public class LauncherLogin {
 	public LauncherLogin(JFrame previousFrame) {
 		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
-		frame.setUndecorated(!Main.TEST);
+		frame.setUndecorated(true);
 		frame.add(new JPanelBG("/res/login.bg.png") {{
 			setPreferredSize(new Dimension(560, 384));
 			setLayout(new GridBagLayout());
@@ -233,16 +234,11 @@ public class LauncherLogin {
 		centerPanel.add(new JPanel() {{
 			setOpaque(false);
 			setLayout(new GridBagLayout());
-			add(new JTextPane() {{
-				setHighlighter(null);
+			add(new JLabel() {{
 				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setAlignmentX(JLabel.CENTER_ALIGNMENT);
 				setBackground(new Color(0, 0, 0, 0));
 				setForeground(new Color(25, 97, 14, 255));
-				setEditable(false);
 				setText(progressString);
 				setFont(new Font("ClearSans", Font.BOLD, 30));
 			}}, new GridBagConstraints() {{
@@ -266,16 +262,11 @@ public class LauncherLogin {
 			setOpaque(false);
 			setLayout(new GridBagLayout());
 			setBackground(Util.debugColor());
-			add(new JTextPane() {{
-				setHighlighter(null);
+			add(new JLabel() {{
 				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setAlignmentX(JLabel.CENTER_ALIGNMENT);
 				setBackground(Util.debugColor());
 				setForeground(new Color(25, 97, 14, 255));
-				setEditable(false);
 				setText(I18n.get("login.login"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
 			}}, gbc(1, 1, 0, 0));
@@ -302,16 +293,11 @@ public class LauncherLogin {
 					g.drawImage(bg, 0, 0, this);
 					super.paintComponent(g);
 			}}, gbc(1, 1, 1, 0));
-			add(new JTextPane() {{
-				setHighlighter(null);
+			add(new JLabel() {{
 				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
+				setAlignmentX(JLabel.CENTER_ALIGNMENT);
 				setBackground(Util.debugColor());
 				setForeground(new Color(25, 97, 14, 255));
-				setEditable(false);
 				setText(I18n.get("login.password"));
 				setFont(new Font("ClearSans", Font.PLAIN, 18));
 			}}, gbc(1, 1, 0, 1));

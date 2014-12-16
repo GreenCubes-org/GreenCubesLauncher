@@ -9,11 +9,11 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
@@ -28,9 +28,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -45,8 +43,11 @@ import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
+import org.greencubes.swing.ComponentResizer;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
+import org.greencubes.swing.MotionPanel;
+import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
 import org.greencubes.util.Util;
 import org.json.JSONException;
@@ -74,46 +75,89 @@ public class LauncherMain {
 	 * Should not be invoked in AWT thread
 	 */
 	public LauncherMain(Window previousFrame) {
-		frame = new JFrame(I18n.get("title"));
+		frame = new UndecoratedJFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
-		frame.setUndecorated(!Main.TEST);
+		frame.setUndecorated(true);
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
-		frame.add(innerPanel = new JPanelBG("/res/main.bg.png") {{
+		frame.add(innerPanel = new JPanel() {{
 			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
 			setPreferredSize(d);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(0, 0, 0, 0));
+			setBackground(new Color(23, 30, 30, 255));
+			setBorder(BorderFactory.createLineBorder(new Color(11, 33, 31, 255), 1));
 			// Top line
 			add(new JPanel() {{
 				setOpaque(false);
 				setBackground(new Color(0, 0, 0, 0));
-				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-				add(new JPanel() {{
+				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
 					setBackground(new Color(0, 0, 0, 0));
-					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-					add(Box.createHorizontalGlue());
-					add(new JPanel() {{ // Minimize button
-						s(this, 25, 25);
+					s(this, 98, 95);
+					paddingTop = 15;
+					paddingLeft = 16;
+					// TODO : Add popout panel
+				}});
+				
+				add(new JPanel() {{ // Everything else on top
+					setMaximumSize(new Dimension(9999, 95));
+					setOpaque(false);
+					setBackground(new Color(0, 0, 0, 0));
+					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+					add(new JPanel() {{ // Window buttons
 						setBackground(new Color(0, 0, 0, 0));
-						add(new JPanelBG("/res/cross.png") {{ // TODO : Minimize button
-							s(this, 14, 14);
+						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+						add(Box.createHorizontalGlue());
+						add(new JPanel() {{ // Minimize button
+							s(this, 25, 25);
 							setBackground(new Color(0, 0, 0, 0));
+							add(new JPanelBG("/res/minimize.png") {{
+								s(this, 14, 14);
+								setBackground(new Color(0, 0, 0, 0));
+							}});
+							addMouseListener(new AbstractMouseListener() {
+								// TODO : Can add cross animation
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									frame.setState(Frame.ICONIFIED);
+								}
+							});
 						}});
-						addMouseListener(new AbstractMouseListener() {
-							// TODO : Can add cross animation
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								frame.setState(Frame.ICONIFIED);
-							}
-						});
-					}});
-					add(new JPanel() {{ // Close button
-						s(this, 25, 25);
-						setBackground(new Color(0, 0, 0, 0));
-						add(new JPanelBG("/res/cross.png") {{
-							s(this, 14, 14);
+						/*add(new JPanel() {{ // Maximize button
+							s(this, 25, 25);
 							setBackground(new Color(0, 0, 0, 0));
+							add(new JPanelBG("/res/expand.png") {{
+								s(this, 14, 14);
+								setBackground(new Color(0, 0, 0, 0));
+							}});
+							addMouseListener(new AbstractMouseListener() {
+								// TODO : Can add cross animation
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									// TODO : Wrong way to maximize and restore
+									int state = frame.getExtendedState();
+									if((state & Frame.MAXIMIZED_BOTH) != 0)
+										frame.setExtendedState(Frame.NORMAL);
+									else
+										frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+								}
+							});
+						}});*/
+						add(new JPanel() {{ // Close button
+							s(this, 25, 25);
+							setBackground(new Color(0, 0, 0, 0));
+							add(new JPanelBG("/res/cross.png") {{
+								s(this, 14, 14);
+								setBackground(new Color(0, 0, 0, 0));
+								addMouseListener(new AbstractMouseListener() {
+									// TODO : Can add cross animation
+									@Override
+									public void mouseClicked(MouseEvent e) {
+										frame.dispose();
+										Main.close();
+									}
+								});
+							}});
 							addMouseListener(new AbstractMouseListener() {
 								// TODO : Can add cross animation
 								@Override
@@ -123,96 +167,57 @@ public class LauncherMain {
 								}
 							});
 						}});
-						addMouseListener(new AbstractMouseListener() {
-							// TODO : Can add cross animation
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								frame.dispose();
-								Main.close();
-							}
-						});
-					}});
-				}});
-				add(new JPanel() {{
-					setOpaque(false);
-					setBackground(new Color(0, 0, 0, 0));
-					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-					add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-						setBackground(new Color(0, 0, 0, 0));
-						s(this, 100, 50);
-						paddingTop = 1;
-						// TODO : Add popout panel
 					}});
 					
-					add(new JPanelBG("/res/main.play.ruRU.png") {{
-						s(this, 110, 50);
-						setBackground(new Color(0, 0, 0, 0));
-						paddingLeft = 15;
-						paddingTop = 15;
-					}});
-					add(new JPanelBG("/res/main.shop.ruRU.png") {{
-						s(this, 120, 50);
-						setBackground(new Color(0, 0, 0, 0));
-						paddingLeft = 10;
-						paddingTop = 15;
-					}});
-					add(new JPanelBG("/res/main.news.ruRU.png") {{
-						s(this, 130, 50);
-						setBackground(new Color(0, 0, 0, 0));
-						paddingLeft = 15;
-						paddingTop = 15;
-					}});
-					
-					add(Box.createHorizontalGlue());
+					add(Box.createVerticalGlue());
 					
 					add(new JPanel() {{
-						setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-						setOpaque(false);
-						setBackground(Util.debugColor());
-						add(new JPanel() {{
-							setOpaque(false);
-							add(new JTextPane() {{
-								setHighlighter(null);
-								setOpaque(false);
-								StyledDocument doc = getStyledDocument();
-								SimpleAttributeSet center = new SimpleAttributeSet();
-								StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-								doc.setParagraphAttributes(0, doc.getLength(), center, false);
-								setBackground(Util.debugColor());
-								setForeground(new Color(0, 0, 0, 255));
-								setEditable(false);
-								setText(LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser);
-								setFont(new Font("ClearSans", Font.PLAIN, 14));
-								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-							}});
+						setBackground(new Color(0, 0, 0, 0));
+						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+						add(new JLabel() {{
+							//setOpaque(false);
+							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+							setBackground(Util.debugColor());
+							setForeground(new Color(126, 209, 218, 255));
+							setText("ИГРА");
+							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
-						
-						add(new JMenuBar() {{
-							add(new JMenu("Online") {{
-								add(new JMenuItem("Log Out"){{
-									addActionListener(new ActionListener() {
-										@Override
-										public void actionPerformed(ActionEvent e) {
-											Client.MAIN.openBrowserPage(browser.getEngine());
-										}
-									});
-								}});
-							}});
+						add(new JLabel() {{
+							//setOpaque(false);
+							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+							setBackground(Util.debugColor());
+							setForeground(new Color(126, 209, 218, 255));
+							setText("МАГАЗИН");
+							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
-							
+						add(new JLabel() {{
+							//setOpaque(false);
+							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+							setBackground(Util.debugColor());
+							setForeground(new Color(126, 209, 218, 255));
+							setText("ОБНОВЛЕНИЯ");
+							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}});
+						add(new JLabel() {{
+							//setOpaque(false);
+							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+							setBackground(Util.debugColor());
+							setForeground(new Color(126, 209, 218, 255));
+							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
+							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}});
+						add(Box.createHorizontalGlue());
 					}});
-					add(new JPanel() {{
-						s(this, 20, 0);
-					}});
-				}});
-				add(new JPanel() {{
-					s(this, 5, 8);
-					setBackground(new Color(0, 0, 0, 0));
 				}});
 			}});
 			add(mainPanel = new JPanel() {{
 				setOpaque(false);
 				setBackground(new Color(0, 0, 0, 0));
+				setMaximumSize(new Dimension(9999, 9999));
 			}});
 		}});
 		
@@ -277,52 +282,49 @@ public class LauncherMain {
 	private void displayPlayPanel() {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
 		mainPanel.add(new JPanel() {{
-			setOpaque(false);
+			//setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(0, 0, 0, 0));
+			setBackground(new Color(46, 54, 54, 255));
 			add(new JPanel() {{
 				s(this, 1, 1);
 				setBackground(new Color(0, 0, 0, 0));
 			}});
 			add(new JPanel() {{ // New client button
-				setOpaque(false);
-				s(this, 101, 101);
+				//setOpaque(false);
+				s(this, 95, 95);
 				setBackground(new Color(0, 0, 0, 0));
 				final JPanel inner;
 				add(inner = new JPanel() {{ // Inner
 					s(this, 95, 95);
 					setOpaque(false);
-					setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 					setBackground(new Color(0, 0, 0, 0));
 					add(new JPanelBG("/res/main.newclient.logo.png") {{
 						s(this, 48, 48);
 					}});
-					JTextPane pane;
-					add(pane = new JTextPane() {{
-						setHighlighter(null);
+					JComponent pane;
+					add(pane = new JLabel() {{
 						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
+						setAlignmentX(JLabel.CENTER_ALIGNMENT);
 						setBackground(new Color(0, 0, 0, 100));
-						setForeground(new Color(93, 43, 94, 255));
-						setEditable(false);
+						setForeground(new Color(126, 209, 218, 255));
 						setText(I18n.get("client.main.name"));
-						setFont(new Font("ClearSans", Font.PLAIN, 14));
+						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 					}});
 					GAWTUtil.removeMouseListeners(pane);
 				}});
+				final JPanel it = this;
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseEntered(MouseEvent e) {
-						inner.setBorder(BorderFactory.createLineBorder(new Color(21, 54, 20, 255), 1));
+						it.setBackground(new Color(96, 122, 122, 255));
+						it.revalidate();
 					}
 					
 					@Override
 					public void mouseExited(MouseEvent e) {
-						inner.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+						it.setBackground(new Color(46, 54, 54, 255));
+						it.revalidate();
 					}
 				});
 			}});
@@ -332,7 +334,7 @@ public class LauncherMain {
 		mainPanel.add(clientPanel = new JPanel() {{
 			setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(0, 0, 0, 0));
+			setBackground(new Color(23, 30, 30, 255));
 		}});
 		frame.revalidate();
 		currentClient = null;
@@ -360,56 +362,14 @@ public class LauncherMain {
 					weighty = 1;
 					fill = GridBagConstraints.BOTH;
 				}});
-				s(browserPanel, 100, 100);
+				//s(browserPanel, 100, 100);
 				openClientBrowser(currentClient, browserPanel);
 			}});
 			clientPanel.add(new JPanel() {{
 				//s(this, -1, 100);
 				setOpaque(false);
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-				add(new JPanel() {{
-					s(this, 10, 100);
-					setBackground(new Color(0, 0, 0, 0));
-				}});
-				add(new JPanel() {{
-					setLayout(new GridBagLayout());
-					s(this, 170, 100);
-					setBackground(new Color(0, 0, 0, 0));
-					add(clientButton = new JPanel() {{
-						s(this, 150, 80);
-						setBackground(new Color(52, 53, 50, 255));
-						setLayout(new GridBagLayout());
-						add(clientButtonText = new JTextPane() {{
-							setHighlighter(null);
-							setOpaque(false);
-							StyledDocument doc = getStyledDocument();
-							SimpleAttributeSet center = new SimpleAttributeSet();
-							StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-							doc.setParagraphAttributes(0, doc.getLength(), center, false);
-							setBackground(new Color(0, 0, 0, 0));
-							setForeground(new Color(25, 97, 14, 255));
-							setEditable(false);
-							Status s = currentClient.getStatus().getStatus();
-							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
-							setFont(new Font("ClearSans", Font.BOLD, 25));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}}, new GridBagConstraints() {{
-							weightx = 1;
-							weighty = 1;
-						}});
-						GAWTUtil.removeMouseListeners(clientButtonText);
-						addMouseListener(new AbstractMouseListener() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								pressTheBigButton();
-							}
-						});
-					}}, new GridBagConstraints() {{
-						weightx = 1;
-						weighty = 1;
-					}});
-					
-				}});
+				setBorder(BorderFactory.createEmptyBorder(22, 64, 22, 64));
 				add(new JPanel() {{
 					setOpaque(false);
 					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -433,13 +393,13 @@ public class LauncherMain {
 						setOpaque(false);
 						StyledDocument doc = getStyledDocument();
 						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_LEFT);
+						StyleConstants.setAlignment(center, StyleConstants.ALIGN_RIGHT);
 						doc.setParagraphAttributes(0, doc.getLength(), center, false);
 						setBackground(Util.debugColor());
-						setForeground(new Color(0, 0, 0, 255));
+						setForeground(new Color(192, 229, 237, 255));
 						setEditable(false);
 						setText(currentClient.getStatus().getStatusTitle());
-						setFont(new Font("ClearSans", Font.PLAIN, 14));
+						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 					}});
 					add(new JPanel() {{
@@ -447,8 +407,53 @@ public class LauncherMain {
 						s(this, 10, 10);
 					}});
 				}});
+				add(new JPanel() {{
+					setLayout(new GridBagLayout());
+					s(this, 170, 100);
+					setBackground(new Color(0, 0, 0, 0));
+					add(clientButton = new JPanel() {{
+						s(this, 150, 80);
+						setBackground(new Color(116, 147, 147, 255));
+						setLayout(new GridBagLayout());
+						add(clientButtonText = new JTextPane() {{
+							setHighlighter(null);
+							setOpaque(false);
+							StyledDocument doc = getStyledDocument();
+							SimpleAttributeSet center = new SimpleAttributeSet();
+							StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+							doc.setParagraphAttributes(0, doc.getLength(), center, false);
+							setBackground(new Color(0, 0, 0, 0));
+							setForeground(new Color(192, 229, 237, 255));
+							setEditable(false);
+							Status s = currentClient.getStatus().getStatus();
+							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
+							setFont(new Font("ClearSans Light", Font.BOLD, 25));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}}, new GridBagConstraints() {{
+							weightx = 1;
+							weighty = 1;
+						}});
+						GAWTUtil.removeMouseListeners(clientButtonText);
+						addMouseListener(new AbstractMouseListener() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								pressTheBigButton();
+							}
+						});
+					}}, new GridBagConstraints() {{
+						weightx = 1;
+						weighty = 1;
+					}});
+				}});
 			}});
 			frame.revalidate();
+			Platform.runLater(new Runnable() { // We should wait while browser loads
+	            @Override 
+	            public void run() {
+	            	currentClient.openBrowserPage(browser.getEngine());
+	    			currentClient.load(LauncherMain.this);
+	            }
+	        });
 		}
 	}
 	//@formatter:on
