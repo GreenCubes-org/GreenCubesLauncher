@@ -484,29 +484,14 @@ public class LauncherMain {
 				if(progressBarContainer == null) {
 					clientStatusPanel.add(progressBarContainer = new JPanel() {{
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-						setMinimumSize(new Dimension(20, 20));
-						setMaximumSize(new Dimension(9999, 20));
-						setBackground(new Color(46, 94, 44, 255));
-						add(new JPanel() {{
-							setOpaque(true);
-							s(this, 2, 2);
-							setBackground(new Color(46, 94, 44, 255));
-						}});
-						add(new JPanel() {{
-							setBackground(new Color(46, 94, 44, 255));
-							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-							add(new JPanel() {{
-								s(this, 2, 2);
-								setBackground(new Color(46, 94, 44, 255));
-							}});
-							add(progressBar = new JPanel() {{
-								setBackground(new Color(94, 94, 94, 255));
-								s(this, 16, 16);
-							}});
-							add(new JPanel() {{
-								s(this, 2, 2);
-								setBackground(new Color(46, 94, 44, 255));
-							}});
+						setMinimumSize(new Dimension(24, 24));
+						setMaximumSize(new Dimension(9999, 24));
+						setBackground(new Color(68, 84, 83, 255));
+						setBorder(BorderFactory.createLineBorder(new Color(111, 134, 138, 255), 1));
+						add(progressBar = new JPanel() {{
+							setBackground(new Color(192, 229, 237, 255));
+							s(this, 22, 22);
+							setBorder(BorderFactory.createLineBorder(new Color(68, 84, 83, 255), 1));
 						}});
 						
 					}}, BorderLayout.PAGE_END);
