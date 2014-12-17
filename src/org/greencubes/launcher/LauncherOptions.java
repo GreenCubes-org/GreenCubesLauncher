@@ -65,7 +65,7 @@ public class LauncherOptions {
 		synchronized(clientDownloaders) {
 			Downloader d = clientDownloaders.get(client);
 			if(d == null) {
-				d = newDownloader();
+				d = newClientDownloader();
 				clientDownloaders.put(client, d);
 			}
 			return d;
@@ -84,6 +84,13 @@ public class LauncherOptions {
 			downloader = new Downloader("https://auth.greencubes.org/");
 			downloader.addServer("https://auth1.greencubes.org/");
 		}
+		return downloader;
+	}
+	
+	private static Downloader newClientDownloader() {
+		Downloader downloader;
+		downloader = new Downloader("https://auth.greencubes.org/");
+		downloader.addServer("https://auth1.greencubes.org/");
 		return downloader;
 	}
 	

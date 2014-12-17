@@ -2,6 +2,7 @@ package org.greencubes.client;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,7 +196,7 @@ public class ClientMain extends Client {
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("login/files/main/version.md5"));
+			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("mc/vc/greencubes/version.md5"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
@@ -224,7 +225,7 @@ public class ClientMain extends Client {
 		Iterator<Entry<String, byte[]>> oldFilesIterator = localHashes.entrySet().iterator();
 		while(oldFilesIterator.hasNext()) {
 			Entry<String, byte[]> e = oldFilesIterator.next();
-			if(!newGameFiles.contains(e.getKey())) {
+			if(!remoteFiles.contains(e.getKey())) {
 				// File not found remote, create game file so we can delete it later
 				newGameFiles.add(new GameFile(new File(workingDirectory, e.getKey()), null, e.getValue(), null));
 			}
@@ -232,7 +233,7 @@ public class ClientMain extends Client {
 		gameFiles.clear();
 		gameFiles.addAll(newGameFiles);
 		if(needUpdate)
-			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), -1f);
+			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), 0f);
 		// Fetch file sizes
 		bytesToDownload = 0;
 		filesToDownload = 0;
@@ -241,7 +242,7 @@ public class ClientMain extends Client {
 			GameFile gf = gameFiles.get(i);
 			if(gf.remotemd5 != null && gf.needUpdate) {
 				try {
-					gf.remoteFileSize = LauncherOptions.getClientDownloder(ClientMain.this).getFileSize(Util.urlEncode("login/files/main/" + gf.remoteFileUrl));
+					gf.remoteFileSize = LauncherOptions.getClientDownloder(ClientMain.this).getFileSize(Util.urlEncode("mc/vc/greencubes/" + gf.remoteFileUrl));
 					bytesToDownload += gf.remoteFileSize;
 				} catch(IOException e) {
 					isEstimate = true;
@@ -249,14 +250,42 @@ public class ClientMain extends Client {
 				}
 				filesToDownload++;
 			}
+			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), (float) i / gameFiles.size());
 		}
 		if(filesToDownload != 0) {
 			status(Status.NEED_UPDATE, I18n.get("Требуется обновление (" + filesToDownload + " файлов, " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload) + ")"), 0f);
 		} else {
 			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
-			try {
-				LauncherOptions.getClientDownloder(ClientMain.this).downloadFile(new File(workingDirectory, "version.md5"), Util.urlEncode("login/files/main/version.md5"));
-			} catch(IOException e) {}
+		}
+	}
+	
+	private void updateVersionFile() {
+		File workingDirectory = getWorkingDirectory();
+		if(!workingDirectory.exists()) {
+			if(!workingDirectory.mkdirs())
+				status(Status.ERROR, I18n.get("Невозможно создать папку клиента"), -1f);
+			else
+				status(Status.NEED_UPDATE, I18n.get("Готово к установке"), 0f);
+			return;
+		}
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(new File(workingDirectory, "version.md5"));
+			for(int i = 0; i < gameFiles.size(); ++i) {
+				GameFile gf = gameFiles.get(i);
+				if(gf.remoteFileUrl != null) {
+					String name = Util.getRelativePath(workingDirectory, gf.localFile);
+					fw.write(name);
+					fw.write(';');
+					fw.write(Util.byteArrayToHex(gf.localmd5));
+					fw.write('\n');
+				}
+			}
+			fw.close();
+		} catch(IOException e) {
+			status(Status.ERROR, I18n.get("Ошибка записи"), -1f);
+		} finally {
+			Util.close(fw);
 		}
 	}
 	
@@ -358,8 +387,10 @@ public class ClientMain extends Client {
 								+ " " + downloader.error, ((float) filesDownloaded / filesToDownload + (float) bytesDownloaded / bytesToDownload) / 2);
 						//@formatter:on
 					}
-					if(downloader.finished)
+					if(downloader.finished) {
+						downloader = null;
 						status(Status.CHECK, "Проверка...", -1f);
+					}
 					break;
 				default:
 					break;
@@ -388,43 +419,48 @@ public class ClientMain extends Client {
 		
 		@Override
 		public void run() {
-			Downloader d = LauncherOptions.getClientDownloder(ClientMain.this);
-			filesDownloaded = 0;
-			bytesDownloaded = 0;
-			Queue<GameFile> queue = new ArrayBlockingQueue<>(gameFiles.size());
-			queue.addAll(gameFiles);
-			while(!abort) {
-				GameFile gf = queue.poll();
-				if(gf == null) {
-					finished = true;
-					return;
-				}
-				if(gf.needUpdate) {
-					if(gf.remotemd5 != null) {
-						downloading = gf;
-						repeats = 0;
-						while(true) {
-							try {
-								d.downloadFile(gf.localFile, Util.urlEncode("login/files/main/" + gf.remoteFileUrl));
-								gf.needUpdate = false;
-								filesDownloaded++;
-								bytesDownloaded += d.bytesDownloaded;
-								break;
-							} catch(IOException e) {
-								if(repeats++ > MAX_REPEATS) {
-									status(Status.ERROR, e.getLocalizedMessage(), -1f);
-									return;
+			try {
+				Downloader d = LauncherOptions.getClientDownloder(ClientMain.this);
+				filesDownloaded = 0;
+				bytesDownloaded = 0;
+				Queue<GameFile> queue = new ArrayBlockingQueue<>(gameFiles.size());
+				queue.addAll(gameFiles);
+				while(!abort) {
+					GameFile gf = queue.poll();
+					if(gf == null) {
+						finished = true;
+						return;
+					}
+					if(gf.needUpdate) {
+						if(gf.remotemd5 != null) {
+							downloading = gf;
+							repeats = 0;
+							while(true) {
+								try {
+									d.downloadFile(gf.localFile, Util.urlEncode("mc/vc/greencubes/" + gf.remoteFileUrl));
+									gf.needUpdate = false;
+									gf.localmd5 = Util.createChecksum(gf.localFile);
+									filesDownloaded++;
+									bytesDownloaded += d.bytesDownloaded;
+									break;
+								} catch(IOException e) {
+									if(repeats++ > MAX_REPEATS) {
+										status(Status.ERROR, e.getLocalizedMessage(), -1f);
+										return;
+									}
+									error = I18n.get("Error. Repeats: " + repeats);
 								}
-								error = I18n.get("Error. Repeats: " + repeats);
 							}
+							error = "";
+						} else {
+							if(!gf.localFile.delete())
+								gf.localFile.deleteOnExit();
+							gf.needUpdate = false;
 						}
-						error = "";
-					} else {
-						if(!gf.localFile.delete())
-							gf.localFile.deleteOnExit();
-						gf.needUpdate = false;
 					}
 				}
+			} finally {
+				updateVersionFile();
 			}
 		}
 	}

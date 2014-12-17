@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -68,6 +69,13 @@ public final class Util {
 			if(destination != null)
 				destination.close();
 		}
+	}
+	
+	public static String getRelativePath(File directory, File file) {
+		URI uri1 = directory.toURI();
+		URI uri2 = file.toURI();
+		URI uri3 = uri1.relativize(uri2);
+		return uri3.getPath();
 	}
 	
 	public static String join(String[] split) {

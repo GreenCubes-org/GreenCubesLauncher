@@ -46,6 +46,9 @@ public class Main {
 	public static File launcherFile = null;
 	
 	public static void main(String[] args) {
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
+		System.setProperty("java.net.preferIPv4Stack", "true");
 		// Check arguments
 		for(String arg : args) {
 			if(arg.equals("-debug"))
@@ -59,6 +62,9 @@ public class Main {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		try {
 			InputStream is = Main.class.getResource("/res/font/ClearSans-Light.ttf").openStream();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, is));
+			is.close();
+			is = Main.class.getResource("/res/font/Lato-Regular.ttf").openStream();
 			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, is));
 			is.close();
 			is = Main.class.getResource("/res/font/ClearSans-Bold.ttf").openStream();

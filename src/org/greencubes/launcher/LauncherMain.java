@@ -9,11 +9,10 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
@@ -30,11 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
@@ -43,10 +38,9 @@ import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
-import org.greencubes.swing.ComponentResizer;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
-import org.greencubes.swing.MotionPanel;
+import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
 import org.greencubes.util.Util;
@@ -63,9 +57,8 @@ public class LauncherMain {
 	private WebView browser;
 	
 	private Client currentClient;
-	private JTextPane clientButtonText;
-	private JComponent clientButton;
-	private JTextPane clientStatusLine;
+	private JLabel clientButtonText;
+	private JLabel clientStatusLine;
 	private JComponent clientStatusPanel;
 	private JComponent progressBarContainer;
 	private JComponent progressBar;
@@ -88,8 +81,7 @@ public class LauncherMain {
 			setBorder(BorderFactory.createLineBorder(new Color(11, 33, 31, 255), 1));
 			// Top line
 			add(new JPanel() {{
-				setOpaque(false);
-				setBackground(new Color(0, 0, 0, 0));
+				setBackground(new Color(71, 87, 85, 255));
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
 					setBackground(new Color(0, 0, 0, 0));
@@ -179,8 +171,8 @@ public class LauncherMain {
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
 							setForeground(new Color(126, 209, 218, 255));
-							setText("ИГРА");
-							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							setText(I18n.get("main.title.game"));
+							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
@@ -188,8 +180,8 @@ public class LauncherMain {
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
 							setForeground(new Color(126, 209, 218, 255));
-							setText("МАГАЗИН");
-							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							setText(I18n.get("main.title.shop"));
+							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
@@ -197,8 +189,8 @@ public class LauncherMain {
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
 							setForeground(new Color(126, 209, 218, 255));
-							setText("ОБНОВЛЕНИЯ");
-							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							setText(I18n.get("main.title.updates"));
+							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
@@ -207,7 +199,7 @@ public class LauncherMain {
 							setBackground(Util.debugColor());
 							setForeground(new Color(126, 209, 218, 255));
 							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
-							setFont(new Font("ClearSans Light", Font.PLAIN, 24));
+							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(Box.createHorizontalGlue());
@@ -297,7 +289,7 @@ public class LauncherMain {
 					s(this, 95, 95);
 					setOpaque(false);
 					setBackground(new Color(0, 0, 0, 0));
-					add(new JPanelBG("/res/main.newclient.logo.png") {{
+					add(new JPanelBG("/res/main.oldclient.logo.png") {{
 						s(this, 48, 48);
 					}});
 					JComponent pane;
@@ -361,73 +353,59 @@ public class LauncherMain {
 					weighty = 1;
 					fill = GridBagConstraints.BOTH;
 				}});
-				//s(browserPanel, 100, 100);
 				openClientBrowser(currentClient, browserPanel);
 			}});
 			clientPanel.add(new JPanel() {{
-				//s(this, -1, 100);
 				setOpaque(false);
-				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 				setBorder(BorderFactory.createEmptyBorder(22, 64, 22, 64));
 				add(new JPanel() {{
+					setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					s(this, 0, 40);
+					setMaximumSize(new Dimension(9999, 9999));
 					setOpaque(false);
-					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-					add(new JPanel() {{
-						setBackground(new Color(0, 0, 0, 0));
-						s(this, 10, 10);
-					}});
-					add(new JPanel() {{
+					add(clientStatusPanel = new JPanel() {{
 						setOpaque(false);
-						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-						add(clientStatusPanel = new JPanel() {{
-							setBackground(new Color(0, 0, 0, 0));
-							setMaximumSize(new Dimension(800, 9999));
-							setLayout(new BorderLayout());
-						}});
 						setMaximumSize(new Dimension(9999, 9999));
-					}});
-					add(clientStatusLine = new JTextPane() {{
-						setHighlighter(null);
-						setMaximumSize(new Dimension(9999, 25));
-						setOpaque(false);
-						StyledDocument doc = getStyledDocument();
-						SimpleAttributeSet center = new SimpleAttributeSet();
-						StyleConstants.setAlignment(center, StyleConstants.ALIGN_RIGHT);
-						doc.setParagraphAttributes(0, doc.getLength(), center, false);
-						setBackground(Util.debugColor());
-						setForeground(new Color(192, 229, 237, 255));
-						setEditable(false);
-						setText(currentClient.getStatus().getStatusTitle());
-						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
-						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+						setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
 					}});
 					add(new JPanel() {{
-						setBackground(new Color(0, 0, 0, 0));
-						s(this, 10, 10);
+						s(this, 272, 22);
+						setOpaque(false);
+						// TODO : Server selection
 					}});
 				}});
 				add(new JPanel() {{
-					setLayout(new GridBagLayout());
-					s(this, 170, 100);
-					setBackground(new Color(0, 0, 0, 0));
-					add(clientButton = new JPanel() {{
-						s(this, 150, 80);
+					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(Box.createHorizontalGlue());
+					setOpaque(false);
+					add(clientStatusLine = new JLabel() {{
+						setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
+						setOpaque(false);
+						setBackground(Util.debugColor());
+						setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+						setAlignmentY(JLabel.CENTER_ALIGNMENT);
+						setForeground(new Color(192, 229, 237, 255));
+						setText(currentClient.getStatus().getStatusTitle());
+						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						setMinimumSize(new Dimension(0, 66));
+					}});
+					add(new JPanel() {{
+						s(this, 272, 66);
+						setBorder(new RoundedCornerBorder(new Color(23, 30, 30, 255), null, 4));
 						setBackground(new Color(116, 147, 147, 255));
 						setLayout(new GridBagLayout());
-						add(clientButtonText = new JTextPane() {{
-							setHighlighter(null);
+						add(clientButtonText = new JLabel() {{
 							setOpaque(false);
-							StyledDocument doc = getStyledDocument();
-							SimpleAttributeSet center = new SimpleAttributeSet();
-							StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-							doc.setParagraphAttributes(0, doc.getLength(), center, false);
-							setBackground(new Color(0, 0, 0, 0));
-							setForeground(new Color(192, 229, 237, 255));
-							setEditable(false);
+							setAlignmentX(JLabel.CENTER_ALIGNMENT);
+							setForeground(new Color(236, 255, 255, 255));
 							Status s = currentClient.getStatus().getStatus();
-							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
-							setFont(new Font("ClearSans Light", Font.BOLD, 25));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName).toUpperCase());
+							setFont(new Font("Lato", Font.BOLD, 36));
+							//disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}}, new GridBagConstraints() {{
 							weightx = 1;
 							weighty = 1;
@@ -439,11 +417,8 @@ public class LauncherMain {
 								pressTheBigButton();
 							}
 						});
-					}}, new GridBagConstraints() {{
-						weightx = 1;
-						weighty = 1;
 					}});
-				}});
+				}});	
 			}});
 			frame.revalidate();
 			Platform.runLater(new Runnable() { // We should wait while browser loads
@@ -473,7 +448,7 @@ public class LauncherMain {
 		if(client == currentClient && clientPanel != null) {
 			IClientStatus clientStatus = client.getStatus();
 			Status s = clientStatus.getStatus();
-			clientButtonText.setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName));
+			clientButtonText.setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName).toUpperCase());
 			clientStatusLine.setText(client.getStatus().getStatusTitle());
 			if(clientStatus.getStatusProgress() < 0 && progressBarContainer != null) {
 				clientStatusPanel.remove(progressBarContainer);
@@ -483,20 +458,24 @@ public class LauncherMain {
 				if(progressBarContainer == null) {
 					clientStatusPanel.add(progressBarContainer = new JPanel() {{
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-						setMinimumSize(new Dimension(24, 24));
-						setMaximumSize(new Dimension(9999, 24));
+						Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
+						s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
 						setBackground(new Color(68, 84, 83, 255));
-						setBorder(BorderFactory.createLineBorder(new Color(111, 134, 138, 255), 1));
+						setBorder(new RoundedCornerBorder(new Color(23, 30, 30, 255), new Color(111, 134, 138, 255), 4));
+						add(new JPanel() {{
+							s(this, 1, 1);
+							setBackground(new Color(0, 0, 0, 0));
+						}});
 						add(progressBar = new JPanel() {{
 							setBackground(new Color(192, 229, 237, 255));
-							s(this, 22, 22);
-							setBorder(BorderFactory.createLineBorder(new Color(68, 84, 83, 255), 1));
+							s(this, 18, 18);
+							setBorder(new RoundedCornerBorder(new Color(68, 84, 83, 255), null, 4));
 						}});
 						
-					}}, BorderLayout.PAGE_END);
-					clientStatusPanel.revalidate();
+					}});
+					clientStatusPanel.getLayout().layoutContainer(clientStatusPanel);
 				}
-				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 16);
+				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 18);
 				clientStatusPanel.revalidate();
 			}
 		}

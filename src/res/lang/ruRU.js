@@ -49,4 +49,7 @@
 "main.goonline": "Войти",
 "main.gooffline": "Выйти",
 
+"main.title.game": "ИГРА",
+"main.title.shop": "МАГАЗИН",
+"main.title.updates": "ОБНОВЛЕНИЯ",
 }
