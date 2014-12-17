@@ -293,8 +293,7 @@ public class LauncherMain {
 				//setOpaque(false);
 				s(this, 95, 95);
 				setBackground(new Color(0, 0, 0, 0));
-				final JPanel inner;
-				add(inner = new JPanel() {{ // Inner
+				add(new JPanel() {{ // Inner
 					s(this, 95, 95);
 					setOpaque(false);
 					setBackground(new Color(0, 0, 0, 0));

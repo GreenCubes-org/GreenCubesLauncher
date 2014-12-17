@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="libs/httpclient-4.2.3.jar"/>
 	<classpathentry kind="lib" path="libs/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/bcprov-ext-jdk15on-151.jar" sourcepath="libs_docs/bc_src.zip"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jre7/lib/jfxrt.jar"/>
+	<classpathentry kind="lib" path="libs/jfxrt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
