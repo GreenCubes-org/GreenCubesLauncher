@@ -27,8 +27,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.BasicMenuItemUI;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
@@ -39,6 +42,7 @@ import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
+import org.greencubes.swing.DropdownListener;
 import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
@@ -86,7 +90,42 @@ public class LauncherMain {
 					s(this, 98, 95);
 					paddingTop = 15;
 					paddingLeft = 16;
-					// TODO : Add popout panel
+					final JPopupMenu mainPopup = new JPopupMenu();
+					addMouseListener(new DropdownListener(mainPopup, 0, 95));
+					mainPopup.add(new JMenuItem("Test item 1") {{
+						setBackground(new Color(115, 146, 146, 255));
+						setForeground(new Color(192, 228, 232, 255));
+						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setUI(new BasicMenuItemUI() {{
+							selectionBackground = new Color(155, 193, 193, 255);
+							selectionForeground = new Color(236, 255, 255, 255);
+						}});
+						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+					}});
+					mainPopup.add(new JMenuItem("Test item 2") {{
+						setBackground(new Color(115, 146, 146, 255));
+						setForeground(new Color(192, 228, 232, 255));
+						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setUI(new BasicMenuItemUI() {{
+							selectionBackground = new Color(155, 193, 193, 255);
+							selectionForeground = new Color(236, 255, 255, 255);
+						}});
+						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+					}});
+					mainPopup.add(new JMenuItem("Test item 3") {{
+						setBackground(new Color(115, 146, 146, 255));
+						setForeground(new Color(192, 228, 232, 255));
+						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setUI(new BasicMenuItemUI() {{
+							selectionBackground = new Color(155, 193, 193, 255);
+							selectionForeground = new Color(236, 255, 255, 255);
+						}});
+						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+					}});
+					
+					//mainPopup.setBackground(new Color(0, 0, 0, 0));
+					
+					mainPopup.setBorder(GAWTUtil.popupBorder());
 				}});
 				
 				add(new JPanel() {{ // Everything else on top
@@ -219,8 +258,10 @@ public class LauncherMain {
 			frame.setLocation(Main.getConfig().optInt("posx", 0), Main.getConfig().optInt("posy", 0));
 		} else
 			frame.setLocationRelativeTo(null);
-		if(Main.getConfig().optBoolean("maximized"))
-			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		if(Main.getConfig().optBoolean("maximized")) {
+			frame.maximize();
+			frame.setResizable(false);
+		}
 		// Resize and close listeners to save position and size betwen launcher starts
 		innerPanel.addComponentListener(new AbstractComponentListener() {
 			@Override

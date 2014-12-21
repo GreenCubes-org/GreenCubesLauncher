@@ -20,6 +20,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.swing.UIManager;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.greencubes.launcher.LauncherInstanceError;
@@ -49,6 +50,7 @@ public class Main {
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		UIManager.put("PopupMenu.consumeEventOnClose", true);
 		// Check arguments
 		for(String arg : args) {
 			if(arg.equals("-debug"))
