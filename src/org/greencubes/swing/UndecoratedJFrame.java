@@ -1,7 +1,8 @@
 package org.greencubes.swing;
 
 import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
+import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -9,6 +10,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 
+import sun.java2d.SunGraphicsEnvironment;
+
+@SuppressWarnings("restriction")
 public class UndecoratedJFrame extends JFrame {
 	
 	private Point initialClick;
@@ -18,9 +22,9 @@ public class UndecoratedJFrame extends JFrame {
 		super(title);
 		// Hack to use right maximized bound with udecorated window.
 		// Otherwise it will overlap system panel.
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		Rectangle bounds = env.getMaximumWindowBounds();
-		setMaximizedBounds(bounds);
+		GraphicsConfiguration config = getGraphicsConfiguration();
+		Rectangle usableBounds = SunGraphicsEnvironment.getUsableBounds(config.getDevice());
+		setMaximizedBounds(new Rectangle(0, 0, usableBounds.width, usableBounds.height));
 		
 		setUndecorated(true);
 		
@@ -53,6 +57,17 @@ public class UndecoratedJFrame extends JFrame {
 				UndecoratedJFrame.this.setLocation(X, Y);
 			}
 		});
+	}
+	
+	/**
+	 * For right result on multimonitor system you should use this function, not
+	 * {@code setExtendedState(Frame.MAXIMIZED_BOTH)}
+	 */
+	public void maximize() {
+		GraphicsConfiguration config = getGraphicsConfiguration();
+		Rectangle usableBounds = SunGraphicsEnvironment.getUsableBounds(config.getDevice());
+		setMaximizedBounds(new Rectangle(0, 0, usableBounds.width, usableBounds.height));
+		setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
 	
 	@Override

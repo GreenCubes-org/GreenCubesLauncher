@@ -129,7 +129,7 @@ public class LauncherMain {
 										frame.setExtendedState(Frame.NORMAL);
 										frame.setResizable(true);
 									} else {
-										frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+										frame.maximize();
 										frame.setResizable(false);
 									}
 								}
