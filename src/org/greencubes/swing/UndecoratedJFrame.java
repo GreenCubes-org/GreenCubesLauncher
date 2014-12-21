@@ -1,7 +1,9 @@
 package org.greencubes.swing;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -10,21 +12,27 @@ import javax.swing.JFrame;
 public class UndecoratedJFrame extends JFrame {
 	
 	private Point initialClick;
+	private ComponentResizer resizer;
 	
 	public UndecoratedJFrame(String title) {
 		super(title);
+		// Hack to use right maximized bound with udecorated window.
+		// Otherwise it will overlap system panel.
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		Rectangle bounds = env.getMaximumWindowBounds();
+		setMaximizedBounds(bounds);
 		
 		setUndecorated(true);
 		
-		ComponentResizer cr = new ComponentResizer();
-		cr.setSnapSize(new Dimension(10, 10));
-		cr.registerComponent(this);
+		resizer = new ComponentResizer();
+		resizer.setSnapSize(new Dimension(10, 10));
+		resizer.registerComponent(this);
 		
 		addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if(e.isConsumed())
+				if(e.isConsumed() || !resizer.isEnabled())
 					return;
 				initialClick = e.getPoint();
 			}
@@ -34,7 +42,7 @@ public class UndecoratedJFrame extends JFrame {
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if(e.isConsumed())
+				if(e.isConsumed() || !resizer.isEnabled())
 					return;
 				int thisX = UndecoratedJFrame.this.getLocation().x;
 				int thisY = UndecoratedJFrame.this.getLocation().y;
@@ -45,5 +53,15 @@ public class UndecoratedJFrame extends JFrame {
 				UndecoratedJFrame.this.setLocation(X, Y);
 			}
 		});
+	}
+	
+	@Override
+	public void setResizable(boolean resizable) {
+		resizer.setEnabled(resizable);
+	}
+	
+	@Override
+	public boolean isResizable() {
+		return resizer.isEnabled();
 	}
 }

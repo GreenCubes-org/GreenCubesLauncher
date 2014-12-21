@@ -110,10 +110,9 @@ public class Main {
 				LauncherInstanceError.showError();
 				return;
 			}
-		} catch(IOException e) { // Somehow MAC does not supports file locking
+		} catch(IOException e) { // Some systems does not supports file locking
 			if(Main.TEST)
 				e.printStackTrace();
-			//return;
 		}
 		
 		if(LauncherOptions.sessionUser == null && new File("launcher.dat").exists()) {
@@ -151,7 +150,6 @@ public class Main {
 					System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 			}
 		}
-		
 		// Start launcher from updating
 		new LauncherUpdate();
 	}

@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
  *  of the component.
  */
 public class ComponentResizer extends MouseAdapter {
+	
 	private final static Dimension MINIMUM_SIZE = new Dimension(10, 10);
 	private final static Dimension MAXIMUM_SIZE = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
 	
@@ -41,6 +42,7 @@ public class ComponentResizer extends MouseAdapter {
 	private Rectangle bounds;
 	private Point pressed;
 	private boolean autoscrolls;
+	private boolean enabled;
 	
 	private Dimension minimumSize = MINIMUM_SIZE;
 	private Dimension maximumSize = MAXIMUM_SIZE;
@@ -220,28 +222,26 @@ public class ComponentResizer extends MouseAdapter {
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		Component source = e.getComponent();
-		Point location = e.getPoint();
 		direction = 0;
+		Component source = e.getComponent();
+		if(enabled) {
+			Point location = e.getPoint();
+			if(location.x < dragInsets.left)
+				direction += WEST;
+			
+			if(location.x > source.getWidth() - dragInsets.right - 1)
+				direction += EAST;
+			
+			if(location.y < dragInsets.top)
+				direction += NORTH;
+			
+			if(location.y > source.getHeight() - dragInsets.bottom - 1)
+				direction += SOUTH;
+		}
 		
-		if(location.x < dragInsets.left)
-			direction += WEST;
-		
-		if(location.x > source.getWidth() - dragInsets.right - 1)
-			direction += EAST;
-		
-		if(location.y < dragInsets.top)
-			direction += NORTH;
-		
-		if(location.y > source.getHeight() - dragInsets.bottom - 1)
-			direction += SOUTH;
-		
-		//  Mouse is no longer over a resizable border
-		
-		if(direction == 0) {
+		if(direction == 0) { //  Mouse is no longer over a resizable border
 			source.setCursor(sourceCursor);
-		} else // use the appropriate resizable cursor
-		{
+		} else { // use the appropriate resizable cursor
 			int cursorType = cursors.get(direction);
 			Cursor cursor = Cursor.getPredefinedCursor(cursorType);
 			source.setCursor(cursor);
@@ -412,5 +412,13 @@ public class ComponentResizer extends MouseAdapter {
 		} else {
 			return source.getParent().getSize();
 		}
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void setEnabled(boolean enable) {
+		this.enabled = enable;
 	}
 }

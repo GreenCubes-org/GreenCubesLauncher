@@ -1,7 +1,6 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,7 +48,7 @@ import org.json.JSONObject;
 
 public class LauncherMain {
 	
-	private JFrame frame;
+	private UndecoratedJFrame frame;
 	private JPanel mainPanel;
 	private JPanel innerPanel;
 	private JPanel clientPanel;
@@ -70,7 +69,6 @@ public class LauncherMain {
 	public LauncherMain(Window previousFrame) {
 		frame = new UndecoratedJFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
-		frame.setUndecorated(true);
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
 		frame.add(innerPanel = new JPanel() {{
@@ -115,7 +113,7 @@ public class LauncherMain {
 								}
 							});
 						}});
-						/*add(new JPanel() {{ // Maximize button
+						add(new JPanel() {{ // Maximize button
 							s(this, 25, 25);
 							setBackground(new Color(0, 0, 0, 0));
 							add(new JPanelBG("/res/expand.png") {{
@@ -126,15 +124,17 @@ public class LauncherMain {
 								// TODO : Can add cross animation
 								@Override
 								public void mouseClicked(MouseEvent e) {
-									// TODO : Wrong way to maximize and restore
 									int state = frame.getExtendedState();
-									if((state & Frame.MAXIMIZED_BOTH) != 0)
+									if((state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
 										frame.setExtendedState(Frame.NORMAL);
-									else
+										frame.setResizable(true);
+									} else {
 										frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+										frame.setResizable(false);
+									}
 								}
 							});
-						}});*/
+						}});
 						add(new JPanel() {{ // Close button
 							s(this, 25, 25);
 							setBackground(new Color(0, 0, 0, 0));
@@ -219,6 +219,8 @@ public class LauncherMain {
 			frame.setLocation(Main.getConfig().optInt("posx", 0), Main.getConfig().optInt("posy", 0));
 		} else
 			frame.setLocationRelativeTo(null);
+		if(Main.getConfig().optBoolean("maximized"))
+			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		// Resize and close listeners to save position and size betwen launcher starts
 		innerPanel.addComponentListener(new AbstractComponentListener() {
 			@Override
@@ -262,10 +264,14 @@ public class LauncherMain {
 		Rectangle b = frame.getBounds();
 		Rectangle b2 = innerPanel.getBounds();
 		try {
-			config.put("posx", b.x);
-			config.put("posy", b.y);
-			config.put("width", b2.width);
-			config.put("height", b2.height);
+			boolean maximized = (frame.getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH;
+			if(!maximized) { // Update window info only if not maximized
+				config.put("posx", b.x);
+				config.put("posy", b.y);
+				config.put("width", b2.width);
+				config.put("height", b2.height);
+			}
+			config.put("maximized", maximized);
 		} catch(JSONException e) {
 		}
 	}
@@ -485,7 +491,6 @@ public class LauncherMain {
 		 Platform.runLater(new Runnable() {
             @Override 
             public void run() {
- 
                 browser = new WebView();
                 WebEngine engine = browser.getEngine();
                 panel.setScene(new Scene(browser));
