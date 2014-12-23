@@ -79,17 +79,15 @@ public class LauncherMain {
 			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
 			setPreferredSize(d);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(23, 30, 30, 255));
-			setBorder(BorderFactory.createLineBorder(new Color(11, 33, 31, 255), 1));
+			setBackground(new Color(11, 24, 24, 255));
+			//setBorder(BorderFactory.createLineBorder(new Color(11, 33, 31, 255), 1));
 			// Top line
 			add(new JPanel() {{
 				setBackground(new Color(71, 87, 85, 255));
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-					setBackground(new Color(0, 0, 0, 0));
-					s(this, 98, 95);
-					paddingTop = 15;
-					paddingLeft = 16;
+					setBackground(new Color(99, 147, 147, 255));
+					s(this, 96, 96);
 					final JPopupMenu mainPopup = new JPopupMenu();
 					addMouseListener(new DropdownListener(mainPopup, 0, 90));
 					mainPopup.add(new JMenuItem("Test item 1") {{
@@ -126,22 +124,25 @@ public class LauncherMain {
 					mainPopup.setBorder(GAWTUtil.popupBorder());
 				}});
 				
-				add(new JPanel() {{ // Everything else on top
-					setMaximumSize(new Dimension(9999, 95));
-					setOpaque(false);
-					setBackground(new Color(0, 0, 0, 0));
+				add(new JPanelBG("/res/main.top.png") {{ // Everything else on top
+					setMaximumSize(new Dimension(9999, 96));
+					setBackground(new Color(62, 88, 86, 255));
 					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 					add(new JPanel() {{ // Window buttons
 						setBackground(new Color(0, 0, 0, 0));
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						add(Box.createHorizontalGlue());
 						add(new JPanel() {{ // Minimize button
-							s(this, 25, 25);
+							s(this, 30, 30);
 							setBackground(new Color(0, 0, 0, 0));
+							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+							setAlignmentX(JComponent.CENTER_ALIGNMENT);
+							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/minimize.png") {{
 								s(this, 14, 14);
 								setBackground(new Color(0, 0, 0, 0));
 							}});
+							add(Box.createVerticalGlue());
 							addMouseListener(new AbstractMouseListener() {
 								// TODO : Can add cross animation
 								@Override
@@ -151,12 +152,16 @@ public class LauncherMain {
 							});
 						}});
 						add(new JPanel() {{ // Maximize button
-							s(this, 25, 25);
+							s(this, 30, 30);
 							setBackground(new Color(0, 0, 0, 0));
+							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+							setAlignmentX(JComponent.CENTER_ALIGNMENT);
+							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/expand.png") {{
 								s(this, 14, 14);
 								setBackground(new Color(0, 0, 0, 0));
 							}});
+							add(Box.createVerticalGlue());
 							addMouseListener(new AbstractMouseListener() {
 								// TODO : Can add cross animation
 								@Override
@@ -173,20 +178,16 @@ public class LauncherMain {
 							});
 						}});
 						add(new JPanel() {{ // Close button
-							s(this, 25, 25);
+							s(this, 30, 30);
 							setBackground(new Color(0, 0, 0, 0));
+							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+							setAlignmentX(JComponent.CENTER_ALIGNMENT);
+							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/cross.png") {{
 								s(this, 14, 14);
 								setBackground(new Color(0, 0, 0, 0));
-								addMouseListener(new AbstractMouseListener() {
-									// TODO : Can add cross animation
-									@Override
-									public void mouseClicked(MouseEvent e) {
-										frame.dispose();
-										Main.close();
-									}
-								});
 							}});
+							add(Box.createVerticalGlue());
 							addMouseListener(new AbstractMouseListener() {
 								// TODO : Can add cross animation
 								@Override
@@ -204,37 +205,33 @@ public class LauncherMain {
 						setBackground(new Color(0, 0, 0, 0));
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						add(new JLabel() {{
-							//setOpaque(false);
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
-							setForeground(new Color(126, 209, 218, 255));
+							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.game"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
-							//setOpaque(false);
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
-							setForeground(new Color(126, 209, 218, 255));
+							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.shop"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
-							//setOpaque(false);
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
-							setForeground(new Color(126, 209, 218, 255));
+							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.updates"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
-							//setOpaque(false);
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setBackground(Util.debugColor());
-							setForeground(new Color(126, 209, 218, 255));
+							setForeground(new Color(176, 230, 238, 255));
 							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -318,20 +315,20 @@ public class LauncherMain {
 	//@formatter:off
 	private void displayPlayPanel() {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
-		mainPanel.add(new JPanel() {{
+		mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
 			//setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(46, 54, 54, 255));
+			setBackground(new Color(38, 51, 51, 255));
 			add(new JPanel() {{
-				s(this, 1, 1);
+				s(this, 1, 24);
 				setBackground(new Color(0, 0, 0, 0));
 			}});
 			add(new JPanel() {{ // New client button
 				//setOpaque(false);
-				s(this, 95, 95);
+				s(this, 96, 96);
 				setBackground(new Color(0, 0, 0, 0));
 				add(new JPanel() {{ // Inner
-					s(this, 95, 95);
+					s(this, 96, 96);
 					setOpaque(false);
 					setBackground(new Color(0, 0, 0, 0));
 					add(new JPanelBG("/res/main.oldclient.logo.png") {{
@@ -342,7 +339,7 @@ public class LauncherMain {
 						setOpaque(false);
 						setAlignmentX(JLabel.CENTER_ALIGNMENT);
 						setBackground(new Color(0, 0, 0, 100));
-						setForeground(new Color(126, 209, 218, 255));
+						setForeground(new Color(176, 230, 238, 255));
 						setText(I18n.get("client.main.name"));
 						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -353,13 +350,13 @@ public class LauncherMain {
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseEntered(MouseEvent e) {
-						it.setBackground(new Color(96, 122, 122, 255));
+						it.setBackground(new Color(82, 123, 123, 255));
 						it.revalidate();
 					}
 					
 					@Override
 					public void mouseExited(MouseEvent e) {
-						it.setBackground(new Color(46, 54, 54, 255));
+						it.setBackground(new Color(38, 51, 51, 255));
 						it.revalidate();
 					}
 				});
@@ -432,7 +429,7 @@ public class LauncherMain {
 						setBackground(Util.debugColor());
 						setAlignmentX(JLabel.RIGHT_ALIGNMENT);
 						setAlignmentY(JLabel.CENTER_ALIGNMENT);
-						setForeground(new Color(192, 229, 237, 255));
+						setForeground(new Color(176, 230, 238, 255));
 						setText(currentClient.getStatus().getStatusTitle());
 						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -441,12 +438,12 @@ public class LauncherMain {
 					add(new JPanel() {{
 						s(this, 272, 66);
 						setBorder(new RoundedCornerBorder(new Color(23, 30, 30, 255), null, 4));
-						setBackground(new Color(116, 147, 147, 255));
+						setBackground(new Color(100, 148, 148, 255));
 						setLayout(new GridBagLayout());
 						add(clientButtonText = new JLabel() {{
 							setOpaque(false);
 							setAlignmentX(JLabel.CENTER_ALIGNMENT);
-							setForeground(new Color(236, 255, 255, 255));
+							setForeground(new Color(229, 255, 255, 255));
 							Status s = currentClient.getStatus().getStatus();
 							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName).toUpperCase());
 							setFont(new Font("Lato", Font.BOLD, 36));
@@ -505,16 +502,16 @@ public class LauncherMain {
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
 						s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
-						setBackground(new Color(68, 84, 83, 255));
-						setBorder(new RoundedCornerBorder(new Color(23, 30, 30, 255), new Color(111, 134, 138, 255), 4));
+						setBackground(new Color(57, 83, 82, 255));
+						setBorder(new RoundedCornerBorder(new Color(11, 24, 24, 255), new Color(98, 131, 135, 255), 4));
 						add(new JPanel() {{
 							s(this, 1, 1);
 							setBackground(new Color(0, 0, 0, 0));
 						}});
 						add(progressBar = new JPanel() {{
-							setBackground(new Color(192, 229, 237, 255));
+							setBackground(new Color(176, 230, 238, 255));
 							s(this, 18, 18);
-							setBorder(new RoundedCornerBorder(new Color(68, 84, 83, 255), null, 4));
+							setBorder(new RoundedCornerBorder(new Color(57, 83, 82, 255), null, 4));
 						}});
 						
 					}});
