@@ -36,7 +36,7 @@ public class GAWTUtil {
 	}
 	
 	public static Border popupBorder() {
-		return new EmptyBorder(new Insets(16, 11, 11, 11)) {
+		return new EmptyBorder(new Insets(23, 13, 13, 13)) {
 			Image icon;
 			{
 				try {
@@ -50,18 +50,41 @@ public class GAWTUtil {
 				g.translate(x, y);
 				
 				// Top-left
-				g.drawImage(icon, 0, 0, 11, 16, 0, 0, 11, 16, c);
+				g.drawImage(icon, 0, 10, 13, 10 + 13, 1, 11, 14, 24, c);
 				// Top-left padding
-				g.drawImage(icon, 11, 0, 11 + 16, 16, 37, 16, 38, 27, c);
-				
-				g.drawImage(icon, 11 + 16, 0, 11 + 16 + 39, 16, 11, 0, 50, 16, c);
-				
-				g.drawImage(icon, 11 + 16 + 39, 0, width - 11, 16, 37, 16, 38, 27, c);
+				g.drawImage(icon, 13, 10, 13 + 7, 10 + 13, 15, 11, 15 + 7, 11 + 13, c);
+				g.drawImage(icon, 13 + 7, 10, 13 + 7 + 7, 10 + 13, 23, 11, 23 + 1, 11 + 13, c);
+				// Pimpochka
+				g.drawImage(icon, 13 + 7 + 7, 0, 13 + 7 + 7 + 38, 23, 25, 1, 25 + 38, 1 + 23, c);
 				
 				// Top-right
-				g.drawImage(icon, width - 11, 0, width, 16, 0, 33, 11, 44, c);
+				g.drawImage(icon, width - 13, 10, width, 10 + 13, 74, 11, 74 + 13, 11 + 13, c);
+				// Top-right padding
+				g.drawImage(icon, width - 13 - 7, 10, width - 13, 10 + 13, 66, 11, 66 + 7, 11 + 13, c);
+				// Top
+				g.drawImage(icon, 13 + 7 + 7 + 38, 10, width - 13 - 7, 10 + 13, 64, 11, 64 + 1, 11 + 13, c);
+				// Right-top padding
+				g.drawImage(icon, width - 13, 23, width, 23 + 7, 74, 25, 74 + 13, 25 + 7, c);
 				// Right
-				g.drawImage(icon, width - 11, 16, width, height - 16 - 11, 39, 17, 50, 18, c);
+				g.drawImage(icon, width - 13, 23 + 7, width, height - 13 - 7, 74, 33, 74 + 13, 33 + 1, c);
+				// Right-bottom padding
+				g.drawImage(icon, width - 13, height - 13 - 7, width, height - 13, 74, 35, 74 + 13, 35 + 7, c);
+				// Right-bottom
+				g.drawImage(icon, width - 13, height - 13, width, height, 74, 43, 74 + 13, 43 + 13, c);
+				// Bottom-right padding
+				g.drawImage(icon, width - 13 - 7, height - 13, width - 13, height, 66, 43, 66 + 7, 43 + 13, c);
+				// Bottom
+				g.drawImage(icon, 13 + 7, height - 13, width - 13 - 7, height, 23, 43, 23 + 1, 43 + 13, c);
+				// Bottom-left padding
+				g.drawImage(icon, 13, height - 13, 13 + 7, height, 15, 43, 15 + 7, 43 + 13, c);
+				// Bottom-left
+				g.drawImage(icon, 0, height - 13, 13, height, 1, 43, 1 + 13, 43 + 13, c);
+				// Left-bottom padding
+				g.drawImage(icon, 0, height - 13 - 7, 13, height - 13, 1, 35, 1 + 13, 35 + 7, c);
+				// Left
+				g.drawImage(icon, 0, 10 + 13 + 7, 13, height - 13 - 7, 1, 33, 1 + 13, 33 + 1, c);
+				// Left-top padding
+				g.drawImage(icon, 0, 10 + 13, 13, 10 + 13 + 7, 1, 25, 1 + 13, 25 + 7, c);
 			}
 
 			@Override
