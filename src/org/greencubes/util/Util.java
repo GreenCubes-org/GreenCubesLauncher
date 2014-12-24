@@ -31,8 +31,12 @@ import sun.misc.Unsafe;
 @SuppressWarnings("restriction")
 public final class Util {
 	
+	/**
+	 * Пожалуйста, не трогайте Unsafe если вы не точно знаете что делать.
+	 * @return
+	 */
 	private static Unsafe unsafe;
-	
+
 	static {
 		Field f;
 		try {
@@ -50,6 +54,10 @@ public final class Util {
 	public static final DateFormat fileDateFormat = new SynchronizedDateFormat(new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss"));
 	public static final String[] emptyStringArray = new String[]{};
 	
+	/**
+	 * Пожалуйста, не трогайте Unsafe если вы не точно знаете что делать.
+	 * @return
+	 */
 	public static final Unsafe getUnsafe() {
 		return unsafe;
 	}

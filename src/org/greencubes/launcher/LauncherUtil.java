@@ -30,7 +30,7 @@ public class LauncherUtil {
 	public static JSONObject sessionRequest(String args) throws IOException, AuthError {
 		JSONObject answer;
 		do {
-			String read = LauncherOptions.getDownloader().readURL("login/login.php?user=" + LauncherOptions.sessionUserId + "&session=" + Util.urlEncode(LauncherOptions.sessionId) + "&" + args);
+			String read = LauncherOptions.getDownloader().readURL("login.php?user=" + LauncherOptions.sessionUserId + "&session=" + Util.urlEncode(LauncherOptions.sessionId) + "&" + args);
 			try {
 				answer = new JSONObject(read);
 			} catch(JSONException e) {

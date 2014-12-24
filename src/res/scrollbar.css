@@ -1,0 +1,47 @@
+.scroll-bar{
+    -fx-background-color: rgb(11, 24, 24);
+    -fx-background-radius: 0em;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-background-color: rgb(11, 24, 24);
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+.scroll-bar:vertical .track-background,
+.scroll-bar:horizontal .track-background {
+    -fx-background-color: rgb(11, 24, 24);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0em;
+}
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: rgb(62, 88, 86);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0em;
+}
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgb(62, 88, 86);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
+    visibility: hidden;
+    -fx-background-color: rgb(11, 24, 24);
+}
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+    visibility: hidden;
+    -fx-background-color: rgb(11, 24, 24);
+}
+.scroll-bar:horizontal .increment-arrow {
+    visibility: hidden;
+}
+.scroll-bar:vertical .increment-arrow {
+    visibility: hidden;
+}
+.scroll-bar:horizontal .decrement-arrow {
+    visibility: hidden;
+}
+.scroll-bar:vertical .decrement-arrow {
+    visibility: hidden;
+}

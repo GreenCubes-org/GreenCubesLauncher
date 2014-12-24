@@ -79,7 +79,7 @@ public class LauncherOptions {
 	private static Downloader newDownloader() {
 		Downloader downloader;
 		if(Main.TEST) {
-			downloader = new Downloader("https://greencubes.org/"); // For test purposes
+			downloader = new Downloader("https://greencubes.org/login/"); // For test purposes
 		} else {
 			downloader = new Downloader("https://auth.greencubes.org/");
 			downloader.addServer("https://auth1.greencubes.org/");
@@ -89,8 +89,7 @@ public class LauncherOptions {
 	
 	private static Downloader newClientDownloader() {
 		Downloader downloader;
-		downloader = new Downloader("https://auth.greencubes.org/");
-		downloader.addServer("https://auth1.greencubes.org/");
+		downloader = new Downloader("https://greencubes.org/login/");
 		return downloader;
 	}
 	
@@ -123,7 +122,7 @@ public class LauncherOptions {
 	}
 	
 	public static void auth(String userName, char[] password) throws IOException, AuthError {
-		String answer = getDownloader().readURL(new StringBuilder().append("login/login.php?user=").append(userName).append("&password=").append(Util.urlEncode(new String(password))).toString());
+		String answer = getDownloader().readURL(new StringBuilder().append("login.php?user=").append(userName).append("&password=").append(Util.urlEncode(new String(password))).toString());
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);
@@ -153,7 +152,7 @@ public class LauncherOptions {
 				for(int i = 0; i < 128; ++i)
 					sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
 				try {
-					getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)) + "&drop=1");
+					getDownloader().readURL("login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)) + "&drop=1");
 					// We are not so interested in answer
 				} catch(IOException e) {}
 			}
@@ -185,7 +184,7 @@ public class LauncherOptions {
 		byte[] sessionKey = new byte[128];
 		for(int i = 0; i < 128; ++i)
 			sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
-		String answer = getDownloader().readURL("login/login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)));
+		String answer = getDownloader().readURL("login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)));
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);

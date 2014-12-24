@@ -129,7 +129,7 @@ public class LauncherMain {
 					setBackground(new Color(62, 88, 86, 255));
 					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 					add(new JPanel() {{ // Window buttons
-						setBackground(new Color(0, 0, 0, 0));
+						setOpaque(false);
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						add(Box.createHorizontalGlue());
 						add(new JPanel() {{ // Minimize button
@@ -186,6 +186,14 @@ public class LauncherMain {
 							add(new JPanelBG("/res/cross.png") {{
 								s(this, 14, 14);
 								setBackground(new Color(0, 0, 0, 0));
+								addMouseListener(new AbstractMouseListener() {
+									// TODO : Can add cross animation
+									@Override
+									public void mouseClicked(MouseEvent e) {
+										frame.dispose();
+										Main.close();
+									}
+								});
 							}});
 							add(Box.createVerticalGlue());
 							addMouseListener(new AbstractMouseListener() {
@@ -202,11 +210,10 @@ public class LauncherMain {
 					add(Box.createVerticalGlue());
 					
 					add(new JPanel() {{
-						setBackground(new Color(0, 0, 0, 0));
+						setOpaque(false);
 						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setBackground(Util.debugColor());
 							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.game"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
@@ -214,7 +221,6 @@ public class LauncherMain {
 						}});
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setBackground(Util.debugColor());
 							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.shop"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
@@ -222,7 +228,6 @@ public class LauncherMain {
 						}});
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setBackground(Util.debugColor());
 							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.updates"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
@@ -230,7 +235,6 @@ public class LauncherMain {
 						}});
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setBackground(Util.debugColor());
 							setForeground(new Color(176, 230, 238, 255));
 							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
 							setFont(new Font("Lato", Font.PLAIN, 24));
@@ -242,7 +246,6 @@ public class LauncherMain {
 			}});
 			add(mainPanel = new JPanel() {{
 				setOpaque(false);
-				setBackground(new Color(0, 0, 0, 0));
 				setMaximumSize(new Dimension(9999, 9999));
 			}});
 		}});
@@ -324,13 +327,11 @@ public class LauncherMain {
 				setBackground(new Color(0, 0, 0, 0));
 			}});
 			add(new JPanel() {{ // New client button
-				//setOpaque(false);
 				s(this, 96, 96);
-				setBackground(new Color(0, 0, 0, 0));
+				setBackground(new Color(38, 51, 51, 255));
 				add(new JPanel() {{ // Inner
 					s(this, 96, 96);
 					setOpaque(false);
-					setBackground(new Color(0, 0, 0, 0));
 					add(new JPanelBG("/res/main.oldclient.logo.png") {{
 						s(this, 48, 48);
 					}});
@@ -389,11 +390,20 @@ public class LauncherMain {
 			clientPanel.add(new JPanel() {{
 				setOpaque(false);
 				setLayout(new GridBagLayout());
-				JFXPanel browserPanel = new JFXPanel();
+				final JFXPanel browserPanel = new JFXPanel();
 				add(browserPanel, new GridBagConstraints() {{
+					gridx = 0;
+					gridy = 0;
 					weightx = 1;
 					weighty = 1;
 					fill = GridBagConstraints.BOTH;
+				}});
+				add(new JPanel() {{
+					s(this, 4, 4);
+					setBackground(new Color(11, 24, 24, 255));
+				}}, new GridBagConstraints() {{
+					gridx = 1;
+					gridy = 0;
 				}});
 				openClientBrowser(currentClient, browserPanel);
 			}});
@@ -529,7 +539,10 @@ public class LauncherMain {
             public void run() {
                 browser = new WebView();
                 WebEngine engine = browser.getEngine();
-                panel.setScene(new Scene(browser));
+                //engine.setUserStyleSheetLocation(LauncherMain.class.getResource("/res/css.css").toExternalForm());
+                Scene sc = new Scene(browser);
+                sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
+                panel.setScene(sc);
                 client.openBrowserPage(engine);
             }
         });

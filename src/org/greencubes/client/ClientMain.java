@@ -2,6 +2,7 @@ package org.greencubes.client;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,10 @@ import org.greencubes.main.Main;
 import org.greencubes.util.I18n;
 import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class ClientMain extends Client {
 	
@@ -41,6 +45,8 @@ public class ClientMain extends Client {
 	private int filesDownloaded = 0;
 	private long bytesDownloaded = 0;
 	private ProcessMonitorThread processMonitor;
+	private JSONObject currentVersion;
+	private JSONObject remoteVersion;
 	
 	public ClientMain(String name, String localizedName) {
 		super(name, localizedName);
@@ -172,53 +178,65 @@ public class ClientMain extends Client {
 		Map<String, byte[]> localHashes = new HashMap<String, byte[]>();
 		List<String> remoteFiles = new ArrayList<String>();
 		List<GameFile> newGameFiles = new ArrayList<GameFile>();
-		
-		Scanner s = null;
+		FileReader fr = null;
 		try {
-			s = new Scanner(new File(workingDirectory, "version.md5"));
-			while(s.hasNextLine()) {
-				String line = s.nextLine();
-				if(line.startsWith("#"))
-					continue;
-				String[] split = line.split(";");
-				if(split.length < 2)
-					continue;
-				if(split.length == 2)
-					localHashes.put(split[0], Util.hexStringToByteArray(split[1]));
-				else
-					localHashes.put(Util.join(split, ";", 0, split.length - 2), Util.hexStringToByteArray(split[split.length - 1]));
-			}
+			fr = new FileReader(new File("version.js"));
 		} catch(IOException e) {
-			
-		} finally {
-			Util.close(s);
 		}
+		JSONObject localVersion = null;
+		if(fr == null) {
+			localVersion = new JSONObject();
+		} else {
+			try {
+				localVersion = new JSONObject(new JSONTokener(fr));
+			} catch(JSONException e) {
+				localVersion = new JSONObject();
+			} finally {
+				Util.close(fr);
+			}
+		}
+		currentVersion = localVersion;
+		JSONArray hashesArray = localVersion.optJSONArray("files");
+		if(hashesArray != null)
+			for(int i = 0; i < hashesArray.length(); ++i) {
+				JSONObject fileObject = hashesArray.optJSONObject(i);
+				if(fileObject != null)
+					localHashes.put(fileObject.optString("name"), Util.hexStringToByteArray(fileObject.optString("hash")));
+			}
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("mc/vc/greencubes/version.md5"));
+			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("files/main/version.js"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
 		}
-		for(String line : serverHash.split("\n")) {
-			if(line.startsWith("#"))
-				continue;
-			String[] split = line.split(";");
-			if(split.length < 2)
-				continue;
-			String name;
-			byte[] hash;
-			if(split.length == 2) {
-				name = split[0];
-				hash = Util.hexStringToByteArray(split[1]);
-			} else {
-				name = Util.join(split, ";", 0, split.length - 2);
-				hash = Util.hexStringToByteArray(split[split.length - 1]);
+		JSONObject remoteVersion;
+		try {
+			remoteVersion = new JSONObject(serverHash);
+		} catch(JSONException e) {
+			status(Status.ERROR, e.getLocalizedMessage(), -1f);
+			return;
+		}
+		this.remoteVersion = remoteVersion;
+		hashesArray = remoteVersion.optJSONArray("files");
+		if(hashesArray == null) {
+			status(Status.ERROR, I18n.get("Ошибка обновления #1"), -1f);
+			return;
+		}
+		
+		for(int i = 0; i < hashesArray.length(); ++i) {
+			JSONObject fileObject = hashesArray.optJSONObject(i);
+			if(fileObject == null) {
+				status(Status.ERROR, I18n.get("Ошибка обновления #2 (" + i + ")"), -1f);
+				return;
 			}
+			byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
+			String name = fileObject.optString("name");
 			GameFile file = new GameFile(new File(workingDirectory, name), name, localHashes.get(name), hash);
 			if(file.needUpdate)
 				needUpdate = true;
+			file.remoteFileSize = fileObject.optInt("length", -1);
 			newGameFiles.add(file);
 			remoteFiles.add(name);
 		}
@@ -241,12 +259,10 @@ public class ClientMain extends Client {
 		for(int i = 0; i < gameFiles.size(); ++i) {
 			GameFile gf = gameFiles.get(i);
 			if(gf.remotemd5 != null && gf.needUpdate) {
-				try {
-					gf.remoteFileSize = LauncherOptions.getClientDownloder(ClientMain.this).getFileSize(Util.urlEncode("mc/vc/greencubes/" + gf.remoteFileUrl));
-					bytesToDownload += gf.remoteFileSize;
-				} catch(IOException e) {
+				if(gf.remoteFileSize < 0) {
 					isEstimate = true;
-					gf.remoteFileSize = -1;
+				} else {
+					bytesToDownload += gf.remoteFileSize;
 				}
 				filesToDownload++;
 			}
@@ -268,22 +284,27 @@ public class ClientMain extends Client {
 				status(Status.NEED_UPDATE, I18n.get("Готово к установке"), 0f);
 			return;
 		}
+		currentVersion = remoteVersion;
+		remoteVersion = null;
 		FileWriter fw = null;
 		try {
-			fw = new FileWriter(new File(workingDirectory, "version.md5"));
+			JSONArray newFilesList = new JSONArray();
 			for(int i = 0; i < gameFiles.size(); ++i) {
 				GameFile gf = gameFiles.get(i);
 				if(gf.remoteFileUrl != null) {
+					JSONObject fileObject = new JSONObject();
 					String name = Util.getRelativePath(workingDirectory, gf.localFile);
-					fw.write(name);
-					fw.write(';');
-					fw.write(Util.byteArrayToHex(gf.localmd5));
-					fw.write('\n');
+					fileObject.put("name", name);
+					fileObject.put("hash", Util.byteArrayToHex(gf.localmd5));
+					newFilesList.put(fileObject);
 				}
 			}
-			fw.close();
-		} catch(IOException e) {
-			status(Status.ERROR, I18n.get("Ошибка записи"), -1f);
+			currentVersion.put("files", newFilesList);
+			fw = new FileWriter(new File("version.js"));
+			currentVersion.writeWithIdent(fw);
+		} catch(Exception e) {
+			if(Main.TEST)
+				e.printStackTrace();
 		} finally {
 			Util.close(fw);
 		}
@@ -437,7 +458,7 @@ public class ClientMain extends Client {
 							repeats = 0;
 							while(true) {
 								try {
-									d.downloadFile(gf.localFile, Util.urlEncode("mc/vc/greencubes/" + gf.remoteFileUrl));
+									d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
 									gf.needUpdate = false;
 									gf.localmd5 = Util.createChecksum(gf.localFile);
 									filesDownloaded++;
