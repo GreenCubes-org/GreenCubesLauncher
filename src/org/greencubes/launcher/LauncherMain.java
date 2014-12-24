@@ -89,7 +89,7 @@ public class LauncherMain {
 					setBackground(new Color(99, 147, 147, 255));
 					s(this, 96, 96);
 					final JPopupMenu mainPopup = new JPopupMenu();
-					addMouseListener(new DropdownListener(mainPopup, 0, 90));
+					addMouseListener(new DropdownListener(mainPopup, 0, 89, 200L, 0, 0));
 					mainPopup.add(new JMenuItem("Test item 1") {{
 						setBackground(new Color(115, 146, 146, 255));
 						setForeground(new Color(192, 228, 232, 255));
@@ -122,6 +122,7 @@ public class LauncherMain {
 					}});
 					mainPopup.setOpaque(false);
 					mainPopup.setBorder(GAWTUtil.popupBorder());
+					mainPopup.validate();
 				}});
 				
 				add(new JPanelBG("/res/main.top.png") {{ // Everything else on top
