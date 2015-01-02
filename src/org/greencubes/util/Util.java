@@ -33,7 +33,6 @@ public final class Util {
 	
 	/**
 	 * Пожалуйста, не трогайте Unsafe если вы не точно знаете что делать.
-	 * @return
 	 */
 	private static Unsafe unsafe;
 
@@ -56,7 +55,6 @@ public final class Util {
 	
 	/**
 	 * Пожалуйста, не трогайте Unsafe если вы не точно знаете что делать.
-	 * @return
 	 */
 	public static final Unsafe getUnsafe() {
 		return unsafe;

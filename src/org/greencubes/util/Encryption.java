@@ -7,6 +7,7 @@ import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.engines.BlowfishEngine;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.util.Arrays;
 import org.greencubes.main.Main;
 
 public class Encryption {
@@ -79,16 +80,17 @@ public class Encryption {
 	
 	/**
 	 * Compute recursive sha1 hash
-	 * @param data - data to hash
+	 * @param data - data to hash (array will be truncated!)
 	 * @param count - number of sha1 repeats
-	 * @return result of applying <i>count</i> of sha1 functions
-	 * to <i>data</i>. 40 bytes exactly.
+	 * @return result of applying <i>count</i> of sha-384 functions
+	 * to <i>data</i>. 48 bytes exactly.
 	 */
-	public static byte[] multiSha1(byte[] data, int count) {
+	public static byte[] secureMultiSha384(byte[] data, int count) {
 		try {
-			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
+			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-384");
 			for(int i = 0; i < count; ++i) {
 				digest.update(data);
+				Arrays.fill(data, (byte) 0);
 				data = digest.digest();
 				digest.reset();
 			}
@@ -101,14 +103,15 @@ public class Encryption {
 	
 	/**
 	 * Compute recursive sha1 hash
-	 * @param data - data to hash
-	 * @return result of applying sha1 function
-	 * to <i>data</i>. 40 bytes exactly.
+	 * @param data - data to hash (array will be truncated!)
+	 * @return result of applying sha-384 function
+	 * to <i>data</i>. 48 bytes exactly.
 	 */
-	public static byte[] sha1(byte[] data) {
+	public static byte[] secureSha384(byte[] data) {
 		try {
-			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-1");
+			MessageDigest digest = java.security.MessageDigest.getInstance("SHA-384");
 			digest.update(data);
+			Arrays.fill(data, (byte) 0);
 			return digest.digest();
 		} catch(NoSuchAlgorithmException e) {
 			throwMajicError();

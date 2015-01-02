@@ -231,12 +231,9 @@ public class ClientMain extends Client {
 				status(Status.ERROR, I18n.get("Ошибка обновления #2 (" + i + ")"), -1f);
 				return;
 			}
-			byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
-			String name = fileObject.optString("name");
-			GameFile file = new GameFile(new File(workingDirectory, name), name, localHashes.get(name), hash);
+			GameFile file = GameFile.getFile(fileObject, workingDirectory, localHashes);
 			if(file.needUpdate)
 				needUpdate = true;
-			file.remoteFileSize = fileObject.optInt("length", -1);
 			newGameFiles.add(file);
 			remoteFiles.add(name);
 		}
@@ -292,10 +289,7 @@ public class ClientMain extends Client {
 			for(int i = 0; i < gameFiles.size(); ++i) {
 				GameFile gf = gameFiles.get(i);
 				if(gf.remoteFileUrl != null) {
-					JSONObject fileObject = new JSONObject();
-					String name = Util.getRelativePath(workingDirectory, gf.localFile);
-					fileObject.put("name", name);
-					fileObject.put("hash", Util.byteArrayToHex(gf.localmd5));
+					JSONObject fileObject = gf.getJSONObject(workingDirectory);
 					newFilesList.put(fileObject);
 				}
 			}
@@ -458,9 +452,10 @@ public class ClientMain extends Client {
 							repeats = 0;
 							while(true) {
 								try {
-									d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
-									gf.needUpdate = false;
-									gf.localmd5 = Util.createChecksum(gf.localFile);
+									gf.downloadFile(d, "files/main/");
+									//d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
+									//gf.needUpdate = false;
+									//gf.localmd5 = Util.createChecksum(gf.localFile);
 									filesDownloaded++;
 									bytesDownloaded += d.bytesDownloaded;
 									break;

@@ -2,9 +2,13 @@ package org.greencubes.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.bouncycastle.util.Arrays;
+import org.greencubes.download.Downloader;
 import org.greencubes.util.Util;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class GameFile {
 	
@@ -41,5 +45,27 @@ public class GameFile {
 	@Override
 	public String toString() {
 		return remoteFileUrl;
+	}
+	
+	public JSONObject getJSONObject(File baseDirectory) throws JSONException {
+		JSONObject fileObject = new JSONObject();
+		String name = Util.getRelativePath(baseDirectory, localFile);
+		fileObject.put("name", name);
+		fileObject.put("hash", Util.byteArrayToHex(localmd5));
+		return fileObject;
+	}
+	
+	public void downloadFile(Downloader downloader, String prefix) throws IOException {
+		downloader.downloadFile(localFile, Util.urlEncode(prefix + remoteFileUrl));
+		localmd5 = Util.createChecksum(localFile);
+		needUpdate = false;
+	}
+	
+	public static GameFile getFile(JSONObject fileObject, File baseDirectory, Map<String, byte[]> localHashes) {
+		byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
+		String name = fileObject.optString("name");
+		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes.get(name), hash);
+		file.remoteFileSize = fileObject.optInt("length", -1);
+		return file;
 	}
 }
