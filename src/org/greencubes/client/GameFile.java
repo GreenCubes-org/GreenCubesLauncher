@@ -47,6 +47,20 @@ public class GameFile {
 		return remoteFileUrl;
 	}
 	
+	@Override
+	public int hashCode() {
+		return localFile.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o == this)
+			return true;
+		if(o == null || !(o instanceof GameFile))
+			return false;
+		return ((GameFile) o).localFile.equals(this.localFile);
+	}
+	
 	public JSONObject getJSONObject(File baseDirectory) throws JSONException {
 		JSONObject fileObject = new JSONObject();
 		String name = Util.getRelativePath(baseDirectory, localFile);

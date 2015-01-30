@@ -235,7 +235,7 @@ public class ClientMain extends Client {
 			if(file.needUpdate)
 				needUpdate = true;
 			newGameFiles.add(file);
-			remoteFiles.add(name);
+			remoteFiles.add(fileObject.optString("name"));
 		}
 		Iterator<Entry<String, byte[]>> oldFilesIterator = localHashes.entrySet().iterator();
 		while(oldFilesIterator.hasNext()) {
@@ -247,6 +247,7 @@ public class ClientMain extends Client {
 		}
 		gameFiles.clear();
 		gameFiles.addAll(newGameFiles);
+		assert checkGameFilesCorrectness();
 		if(needUpdate)
 			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), 0f);
 		// Fetch file sizes
@@ -272,6 +273,24 @@ public class ClientMain extends Client {
 		}
 	}
 	
+	/**
+	 * Test. Check if some files are present two or more times in game files list
+	 * @return
+	 */
+	private boolean checkGameFilesCorrectness() {
+		for(int i = 0; i < gameFiles.size(); ++i) {
+			GameFile f1 = gameFiles.get(i);
+			for(int i1 = 0; i1 < gameFiles.size(); ++i1) {
+				if(i != i1) {
+					GameFile f2 = gameFiles.get(i1);
+					if(f2.equals(f1))
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	private void updateVersionFile() {
 		File workingDirectory = getWorkingDirectory();
 		if(!workingDirectory.exists()) {
@@ -295,7 +314,7 @@ public class ClientMain extends Client {
 			}
 			currentVersion.put("files", newFilesList);
 			fw = new FileWriter(new File("version.js"));
-			currentVersion.writeWithIdent(fw);
+			currentVersion.write(fw);
 		} catch(Exception e) {
 			if(Main.TEST)
 				e.printStackTrace();
@@ -351,7 +370,7 @@ public class ClientMain extends Client {
 							cp.append(new File(getWorkingDirectory(), "libraries/" + classPath.get(i)).getAbsolutePath());
 							cp.append(System.getProperty("path.separator"));
 						}
-						cp.append("client.jar");
+						cp.append("client.jr");
 						command.add(cp.toString());
 						command.add("org.greencubes.client.Main");
 						JSONObject jo;
