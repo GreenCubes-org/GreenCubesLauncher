@@ -43,6 +43,7 @@
 "client.status.abort": "ПРЕРВАТЬ",
 "client.status.loading": "Загрузка",
 "client.status.running": "Запущено",
+"client.status.error": "Ошибка",
 
 "main.online": "Онлайн",
 "main.offline": "Оффлайн",

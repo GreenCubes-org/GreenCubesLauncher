@@ -143,7 +143,7 @@ public class Main {
 			}
 		}
 		// Apply config
-		if(config.optBoolean("debug"))
+		if(config.optBoolean("debug") || TEST)
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);
@@ -153,9 +153,11 @@ public class Main {
 			File f = new File(classPath);
 			if(!f.exists()) {
 				LauncherOptions.noUpdateLauncher = true;
+				if(LauncherOptions.debug)
+					System.out.println("Update declined, launching not from jar");
 			} else {
 				launcherFile = f.getAbsoluteFile();
-				if(LauncherOptions.debug || Main.TEST)
+				if(LauncherOptions.debug)
 					System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 			}
 		}

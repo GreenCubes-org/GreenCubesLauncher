@@ -180,7 +180,7 @@ public class ClientMain extends Client {
 		List<GameFile> newGameFiles = new ArrayList<GameFile>();
 		FileReader fr = null;
 		try {
-			fr = new FileReader(new File("version.js"));
+			fr = new FileReader(new File("version.json"));
 		} catch(IOException e) {
 		}
 		JSONObject localVersion = null;
@@ -206,7 +206,7 @@ public class ClientMain extends Client {
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("files/main/version.js"));
+			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("files/main/version.json"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
@@ -313,7 +313,7 @@ public class ClientMain extends Client {
 				}
 			}
 			currentVersion.put("files", newFilesList);
-			fw = new FileWriter(new File("version.js"));
+			fw = new FileWriter(new File("version.json"));
 			currentVersion.write(fw);
 		} catch(Exception e) {
 			if(Main.TEST)
@@ -370,7 +370,7 @@ public class ClientMain extends Client {
 							cp.append(new File(getWorkingDirectory(), "libraries/" + classPath.get(i)).getAbsolutePath());
 							cp.append(System.getProperty("path.separator"));
 						}
-						cp.append("client.jr");
+						cp.append("client.jar");
 						command.add(cp.toString());
 						command.add("org.greencubes.client.Main");
 						JSONObject jo;
@@ -384,7 +384,8 @@ public class ClientMain extends Client {
 						ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 						pb.directory(getWorkingDirectory());
 						try {
-							System.err.println("Starting client with " + Util.toString(command));
+							if(LauncherOptions.debug)
+								System.err.println("Starting client with " + Util.toString(command));
 							Process p = pb.start();
 							processMonitor = new ProcessMonitorThread(p);
 							processMonitor.start();
