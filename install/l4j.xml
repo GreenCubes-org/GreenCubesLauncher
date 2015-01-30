@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>start.jar</jar>
-  <outfile>C:\_Greencubes\_LAUNCHER\new\build\start.exe</outfile>
+  <jar>greencubes.jar</jar>
+  <outfile>C:\_Greencubes\_LAUNCHER\new\build\greencubes.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

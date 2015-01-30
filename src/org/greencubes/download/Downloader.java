@@ -2,6 +2,7 @@ package org.greencubes.download;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,54 +14,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.greencubes.main.Main;
 import org.greencubes.util.Util;
+import org.greencubes.util.io.GByteArrayOutputStream;
 
 public class Downloader {
-
+	
 	public static boolean printUrls = false;
-
+	
 	public List<Exception> errors = new ArrayList<Exception>();
-
+	
 	private List<String> serversList = new ArrayList<String>();
 	private int currentServer = 0;
 	private int serverListRepeated = 0;
-
+	
 	public volatile int bytesToDownload = 0;
 	public volatile int bytesDownloaded = 0;
 	public volatile IOException lastError = null;
 	public volatile boolean waitingForRepeat = false;
-	private final HttpClient httpClient = new DefaultHttpClient();
-
+	private final CloseableHttpClient httpClient;
+	
 	private List<String> log = new ArrayList<String>();
-
+	
 	public Downloader(String server) {
-		httpClient.getParams().setParameter("http.socket.timeout", new Integer(5000));
+		this();
 		addServer(server);
 	}
-
+	
 	public Downloader() {
+		httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom().setSocketTimeout(500).setConnectTimeout(500).build()).build();
 	}
-
+	
+	public void close() {
+		try {
+			httpClient.close();
+		} catch(IOException e) {
+			// How can it be?
+			e.printStackTrace();
+		}
+	}
+	
 	public void clearServers() {
 		serversList.clear();
 	}
-
+	
 	public String[] getServers() {
 		return serversList.toArray(new String[0]);
 	}
-
+	
 	public String[] getLog() {
 		return log.toArray(new String[0]);
 	}
-
+	
 	public void addServer(String serverUrl) {
 		if(serversList.contains(serverUrl))
 			return;
@@ -68,7 +80,7 @@ public class Downloader {
 		serverListRepeated = 0;
 		currentServer = 0;
 	}
-
+	
 	private void nextServer() {
 		if(currentServer == serversList.size() - 1) {
 			serverListRepeated++;
@@ -76,11 +88,11 @@ public class Downloader {
 		} else
 			currentServer++;
 	}
-
+	
 	public boolean isCrashed() {
 		return serverListRepeated > 1;
 	}
-
+	
 	public int getFileSize(String fileName) throws IOException {
 		if(serversList.size() == 0)
 			throw new IOException("No download servers specified!");
@@ -98,12 +110,11 @@ public class Downloader {
 			try {
 				headRequest = new HttpHead(u.toURI());
 			} catch(URISyntaxException e2) {
-				if(Main.TEST)
-					e2.printStackTrace();
-				throw new IOException("URL Syntax exception");
+				throw new IOException("URL Syntax exception", e2);
 			}
+			CloseableHttpResponse response = null;
 			try {
-				HttpResponse response = httpClient.execute(headRequest);
+				response = httpClient.execute(headRequest);
 				int code = response.getStatusLine().getStatusCode();
 				if(code >= 400) {
 					if(printUrls)
@@ -124,13 +135,15 @@ public class Downloader {
 				} catch(InterruptedException e1) {
 				}
 				continue;
+			} finally {
+				Util.close(response);
 			}
 		}
 		if(lastError != null)
 			throw lastError;
 		return -1;
 	}
-
+	
 	public void downloadFile(File output, String fileName) throws IOException {
 		if(serversList.size() == 0)
 			throw new IOException("No download servers specified!");
@@ -154,14 +167,13 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				if(Main.TEST)
-					e2.printStackTrace();
-				throw new IOException("URL Syntax exception");
+				throw new IOException("URL Syntax exception", e2);
 			}
 			InputStream is = null;
 			FileOutputStream os = null;
+			CloseableHttpResponse response = null;
 			try {
-				HttpResponse response = httpClient.execute(getRequest);
+				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
 				if(code >= 400) {
@@ -198,14 +210,13 @@ public class Downloader {
 				}
 				continue;
 			} finally {
-				Util.close(is);
-				Util.close(os);
+				Util.close(is, os, response);
 			}
 		}
 		if(lastError != null)
 			throw lastError;
 	}
-
+	
 	public InputStream getInputStream(String request) throws IOException {
 		if(serversList.size() == 0)
 			throw new IOException("No download servers specified!");
@@ -223,13 +234,13 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				if(Main.TEST)
-					e2.printStackTrace();
-				throw new IOException("URL Syntax exception");
+				throw new IOException("URL Syntax exception", e2);
 			}
 			InputStream is = null;
+			CloseableHttpResponse response = null;
+			GByteArrayOutputStream baos = null;
 			try {
-				HttpResponse response = httpClient.execute(getRequest);
+				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
 				if(code >= 400) {
@@ -239,7 +250,14 @@ public class Downloader {
 					throw new HTTPResponseError(code + " " + response.getStatusLine().getReasonPhrase() + " for " + u.getPath());
 				}
 				is = entity.getContent();
-				return is;
+				baos = new GByteArrayOutputStream((int) entity.getContentLength());
+				byte[] buff = new byte[1024];
+				int read;
+				while((read = is.read(buff)) != -1) {
+					if(read > 0)
+						baos.write(buff, 0, read);
+				}
+				return new ByteArrayInputStream(baos.getArray(), 0, baos.size());
 			} catch(IOException e) {
 				if(lastError == null)
 					lastError = e;
@@ -250,15 +268,16 @@ public class Downloader {
 					Thread.sleep(2000L);
 				} catch(InterruptedException e1) {
 				}
-				Util.close(is);
 				continue;
+			} finally {
+				Util.close(response, is, baos);
 			}
 		}
 		if(lastError != null)
 			throw lastError;
 		return null;
 	}
-
+	
 	public String readURL(String request) throws IOException {
 		if(serversList.size() == 0)
 			throw new IOException("No download servers specified!");
@@ -276,14 +295,13 @@ public class Downloader {
 			try {
 				getRequest = new HttpGet(u.toURI());
 			} catch(URISyntaxException e2) {
-				if(Main.TEST)
-					e2.printStackTrace();
-				throw new IOException("URL Syntax exception");
+				throw new IOException("URL Syntax exception", e2);
 			}
 			InputStream is = null;
 			FileOutputStream os = null;
+			CloseableHttpResponse response = null;
 			try {
-				HttpResponse response = httpClient.execute(getRequest);
+				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
 				if(code >= 400) {
@@ -316,8 +334,7 @@ public class Downloader {
 				}
 				continue;
 			} finally {
-				Util.close(is);
-				Util.close(os);
+				Util.close(is, os, response);
 			}
 		}
 		if(lastError != null)

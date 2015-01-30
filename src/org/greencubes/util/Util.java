@@ -286,8 +286,7 @@ public final class Util {
 			try {
 				if(r[i] != null)
 					r[i].close();
-			} catch(Exception e) {
-			}
+			} catch(Exception e) {}
 	}
 	
 	public static String concat(String... strings) {
@@ -332,23 +331,13 @@ public final class Util {
 			int numRead;
 			do {
 				numRead = fis.read(buffer);
-				if(numRead > 0) {
+				if(numRead > 0)
 					complete.update(buffer, 0, numRead);
-				}
 			} while(numRead != -1);
 			return complete.digest();
 		} finally {
 			Util.close(fis);
 		}
-	}
-	
-	public static String getMD5Checksum(String filename) throws IOException {
-		byte[] b = createChecksum(new File(filename));
-		String result = "";
-		for(int i = 0; i < b.length; i++) {
-			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
-		}
-		return result;
 	}
 	
 	public static boolean equals(Object o1, Object o2) {
@@ -419,8 +408,7 @@ public final class Util {
 				buf.append(Arrays.toString((double[]) object));
 			else if(eClass == boolean[].class)
 				buf.append(Arrays.toString((boolean[]) object));
-			else
-				// element is an array of object references
+			else // element is an array of object references
 				deepToString((Object[]) object, buf, new HashSet<Object>());
 		} else { // element is non-null and not an array
 			if(object instanceof Collection)
