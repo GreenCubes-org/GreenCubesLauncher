@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.greencubes.client.GameFile;
+import org.greencubes.download.DownloadThread;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractWindowListener;
@@ -216,22 +217,23 @@ public class LauncherUpdate {
 				File localFile = new File(patchDir, file.remoteFileUrl);
 				int trys = 0;
 				do {
-					try {
-						d.downloadFile(localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl));
-						break;
-					} catch(IOException e) {
-						if(++trys > 3) {
-							updateError(104, e.getLocalizedMessage());
-							return false;
-						}
-						setStatus(I18n.get("launcher.update.repeat", trys, 3));
+					DownloadThread dt = new DownloadThread(localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl), d);
+					dt.start();
+					while(!dt.downloaded) {
 						try {
-							Thread.sleep(1000L);
-						} catch(InterruptedException e1) {}
+							Thread.sleep(100L);
+						} catch(InterruptedException e) {}
+						setDownloadStatus(downloaded + d.bytesDownloaded, updateSize);
 					}
+					if(dt.lastError == null)
+						break;
+					if(++trys > 3) {
+						updateError(104, null);
+						return false;
+					}
+					setStatus(I18n.get("launcher.update.repeat", trys, 3));
 				} while(true);
 				downloaded += d.bytesDownloaded;
-				setDownloadStatus(downloaded, updateSize);
 			}
 		}
 		return true;
@@ -253,7 +255,7 @@ public class LauncherUpdate {
 	private void createWindow() {
 		frame = new JFrame(I18n.get("title"));
 		frame.setIconImages(LauncherOptions.getIcons());
-		//frame.setUndecorated(true);
+		frame.setUndecorated(true);
 		frame.setResizable(false);
 		
 		frame.add(new JPanel() {{
