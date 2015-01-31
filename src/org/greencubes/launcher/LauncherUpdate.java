@@ -10,8 +10,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -19,6 +23,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -27,6 +32,7 @@ import org.greencubes.download.DownloadThread;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractWindowListener;
+import org.greencubes.swing.GAWTUtil;
 import org.greencubes.util.I18n;
 import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
@@ -302,8 +308,66 @@ public class LauncherUpdate {
 	}
 	
 	private void updateError(int code, String message) {
+		saveUpdateErrorMessage(code, message);
+		frame.dispose();
+		frame = null;
 		System.err.println("Update error " + code + ": " + message);
-		// TODO: Display error message and check error codes
+		int answer = -1;
+		if(code >= 100 && code < 200) {
+			// Ошибка связи с сервером
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.server"), new String[] {I18n.get("launcher.update.error.continue"),
+				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
+		} else if(code >= 200 && code < 300) {
+			// TODO : Уточнить сообщения об ошибке
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
+		} else if(code >= 300 && code < 400) {
+			// TODO : Уточнить сообщения об ошибке
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
+		} else {
+			// TODO : Уточнить сообщения об ошибке
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
+		}
+		if(answer == 0) {
+			launcherLoad();
+		} else if(answer == 1) {
+			new Thread() {
+				@Override
+				public void run() {
+					new LauncherUpdate();
+				}
+			}.start();
+		} else {
+			Main.close();
+		}
+	}
+	
+	private void saveUpdateErrorMessage(int code, String message) {
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter("launcherUpdateError.txt");
+			StringBuilder sb = new StringBuilder();
+			sb.append("-- LAUNCHER UPDATE ERROR " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " --\n\n");
+			sb.append("Error code: " + code + ", message: " + message + ", version: " + Main.BUILD_INFO + "\n\n");
+			StringWriter stringwriter = new StringWriter();
+			Throwable t = new Throwable();
+			t.printStackTrace(new PrintWriter(stringwriter));
+			sb.append("Stacktrace: \n");
+			sb.append(stringwriter.toString());
+			sb.append("\n\nSys info:");
+			sb.append("\nOS: " + System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
+			sb.append("\nJava: " + System.getProperty("java.version") + ", " + System.getProperty("java.vendor") + System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor"));
+			Runtime runtime = Runtime.getRuntime();
+			sb.append("\nTotal memory: ").append(runtime.totalMemory()).append(", free memory: ").append(runtime.freeMemory()).append(", max memory: ").append(runtime.maxMemory()).append(", processors: ").append(runtime.availableProcessors());
+			sb.append("\n\n-- END --\n");
+			fw.write(sb.toString().replace("\r\n","\n").replace("\n", System.getProperty("line.separator")));
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally {
+			Util.close(fw);
+		}
 	}
 	
 	private List<String> getLaunchParameters() {

@@ -37,6 +37,7 @@ public class Main {
 	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
 	public static final String REGISTRATION_URL = "https://greencubes.org/?action=start";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
+	public static final String BUILD_INFO = "0.1.0 Dev 1";
 	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = true;
 	

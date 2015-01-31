@@ -1,6 +1,7 @@
 package org.greencubes.swing;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
@@ -13,10 +14,31 @@ import java.util.EventListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
 
 public class GAWTUtil {
+	
+	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxHeight) {
+		try {
+			JTextPane jtp = new JTextPane();
+			jtp.setEditable(false);
+			jtp.setOpaque(false);
+			jtp.setHighlighter(null);
+		    Document doc = jtp.getDocument();
+		    doc.insertString(doc.getLength(), dialogText, new SimpleAttributeSet());
+		    jtp.setSize(new Dimension(maxHeight, 10));
+		    jtp.setPreferredSize(new Dimension(maxHeight, jtp.getPreferredSize().height));
+		    return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
+	    } catch(BadLocationException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
 	
 	public static void removeMouseListeners(JComponent c) {
 		EventListener handlers[] = c.getListeners(MouseListener.class);

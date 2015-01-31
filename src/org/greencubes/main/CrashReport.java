@@ -32,6 +32,7 @@ public class CrashReport extends Panel {
 		sb.append(I18n.get("Чтобы помочь улучшить GreenCubes и исправить ошибки, пожалуйста, пошлите нижеследующее сообщение в систему поддержки help.greencubes.org в раздел Баг-репортов. Спасибо.") + "\n");
 		sb.append("\n--- CRASH REPORT ---\n");
 		sb.append("Date: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
+		sb.append("Version: " + Main.BUILD_INFO + "\n");
 		sb.append(error).append('\n');
 		sb.append(stringwriter);
 		sb.append("\n\nSys info:");
@@ -50,7 +51,7 @@ public class CrashReport extends Panel {
 		}
 		sb.append("\n--- CRASH REPORT END ---\n");
 		sb.append("Спасибо, что помогаете GreenCubes стать лучше!");
-		TextArea textarea = new TextArea(sb.toString(), 0, 0, 1);
+		TextArea textarea = new TextArea(sb.toString().replace("\r\n","\n").replace("\n", System.getProperty("line.separator")), 0, 0, 1);
 		textarea.setFont(new Font("Monospaced", 0, 12));
 		add(textarea, "Center");
 	}

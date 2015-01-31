@@ -11,6 +11,15 @@
 "launcher.update.repeat": "Ошибка загрузки. Повтор (%d/%d)",
 "launcher.update.loading": "Подготовка обновления...",
 
+"launcher.update.error.title": "Ошибка обновления",
+"launcher.update.error.server": "Ошибка при связи с сервером обновлений.\n\nВозможно, проблема с Вашим интернет-соединением или на стороне сервера.\n\nВы можете продолжить без обновления, но в таком случае, некоторые функции могут быть не доступны.",
+
+"launcher.update.error.update": "Ошибка при обновлении (%d).\n\nВы можете продолжить без обновления, но в таком случае, некоторые функции могут быть не доступны.\n\nЕсли ошибка повторяется, пожалуйста, обратитесь в нашу службу поддержки по адресу\n\nhttps://help.greencubes.org",
+
+"launcher.update.error.repeat": "Повторить",
+"launcher.update.error.continue": "Продолжить",
+"launcher.update.error.exit": "Выйти",
+
 "client.update.title": "Обновление",
 "client.update.check": "Проверка",
 "client.update.subtitle": "Загрузка",
