@@ -78,7 +78,7 @@ public class GameFile {
 	public static GameFile getFile(JSONObject fileObject, File baseDirectory, Map<String, byte[]> localHashes) {
 		byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
 		String name = fileObject.optString("name");
-		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes.get(name), hash);
+		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes != null ? localHashes.get(name) : null, hash);
 		file.remoteFileSize = fileObject.optInt("length", -1);
 		return file;
 	}

@@ -206,7 +206,7 @@ public class ClientMain extends Client {
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloder(ClientMain.this).readURL(Util.urlEncode("files/main/version.json"));
+			serverHash = LauncherOptions.getClientDownloader(ClientMain.this).readURL(Util.urlEncode("files/main/version.json"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
@@ -416,8 +416,8 @@ public class ClientMain extends Client {
 						downloader.start();
 					} else {
 						//@formatter:off
-						status(Status.UPDATING, "Загрузка " + downloader.downloading + " (" + Util.getBytesAsString(LauncherOptions.getClientDownloder(ClientMain.this).bytesDownloaded)
-								+ "/" + Util.getBytesAsString(LauncherOptions.getClientDownloder(ClientMain.this).bytesDownloaded) + "), прогресс: " + filesDownloaded
+						status(Status.UPDATING, "Загрузка " + downloader.downloading + " (" + Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded)
+								+ "/" + Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded) + "), прогресс: " + filesDownloaded
 								+ "/" + filesToDownload + ", " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesDownloaded) + "/" + Util.getBytesAsString(bytesToDownload)
 								+ " " + downloader.error, ((float) filesDownloaded / filesToDownload + (float) bytesDownloaded / bytesToDownload) / 2);
 						//@formatter:on
@@ -455,7 +455,7 @@ public class ClientMain extends Client {
 		@Override
 		public void run() {
 			try {
-				Downloader d = LauncherOptions.getClientDownloder(ClientMain.this);
+				Downloader d = LauncherOptions.getClientDownloader(ClientMain.this);
 				filesDownloaded = 0;
 				bytesDownloaded = 0;
 				Queue<GameFile> queue = new ArrayBlockingQueue<>(gameFiles.size());

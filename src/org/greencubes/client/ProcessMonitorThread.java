@@ -33,7 +33,7 @@ public class ProcessMonitorThread extends Thread {
 		return false;
 	}
 	
-	private void processSignal(String sig) {
+	protected void processSignal(String sig) {
 		System.err.println("Signal: " + sig);
 		if(sig.equals("STARTED")) {
 			synchronized(process) {

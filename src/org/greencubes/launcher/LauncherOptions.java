@@ -61,7 +61,7 @@ public class LauncherOptions {
 		CLOSE, MINIMIZE, HIDE, NO;
 	}
 	
-	public static Downloader getClientDownloder(Client client) {
+	public static Downloader getClientDownloader(Client client) {
 		synchronized(clientDownloaders) {
 			Downloader d = clientDownloaders.get(client);
 			if(d == null) {

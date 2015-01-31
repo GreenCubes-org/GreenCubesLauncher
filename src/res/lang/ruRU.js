@@ -6,8 +6,10 @@
 "oneinstance": "Только один лаунчер может быть запущен одновременно!",
 
 "launcher.update.title": "Обновление",
-"launcher.update.check": "Проверка",
-"launcher.update.subtitle": "Загрузка",
+"launcher.update.check": "Проверка обновления лаунчера...",
+"launcher.update.downloading": "Загрузка обновления... (%s/%s)",
+"launcher.update.repeat": "Ошибка загрузки. Повтор (%d/%d)",
+"launcher.update.loading": "Подготовка обновления...",
 
 "client.update.title": "Обновление",
 "client.update.check": "Проверка",
