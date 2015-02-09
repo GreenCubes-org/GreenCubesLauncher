@@ -26,10 +26,13 @@ import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import biz.source_code.base64Coder.Base64Coder;
+
 @SuppressWarnings("restriction")
 /**
- * Most protected and encrypted class. Do not touch
- * if you are not an author.
+ * <p>Most protected and encrypted class. Do not touch
+ * if you are not an author.</p>
+ * <p>Also, most unreadable. It is for security reasons, trust me!</p>
  * 
  * @author Rena
  */
@@ -39,14 +42,14 @@ public class LauncherOptions {
 	private static ThreadLocal<Downloader> threadLocalDownloader = new ThreadLocal<Downloader>() {
 		@Override
 		protected Downloader initialValue() {
-	        return newDownloader();
-	    }
+			return newDownloader();
+		}
 	};
 	private static Map<Client, Downloader> clientDownloaders = new HashMap<Client, Downloader>();
 	
 	public static boolean debug = false;
 	public static boolean noUpdateLauncher = false;
-	public static OnStartAction onClientStart = OnStartAction.NO;
+	public static OnStartAction onClientStart;;
 	public static boolean autoLogin = false;
 	public static boolean showLocalServer = false;
 	public static boolean autoUpdate = false;
@@ -122,7 +125,10 @@ public class LauncherOptions {
 	}
 	
 	public static void auth(String userName, char[] password) throws IOException, AuthError {
-		String answer = getDownloader().readURL(new StringBuilder().append("login.php?user=").append(userName).append("&password=").append(Util.urlEncode(new String(password))).toString());
+		Map<String, String> post = new HashMap<String, String>();
+		post.put("user", String.valueOf(userName));
+		post.put("passwordE1", Base64Coder.encodeString(new String(password)));
+		String answer = getDownloader().readURL("login.php", post);
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);
@@ -152,9 +158,14 @@ public class LauncherOptions {
 				for(int i = 0; i < 128; ++i)
 					sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
 				try {
-					getDownloader().readURL("login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)) + "&drop=1");
+					Map<String, String> post = new HashMap<String, String>();
+					post.put("user", String.valueOf(sessionUserId));
+					post.put("key", new String(sessionKey));
+					post.put("drop", "1");
+					getDownloader().readURL("login.php", post);
 					// We are not so interested in answer
-				} catch(IOException e) {}
+				} catch(IOException e) {
+				}
 			}
 			Util.getUnsafe().freeMemory(sessionKeyAddress);
 			sessionKeyAddress = -1;
@@ -162,7 +173,7 @@ public class LauncherOptions {
 		sessionUserId = 0;
 		try {
 			Main.userFileChannel.position(0);
-			Main.userFileChannel.write(ByteBuffer.allocate(0));
+			Main.userFileChannel.truncate(0);
 		} catch(IOException e) {
 			if(Main.TEST)
 				e.printStackTrace();
@@ -184,7 +195,10 @@ public class LauncherOptions {
 		byte[] sessionKey = new byte[128];
 		for(int i = 0; i < 128; ++i)
 			sessionKey[i] = Util.getUnsafe().getByte(sessionKeyAddress + i);
-		String answer = getDownloader().readURL("login.php?user=" + sessionUserId + "&key=" + Util.urlEncode(new String(sessionKey)));
+		Map<String, String> post = new HashMap<String, String>();
+		post.put("user", String.valueOf(sessionUserId));
+		post.put("key", new String(sessionKey));
+		String answer = getDownloader().readURL("login.php", post);
 		JSONObject jo;
 		try {
 			jo = new JSONObject(answer);
@@ -229,7 +243,7 @@ public class LauncherOptions {
 				decodedOs.write(r.nextInt());
 			decodedOs.close(); // It is just polite to close streams
 			byte[] decodedDataArray = decodedData.toByteArray();
-			byte[] encodedData = Encryption.encrypt(decodedDataArray, Encryption.secureMultiSha384(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
+			byte[] encodedData = Encryption.encrypt(decodedDataArray, Encryption.secureMultiSha384(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(), 1000));
 			os.writeShort(encodedData.length ^ ~256);
 			os.write(encodedData);
 			byte[] shitload = new byte[Math.max(0, 1024 - os.size())];
@@ -267,7 +281,8 @@ public class LauncherOptions {
 				return;
 			Main.userFileChannel.position(0);
 			ByteBuffer buf = ByteBuffer.allocate((int) Main.userFileChannel.size());
-			while(Main.userFileChannel.read(buf) > 0);
+			while(Main.userFileChannel.read(buf) > 0)
+				;
 			buf.flip();
 			byte[] file = new byte[(int) Main.userFileChannel.size()];
 			buf.get(file);
@@ -277,7 +292,7 @@ public class LauncherOptions {
 			sessionUserId = is.readInt() ^ Integer.parseInt("111011001110011101011010101", 2);
 			byte[] encodedData = new byte[is.readShort() ^ ~256];
 			is.readFully(encodedData);
-			byte[] decodedData = Encryption.decrypt(encodedData, Encryption.secureMultiSha384(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(),1000));
+			byte[] decodedData = Encryption.decrypt(encodedData, Encryption.secureMultiSha384(("7d2510b1a6dd84a3121e62b4c4050949" + Integer.toOctalString(sessionUserId) + f.getAbsolutePath() + System.getProperty("os.name") + System.getProperty("user.name") + System.getProperty("user.home")).getBytes(), 1000));
 			ByteArrayInputStream decodedBis = new ByteArrayInputStream(decodedData);
 			DataInputStream decodedIs = new DataInputStream(decodedBis);
 			sessionUser = decodedIs.readUTF();
@@ -372,5 +387,13 @@ public class LauncherOptions {
 	static {
 		if(Integer.parseInt("68") != ("D".getBytes()[0] & 0xFF))
 			Encryption.throwMajicError();
+		onClientStart = OnStartAction.NO;
+		com.sun.management.OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+		long max = bean.getTotalPhysicalMemorySize();
+		if(max < 3L * 1024L * 1024L * 1024L) {
+			if(Main.TEST)
+				System.out.println("Less than 3Gb memory, setting default start action to close.");
+			onClientStart = OnStartAction.CLOSE;
+		}
 	}
 }

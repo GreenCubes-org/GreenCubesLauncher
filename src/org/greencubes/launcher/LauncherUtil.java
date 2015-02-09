@@ -4,9 +4,10 @@ import java.awt.Desktop;
 import java.awt.Desktop.Action;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.greencubes.main.Main;
-import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +31,10 @@ public class LauncherUtil {
 	public static JSONObject sessionRequest(String args) throws IOException, AuthError {
 		JSONObject answer;
 		do {
-			String read = LauncherOptions.getDownloader().readURL("login.php?user=" + LauncherOptions.sessionUserId + "&session=" + Util.urlEncode(LauncherOptions.sessionId) + "&" + args);
+			Map<String,String> post = new HashMap<String,String>();
+			post.put("user", String.valueOf(LauncherOptions.sessionUserId));
+			post.put("session", LauncherOptions.sessionId);
+			String read = LauncherOptions.getDownloader().readURL("login.php?" + args, post);
 			try {
 				answer = new JSONObject(read);
 			} catch(JSONException e) {

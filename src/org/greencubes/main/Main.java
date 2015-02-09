@@ -36,6 +36,7 @@ public class Main {
 	
 	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
 	public static final String REGISTRATION_URL = "https://greencubes.org/?action=start";
+	public static final String SUPPORT_SYSTEM_URL = "https://help.greencubes.org/";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
 	public static final String BUILD_INFO = "0.1.0 Dev 1";
 	public static final boolean IS_64_BIT_JAVA;
@@ -52,7 +53,7 @@ public class Main {
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		UIManager.put("PopupMenu.consumeEventOnClose", true);
+		//UIManager.put("PopupMenu.consumeEventOnClose", true);
 		UIManager.put("ScrollBar.shadow", new Color(255, 0, 0, 255));
         UIManager.put("ScrollBar.highlight", new Color(0, 255, 0, 255));
         UIManager.put("ScrollBar.darkShadow", new Color(0, 0, 255, 255));

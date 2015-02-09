@@ -15,11 +15,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.greencubes.util.I18n;
+import org.greencubes.util.Util;
 
 public class CrashReport extends Panel {
 
 	private static final long serialVersionUID = 3420347234451905795L;
 
+	@SuppressWarnings("restriction")
 	public CrashReport(String error, Throwable t) {
 		setBackground(new Color(0x2e3444));
 		setPreferredSize(new Dimension(1024, 640));
@@ -39,7 +41,12 @@ public class CrashReport extends Panel {
 		sb.append("\nOS: " + System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
 		sb.append("\nJava: " + System.getProperty("java.version") + ", " + System.getProperty("java.vendor") + System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor"));
 		Runtime runtime = Runtime.getRuntime();
-		sb.append("\nTotal memory: ").append(runtime.totalMemory()).append(", free memory: ").append(runtime.freeMemory()).append(", max memory: ").append(runtime.maxMemory()).append(", processors: ").append(runtime.availableProcessors());
+		try {
+			com.sun.management.OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+			sb.append("\nTotal memory: ").append(Util.getBytesAsString(runtime.totalMemory())).append(", free memory: ").append(Util.getBytesAsString(runtime.freeMemory())).append(", max memory: ").append(Util.getBytesAsString(runtime.maxMemory())).append(", physical: ").append(Util.getBytesAsString(bean.getTotalPhysicalMemorySize())).append(", processors: ").append(runtime.availableProcessors());
+		} catch(Throwable t1) { // If by reason unkown we can not fetch from internal restricted API
+			sb.append("\nTotal memory: ").append(Util.getBytesAsString(runtime.totalMemory())).append(", free memory: ").append(Util.getBytesAsString(runtime.freeMemory())).append(", max memory: ").append(Util.getBytesAsString(runtime.maxMemory())).append(", processors: ").append(runtime.availableProcessors());
+		}
 		sb.append("\n\nThreads traces:");
 		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> iterator = traces.entrySet().iterator();

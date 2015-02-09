@@ -11,6 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -24,6 +26,7 @@ import javafx.scene.web.WebView;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -65,6 +68,7 @@ public class LauncherMain {
 	private JComponent clientStatusPanel;
 	private JComponent progressBarContainer;
 	private JComponent progressBar;
+	private JComponent serverSelect;
 	
 	//@formatter:off
 	/**
@@ -90,36 +94,78 @@ public class LauncherMain {
 					s(this, 96, 96);
 					final JPopupMenu mainPopup = new JPopupMenu();
 					addMouseListener(new DropdownListener(mainPopup, 0, 89, 200L, 0, 0));
-					mainPopup.add(new JMenuItem("Test item 1") {{
+					mainPopup.add(new JMenuItem(I18n.get("menu.settings"), new ImageIcon(Main.class.getResource("/res/menu.settings.png"))) {{
 						setBackground(new Color(115, 146, 146, 255));
 						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
 						setUI(new BasicMenuItemUI() {{
 							selectionBackground = new Color(155, 193, 193, 255);
 							selectionForeground = new Color(236, 255, 255, 255);
 						}});
 						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 					}});
-					mainPopup.add(new JMenuItem("Test item 2") {{
+					/*mainPopup.add(new JMenuItem(I18n.get("menu.help"), new ImageIcon(Main.class.getResource("/res/menu.help.png"))){{
 						setBackground(new Color(115, 146, 146, 255));
 						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
 						setUI(new BasicMenuItemUI() {{
 							selectionBackground = new Color(155, 193, 193, 255);
 							selectionForeground = new Color(236, 255, 255, 255);
 						}});
 						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-					}});
-					mainPopup.add(new JMenuItem("Test item 3") {{
+						
+					}});*/
+					if(LauncherUtil.canOpenBrowser()) {
+						mainPopup.add(new JMenuItem(I18n.get("menu.support"), new ImageIcon(Main.class.getResource("/res/menu.support.png"))) {{
+							setBackground(new Color(115, 146, 146, 255));
+							setForeground(new Color(192, 228, 232, 255));
+							setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
+							setUI(new BasicMenuItemUI() {{
+								selectionBackground = new Color(155, 193, 193, 255);
+								selectionForeground = new Color(236, 255, 255, 255);
+							}});
+							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+							addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									LauncherUtil.onenURLInBrowser(Main.SUPPORT_SYSTEM_URL);
+								}
+							});
+						}});
+					}
+					mainPopup.add(new JMenuItem(I18n.get("menu.relogin"), new ImageIcon(Main.class.getResource("/res/menu.relogin.png"))) {{
 						setBackground(new Color(115, 146, 146, 255));
 						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("ClearSans Light", Font.PLAIN, 18));
+						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
 						setUI(new BasicMenuItemUI() {{
 							selectionBackground = new Color(155, 193, 193, 255);
 							selectionForeground = new Color(236, 255, 255, 255);
 						}});
 						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+						addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								LauncherOptions.logOff();
+								frame.dispose();
+								new Thread() {
+									@Override
+									public void run() {
+										new LauncherLogin(null);
+									}
+								}.start();
+							}
+						});
 					}});
+					/*mainPopup.add(new JMenuItem(I18n.get("menu.offline"), new ImageIcon(Main.class.getResource("/res/menu.offline.png"))) {{
+						setBackground(new Color(115, 146, 146, 255));
+						setForeground(new Color(192, 228, 232, 255));
+						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
+						setUI(new BasicMenuItemUI() {{
+							selectionBackground = new Color(155, 193, 193, 255);
+							selectionForeground = new Color(236, 255, 255, 255);
+						}});
+						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+					}});*/
 					mainPopup.setOpaque(false);
 					mainPopup.setBorder(GAWTUtil.popupBorder());
 					mainPopup.validate();
@@ -220,7 +266,7 @@ public class LauncherMain {
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
-						add(new JLabel() {{
+						/*add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setForeground(new Color(176, 230, 238, 255));
 							setText(I18n.get("main.title.shop"));
@@ -233,7 +279,7 @@ public class LauncherMain {
 							setText(I18n.get("main.title.updates"));
 							setFont(new Font("Lato", Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}});
+						}});*/
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setForeground(new Color(176, 230, 238, 255));
@@ -319,7 +365,7 @@ public class LauncherMain {
 	//@formatter:off
 	private void displayPlayPanel() {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
-		mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
+		/*mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
 			//setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			setBackground(new Color(38, 51, 51, 255));
@@ -365,7 +411,7 @@ public class LauncherMain {
 			}});
 			
 			add(Box.createVerticalGlue());
-		}});
+		}});*/
 		mainPanel.add(clientPanel = new JPanel() {{
 			setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -442,7 +488,7 @@ public class LauncherMain {
 						setAlignmentY(JLabel.CENTER_ALIGNMENT);
 						setForeground(new Color(176, 230, 238, 255));
 						setText(currentClient.getStatus().getStatusTitle());
-						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+						setFont(new Font("Clear Sans Light", Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						setMinimumSize(new Dimension(0, 66));
 					}});
@@ -530,6 +576,12 @@ public class LauncherMain {
 				}
 				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 18);
 				clientStatusPanel.revalidate();
+			}
+			if(clientStatus.getStatus() == Status.READY) {
+				// TODO : Add server selection panel
+			} else if(serverSelect != null){
+				serverSelect.getParent().remove(serverSelect);
+				serverSelect = null;
 			}
 		}
 	}

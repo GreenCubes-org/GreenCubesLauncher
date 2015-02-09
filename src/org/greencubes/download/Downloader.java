@@ -11,16 +11,24 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.greencubes.util.Util;
 import org.greencubes.util.io.GByteArrayOutputStream;
@@ -279,6 +287,10 @@ public class Downloader {
 	}
 	
 	public String readURL(String request) throws IOException {
+		return readURL(request, null);
+	}
+	
+	public String readURL(String request, Map<String, String> post) throws IOException {
 		if(serversList.size() == 0)
 			throw new IOException("No download servers specified!");
 		if(printUrls)
@@ -291,11 +303,22 @@ public class Downloader {
 		while(!isCrashed()) {
 			URL u = new URL(serversList.get(currentServer) + request);
 			waitingForRepeat = false;
-			HttpGet getRequest;
+			HttpUriRequest getRequest;
 			try {
-				getRequest = new HttpGet(u.toURI());
+				if(post != null) {
+					getRequest = new HttpPost(u.toURI());
+					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(post.size());
+					Iterator<Entry<String, String>> iter = post.entrySet().iterator();
+					while(iter.hasNext()) {
+						Entry<String, String> e = iter.next();
+						nameValuePairs.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+					}
+					((HttpPost) getRequest).setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+				} else {
+					getRequest = new HttpGet(u.toURI());
+				}
 			} catch(URISyntaxException e2) {
-				throw new IOException("URL Syntax exception", e2);
+				throw new IOException(e2);
 			}
 			InputStream is = null;
 			FileOutputStream os = null;
