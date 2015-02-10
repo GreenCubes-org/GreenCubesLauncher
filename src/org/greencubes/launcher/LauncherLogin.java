@@ -38,6 +38,7 @@ import javax.swing.text.StyledDocument;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
+import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.util.I18n;
 import org.greencubes.util.Util;
@@ -83,23 +84,9 @@ public class LauncherLogin {
 				add(new JPanelBG("/res/cross.png") {{
 					setPreferredSize(new Dimension(14, 14));
 					setBackground(new Color(0, 0, 0, 0));
-					addMouseListener(new AbstractMouseListener() {
-						// TODO : Can add cross animation
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							frame.dispose();
-							Main.close();
-						}
-					});
+					addMouseListener(GAWTUtil.createCloseListener(frame));
 				}});
-				addMouseListener(new AbstractMouseListener() {
-					// TODO : Can add cross animation
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						frame.dispose();
-						Main.close();
-					}
-				});
+				addMouseListener(GAWTUtil.createCloseListener(frame));
 			}}, gbc(1, 1, 3, 0));
 			add(new JPanel() {{
 				setPreferredSize(new Dimension(128, 25));

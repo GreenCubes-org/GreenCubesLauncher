@@ -2,9 +2,11 @@ package org.greencubes.swing;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
@@ -21,6 +23,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
+
+import org.greencubes.main.Main;
 
 public class GAWTUtil {
 	
@@ -55,6 +59,41 @@ public class GAWTUtil {
 		} catch(MalformedURLException exception) {
 			return null;
 		}
+	}
+	
+	public static MouseListener createMinimizeListener(final Frame frame) {
+		return new AbstractMouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frame.setState(Frame.ICONIFIED);
+			}
+		};
+	}
+	
+	public static MouseListener createCloseListener(final Frame lastFrame) {
+		return new AbstractMouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				lastFrame.dispose();
+				Main.close();
+			}
+		};
+	}
+	
+	public static MouseListener createMaximizeListener(final UndecoratedJFrame frame) {
+		return new AbstractMouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int state = frame.getExtendedState();
+				if((state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
+					frame.setExtendedState(Frame.NORMAL);
+					frame.setResizable(true);
+				} else {
+					frame.maximize();
+					frame.setResizable(false);
+				}
+			}
+		};
 	}
 	
 	public static Border popupBorder() {

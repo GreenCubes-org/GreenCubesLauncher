@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,6 +13,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
@@ -26,15 +26,12 @@ import javafx.scene.web.WebView;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.plaf.basic.BasicMenuItemUI;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
@@ -44,9 +41,12 @@ import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
+import org.greencubes.swing.GJBoxPanel;
+import org.greencubes.swing.GPopupMenu;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.swing.DropdownListener;
 import org.greencubes.swing.RoundedCornerBorder;
+import org.greencubes.swing.UIScheme;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
 import org.greencubes.util.Util;
@@ -69,6 +69,7 @@ public class LauncherMain {
 	private JComponent progressBarContainer;
 	private JComponent progressBar;
 	private JComponent serverSelect;
+	private JPanel serverSelectPanel;
 	
 	//@formatter:off
 	/**
@@ -79,93 +80,42 @@ public class LauncherMain {
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
-		frame.add(innerPanel = new JPanel() {{
-			Dimension d = new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640));
-			setPreferredSize(d);
-			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(11, 24, 24, 255));
-			//setBorder(BorderFactory.createLineBorder(new Color(11, 33, 31, 255), 1));
+		frame.add(innerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
+			setPreferredSize(new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640)));
 			// Top line
-			add(new JPanel() {{
-				setBackground(new Color(71, 87, 85, 255));
-				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.EMPTY) {{
 				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-					setBackground(new Color(99, 147, 147, 255));
 					s(this, 96, 96);
-					final JPopupMenu mainPopup = new JPopupMenu();
+					final GPopupMenu mainPopup = new GPopupMenu(false);
 					addMouseListener(new DropdownListener(mainPopup, 0, 89, 200L, 0, 0));
-					mainPopup.add(new JMenuItem(I18n.get("menu.settings"), new ImageIcon(Main.class.getResource("/res/menu.settings.png"))) {{
-						setBackground(new Color(115, 146, 146, 255));
-						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
-						setUI(new BasicMenuItemUI() {{
-							selectionBackground = new Color(155, 193, 193, 255);
-							selectionForeground = new Color(236, 255, 255, 255);
-						}});
-						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-					}});
-					/*mainPopup.add(new JMenuItem(I18n.get("menu.help"), new ImageIcon(Main.class.getResource("/res/menu.help.png"))){{
-						setBackground(new Color(115, 146, 146, 255));
-						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
-						setUI(new BasicMenuItemUI() {{
-							selectionBackground = new Color(155, 193, 193, 255);
-							selectionForeground = new Color(236, 255, 255, 255);
-						}});
-						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-						
-					}});*/
-					if(LauncherUtil.canOpenBrowser()) {
-						mainPopup.add(new JMenuItem(I18n.get("menu.support"), new ImageIcon(Main.class.getResource("/res/menu.support.png"))) {{
-							setBackground(new Color(115, 146, 146, 255));
-							setForeground(new Color(192, 228, 232, 255));
-							setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
-							setUI(new BasicMenuItemUI() {{
-								selectionBackground = new Color(155, 193, 193, 255);
-								selectionForeground = new Color(236, 255, 255, 255);
-							}});
-							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-							addActionListener(new ActionListener() {
+					mainPopup.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+					mainPopup.setMenuColors(UIScheme.MAIN_MENU_BG, UIScheme.TITLE_COLOR, UIScheme.MAIN_MENU_BG_SEL, UIScheme.TITLE_COLOR_SEL);
+					mainPopup.setMenuBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+					
+					JMenuItem item = mainPopup.addItem(I18n.get("menu.settings"), "/res/menu.settings.png");
+					//item = mainPopup.addItem(I18n.get("menu.help"), "/res/menu.help.png");
+					item = mainPopup.addItem(I18n.get("menu.support"), "/res/menu.support.png");
+					item.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							LauncherUtil.onenURLInBrowser(Main.SUPPORT_SYSTEM_URL);
+						}
+					});
+					item = mainPopup.addItem(I18n.get("menu.relogin"), "/res/menu.relogin.png");
+					item.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							LauncherOptions.logOff();
+							frame.dispose();
+							new Thread() {
 								@Override
-								public void actionPerformed(ActionEvent e) {
-									LauncherUtil.onenURLInBrowser(Main.SUPPORT_SYSTEM_URL);
+								public void run() {
+									new LauncherLogin(null);
 								}
-							});
-						}});
-					}
-					mainPopup.add(new JMenuItem(I18n.get("menu.relogin"), new ImageIcon(Main.class.getResource("/res/menu.relogin.png"))) {{
-						setBackground(new Color(115, 146, 146, 255));
-						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
-						setUI(new BasicMenuItemUI() {{
-							selectionBackground = new Color(155, 193, 193, 255);
-							selectionForeground = new Color(236, 255, 255, 255);
-						}});
-						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-						addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								LauncherOptions.logOff();
-								frame.dispose();
-								new Thread() {
-									@Override
-									public void run() {
-										new LauncherLogin(null);
-									}
-								}.start();
-							}
-						});
-					}});
-					/*mainPopup.add(new JMenuItem(I18n.get("menu.offline"), new ImageIcon(Main.class.getResource("/res/menu.offline.png"))) {{
-						setBackground(new Color(115, 146, 146, 255));
-						setForeground(new Color(192, 228, 232, 255));
-						setFont(new Font("Clear Sans Light", Font.PLAIN, 18));
-						setUI(new BasicMenuItemUI() {{
-							selectionBackground = new Color(155, 193, 193, 255);
-							selectionForeground = new Color(236, 255, 255, 255);
-						}});
-						setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-					}});*/
+							}.start();
+						}
+					});
+					//item = mainPopup.addItem(I18n.get("menu.offline"), "/res/menu.offline.png");
 					mainPopup.setOpaque(false);
 					mainPopup.setBorder(GAWTUtil.popupBorder());
 					mainPopup.validate();
@@ -173,126 +123,66 @@ public class LauncherMain {
 				
 				add(new JPanelBG("/res/main.top.png") {{ // Everything else on top
 					setMaximumSize(new Dimension(9999, 96));
-					setBackground(new Color(62, 88, 86, 255));
+					setBackground(UIScheme.TOP_PANEL_BG);
 					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-					add(new JPanel() {{ // Window buttons
-						setOpaque(false);
-						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{ // Window buttons
 						add(Box.createHorizontalGlue());
-						add(new JPanel() {{ // Minimize button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Minimize button
 							s(this, 30, 30);
-							setBackground(new Color(0, 0, 0, 0));
-							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 							setAlignmentX(JComponent.CENTER_ALIGNMENT);
 							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/minimize.png") {{
 								s(this, 14, 14);
-								setBackground(new Color(0, 0, 0, 0));
+								setBackground(UIScheme.EMPTY);
 							}});
 							add(Box.createVerticalGlue());
-							addMouseListener(new AbstractMouseListener() {
-								// TODO : Can add cross animation
-								@Override
-								public void mouseClicked(MouseEvent e) {
-									frame.setState(Frame.ICONIFIED);
-								}
-							});
+							addMouseListener(GAWTUtil.createMinimizeListener(frame));
 						}});
-						add(new JPanel() {{ // Maximize button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Maximize button
 							s(this, 30, 30);
-							setBackground(new Color(0, 0, 0, 0));
-							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-							setAlignmentX(JComponent.CENTER_ALIGNMENT);
 							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/expand.png") {{
 								s(this, 14, 14);
-								setBackground(new Color(0, 0, 0, 0));
+								setBackground(UIScheme.EMPTY);
 							}});
 							add(Box.createVerticalGlue());
-							addMouseListener(new AbstractMouseListener() {
-								// TODO : Can add cross animation
-								@Override
-								public void mouseClicked(MouseEvent e) {
-									int state = frame.getExtendedState();
-									if((state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
-										frame.setExtendedState(Frame.NORMAL);
-										frame.setResizable(true);
-									} else {
-										frame.maximize();
-										frame.setResizable(false);
-									}
-								}
-							});
+							addMouseListener(GAWTUtil.createMaximizeListener(frame));
 						}});
-						add(new JPanel() {{ // Close button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Close button
 							s(this, 30, 30);
-							setBackground(new Color(0, 0, 0, 0));
-							setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-							setAlignmentX(JComponent.CENTER_ALIGNMENT);
 							add(Box.createVerticalGlue());
 							add(new JPanelBG("/res/cross.png") {{
 								s(this, 14, 14);
-								setBackground(new Color(0, 0, 0, 0));
-								addMouseListener(new AbstractMouseListener() {
-									// TODO : Can add cross animation
-									@Override
-									public void mouseClicked(MouseEvent e) {
-										frame.dispose();
-										Main.close();
-									}
-								});
+								setBackground(UIScheme.EMPTY);
+								addMouseListener(GAWTUtil.createCloseListener(frame));
 							}});
 							add(Box.createVerticalGlue());
-							addMouseListener(new AbstractMouseListener() {
-								// TODO : Can add cross animation
-								@Override
-								public void mouseClicked(MouseEvent e) {
-									frame.dispose();
-									Main.close();
-								}
-							});
+							addMouseListener(GAWTUtil.createCloseListener(frame));
 						}});
 					}});
 					
 					add(Box.createVerticalGlue());
 					
-					add(new JPanel() {{
-						setOpaque(false);
-						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(new Color(176, 230, 238, 255));
+							setForeground(UIScheme.TITLE_COLOR);
 							setText(I18n.get("main.title.game"));
-							setFont(new Font("Lato", Font.PLAIN, 24));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}});
-						/*add(new JLabel() {{
-							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(new Color(176, 230, 238, 255));
-							setText(I18n.get("main.title.shop"));
-							setFont(new Font("Lato", Font.PLAIN, 24));
+							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(new Color(176, 230, 238, 255));
-							setText(I18n.get("main.title.updates"));
-							setFont(new Font("Lato", Font.PLAIN, 24));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}});*/
-						add(new JLabel() {{
-							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(new Color(176, 230, 238, 255));
+							setForeground(UIScheme.TITLE_COLOR);
 							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
-							setFont(new Font("Lato", Font.PLAIN, 24));
+							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						add(Box.createHorizontalGlue());
 					}});
 				}});
 			}});
-			add(mainPanel = new JPanel() {{
-				setOpaque(false);
+			add(mainPanel = new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 				setMaximumSize(new Dimension(9999, 9999));
 			}});
 		}});
@@ -364,7 +254,6 @@ public class LauncherMain {
 	
 	//@formatter:off
 	private void displayPlayPanel() {
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
 		/*mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
 			//setOpaque(false);
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -412,10 +301,8 @@ public class LauncherMain {
 			
 			add(Box.createVerticalGlue());
 		}});*/
-		mainPanel.add(clientPanel = new JPanel() {{
-			setOpaque(false);
-			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(23, 30, 30, 255));
+		mainPanel.add(clientPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+			setBackground(UIScheme.BACKGROUND);
 		}});
 		frame.revalidate();
 		currentClient = null;
@@ -447,39 +334,29 @@ public class LauncherMain {
 				}});
 				add(new JPanel() {{
 					s(this, 4, 4);
-					setBackground(new Color(11, 24, 24, 255));
+					setBackground(UIScheme.BACKGROUND);
 				}}, new GridBagConstraints() {{
 					gridx = 1;
 					gridy = 0;
 				}});
 				openClientBrowser(currentClient, browserPanel);
 			}});
-			clientPanel.add(new JPanel() {{
-				setOpaque(false);
-				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			clientPanel.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 				setBorder(BorderFactory.createEmptyBorder(22, 64, 22, 64));
-				add(new JPanel() {{
+				add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 					setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
-					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 					s(this, 0, 40);
 					setMaximumSize(new Dimension(9999, 9999));
-					setOpaque(false);
-					add(clientStatusPanel = new JPanel() {{
-						setOpaque(false);
+					add(clientStatusPanel = new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 						setMaximumSize(new Dimension(9999, 9999));
-						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 						setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
 					}});
-					add(new JPanel() {{
-						s(this, 272, 22);
-						setOpaque(false);
-						// TODO : Server selection
+					add(serverSelectPanel = new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+						s(this, 272, 24);
 					}});
 				}});
-				add(new JPanel() {{
-					setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+				add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 					add(Box.createHorizontalGlue());
-					setOpaque(false);
 					add(clientStatusLine = new JLabel() {{
 						setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 						setOpaque(false);
@@ -488,14 +365,14 @@ public class LauncherMain {
 						setAlignmentY(JLabel.CENTER_ALIGNMENT);
 						setForeground(new Color(176, 230, 238, 255));
 						setText(currentClient.getStatus().getStatusTitle());
-						setFont(new Font("Clear Sans Light", Font.PLAIN, 14));
+						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						setMinimumSize(new Dimension(0, 66));
 					}});
 					add(new JPanel() {{
 						s(this, 272, 66);
-						setBorder(new RoundedCornerBorder(new Color(23, 30, 30, 255), null, 4));
-						setBackground(new Color(100, 148, 148, 255));
+						setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, null, 4));
+						setBackground(UIScheme.BIG_BUTTON);
 						setLayout(new GridBagLayout());
 						add(clientButtonText = new JLabel() {{
 							setOpaque(false);
@@ -503,8 +380,7 @@ public class LauncherMain {
 							setForeground(new Color(229, 255, 255, 255));
 							Status s = currentClient.getStatus().getStatus();
 							setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName).toUpperCase());
-							setFont(new Font("Lato", Font.BOLD, 36));
-							//disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 36));
 						}}, new GridBagConstraints() {{
 							weightx = 1;
 							weighty = 1;
@@ -555,20 +431,18 @@ public class LauncherMain {
 				progressBarContainer = null;
 			} else if(clientStatus.getStatusProgress() >= 0) {
 				if(progressBarContainer == null) {
-					clientStatusPanel.add(progressBarContainer = new JPanel() {{
-						setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+					clientStatusPanel.add(progressBarContainer = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.PROGRESSBAR_BG) {{
 						Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
 						s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
-						setBackground(new Color(57, 83, 82, 255));
-						setBorder(new RoundedCornerBorder(new Color(11, 24, 24, 255), new Color(98, 131, 135, 255), 4));
+						setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.PROGRESSBAR_BORDER, 4));
 						add(new JPanel() {{
 							s(this, 1, 1);
-							setBackground(new Color(0, 0, 0, 0));
+							setBackground(UIScheme.EMPTY);
 						}});
 						add(progressBar = new JPanel() {{
-							setBackground(new Color(176, 230, 238, 255));
+							setBackground(UIScheme.PROGRESSBAR_BAR);
 							s(this, 18, 18);
-							setBorder(new RoundedCornerBorder(new Color(57, 83, 82, 255), null, 4));
+							setBorder(new RoundedCornerBorder(UIScheme.PROGRESSBAR_BG, null, 4));
 						}});
 						
 					}});
@@ -578,6 +452,36 @@ public class LauncherMain {
 				clientStatusPanel.revalidate();
 			}
 			if(clientStatus.getStatus() == Status.READY) {
+				if(serverSelect == null) {
+					serverSelectPanel.add(serverSelect = new JPanel() {{
+						setBackground(new Color(26, 43, 43, 255));
+						setBorder(BorderFactory.createLineBorder(new Color(41, 61, 62, 255), 1));
+						s(this, 272, 24);
+						final GPopupMenu popup = new GPopupMenu(true);
+						addMouseListener(new MouseAdapter() {
+							@Override
+							public void mousePressed(MouseEvent e) {
+								if(e.isConsumed())
+									return;
+								if(e.getButton() == MouseEvent.BUTTON1) {
+									if(popup.isVisible()) {
+										popup.setVisible(false);
+									} else {
+										popup.show(serverSelect, false);
+									}
+								}
+							}
+						});
+						popup.setBorder(BorderFactory.createEmptyBorder());
+						popup.setOpaque(false);
+						popup.setMenuSize(new Dimension(272, 24));
+						popup.setMenuFont(new Font("Clear Sans Lite", Font.PLAIN, 16));
+						
+						popup.addItem(I18n.get("menu.settings"), null);
+						
+						popup.validate();
+					}});
+				}
 				// TODO : Add server selection panel
 			} else if(serverSelect != null){
 				serverSelect.getParent().remove(serverSelect);
@@ -592,7 +496,6 @@ public class LauncherMain {
             public void run() {
                 browser = new WebView();
                 WebEngine engine = browser.getEngine();
-                //engine.setUserStyleSheetLocation(LauncherMain.class.getResource("/res/css.css").toExternalForm());
                 Scene sc = new Scene(browser);
                 sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
                 panel.setScene(sc);

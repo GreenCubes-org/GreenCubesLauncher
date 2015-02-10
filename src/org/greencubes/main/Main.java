@@ -53,7 +53,7 @@ public class Main {
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		//UIManager.put("PopupMenu.consumeEventOnClose", true);
+		UIManager.put("PopupMenu.consumeEventOnClose", true);
 		UIManager.put("ScrollBar.shadow", new Color(255, 0, 0, 255));
         UIManager.put("ScrollBar.highlight", new Color(0, 255, 0, 255));
         UIManager.put("ScrollBar.darkShadow", new Color(0, 0, 255, 255));
