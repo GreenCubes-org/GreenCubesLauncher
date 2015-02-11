@@ -59,6 +59,7 @@ public class LauncherLogin {
 	 */
 	public LauncherLogin(JFrame previousFrame) {
 		frame = new JFrame(I18n.get("title"));
+		Main.currentFrame = frame;
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(true);
 		frame.add(new JPanelBG("/res/login.bg.png") {{

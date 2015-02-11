@@ -84,6 +84,7 @@ public class LauncherMain {
 	 */
 	public LauncherMain(Window previousFrame) {
 		frame = new UndecoratedJFrame(I18n.get("title"));
+		Main.currentFrame = frame;
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));

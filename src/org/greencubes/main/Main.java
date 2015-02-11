@@ -2,6 +2,7 @@ package org.greencubes.main;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.io.DataInputStream;
 import java.io.File;
@@ -48,6 +49,7 @@ public class Main {
 	public static FileChannel userFileChannel;
 	
 	public static File launcherFile = null;
+	public static Frame currentFrame;
 	
 	public static void main(String[] args) {
 		System.setProperty("awt.useSystemAAFontSettings","on");
@@ -101,7 +103,7 @@ public class Main {
 		// Read config
 		InputStream is = null;
 		try {
-			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"), "launch.conf"));
+			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"), "launcher.json"));
 			config = new JSONObject(new JSONTokener(is));
 			LauncherOptions.sessionUser = config.optString("user");
 			LauncherOptions.autoLogin = config.optBoolean("login");
@@ -167,6 +169,23 @@ public class Main {
 		new LauncherUpdate();
 	}
 	
+	public static void performOnClientStart() {
+		switch(LauncherOptions.onClientStart) {
+		case CLOSE:
+			currentFrame.dispose();
+			close();
+			break;
+		case MINIMIZE:
+			currentFrame.setState(Frame.ICONIFIED);
+			break;
+		case HIDE:
+			// TODO : Implement hiding?
+			break;
+		case NO:
+			break;
+		}
+	}
+	
 	public static JSONObject getConfig() {
 		return config;
 	}
@@ -174,7 +193,7 @@ public class Main {
 	public static void close() {
 		Util.close(userFileChannel, userFile);
 		try {
-			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"), "launch.conf"));
+			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"), "launcher.json"));
 			config.write(fw);
 			fw.close();
 		} catch(Exception e) {

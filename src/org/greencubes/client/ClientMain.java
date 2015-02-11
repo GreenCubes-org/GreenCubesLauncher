@@ -433,8 +433,10 @@ public class ClientMain extends Client {
 							status(Status.ERROR, e.getLocalizedMessage(), -1f);
 							break;
 						}
-					} else if(processMonitor.isStarted())
+					} else if(processMonitor.isStarted()) {
 						status(Status.RUNNING, "", -1f);
+						Main.performOnClientStart();
+					}
 					break;
 				case NEED_UPDATE:
 					if(LauncherOptions.autoUpdate && !updateAborted)
