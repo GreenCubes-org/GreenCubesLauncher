@@ -16,6 +16,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -36,6 +38,7 @@ import javax.swing.SwingUtilities;
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
 import org.greencubes.client.IClientStatus.Status;
+import org.greencubes.client.Server;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
@@ -70,6 +73,10 @@ public class LauncherMain {
 	private JComponent progressBar;
 	private JComponent serverSelect;
 	private JPanel serverSelectPanel;
+	private JLabel selectedServerName;
+	private GPopupMenu serverListMenu;
+	private List<Server> currentServerList = new ArrayList<Server>();
+	private Server lastSelectedServer;
 	
 	//@formatter:off
 	/**
@@ -451,43 +458,77 @@ public class LauncherMain {
 				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 18);
 				clientStatusPanel.revalidate();
 			}
-			if(clientStatus.getStatus() == Status.READY) {
+			if(clientStatus.getStatus() == Status.READY && currentClient.getServers().size() > 0) {
 				if(serverSelect == null) {
-					serverSelectPanel.add(serverSelect = new JPanel() {{
-						setBackground(new Color(26, 43, 43, 255));
-						setBorder(BorderFactory.createLineBorder(new Color(41, 61, 62, 255), 1));
+					serverSelectPanel.add(serverSelect = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {{
+						setBorder(BorderFactory.createLineBorder(UIScheme.MENU_BORDER, 1));
 						s(this, 272, 24);
-						final GPopupMenu popup = new GPopupMenu(true);
+						serverListMenu = new GPopupMenu(true);
+						serverListMenu.setMenuColors(UIScheme.MENU_DD_BG, UIScheme.TITLE_COLOR, UIScheme.MENU_DD_BG_SEL, UIScheme.TITLE_COLOR_SEL);
 						addMouseListener(new MouseAdapter() {
 							@Override
 							public void mousePressed(MouseEvent e) {
 								if(e.isConsumed())
 									return;
 								if(e.getButton() == MouseEvent.BUTTON1) {
-									if(popup.isVisible()) {
-										popup.setVisible(false);
+									if(serverListMenu.isVisible()) {
+										serverListMenu.setVisible(false);
 									} else {
-										popup.show(serverSelect, false);
+										serverListMenu.show(serverSelect, false);
 									}
 								}
 							}
 						});
-						popup.setBorder(BorderFactory.createEmptyBorder());
-						popup.setOpaque(false);
-						popup.setMenuSize(new Dimension(272, 24));
-						popup.setMenuFont(new Font("Clear Sans Lite", Font.PLAIN, 16));
-						
-						popup.addItem(I18n.get("menu.settings"), null);
-						
-						popup.validate();
+						serverListMenu.setBorder(BorderFactory.createEmptyBorder());
+						serverListMenu.setOpaque(false);
+						serverListMenu.setMenuSize(new Dimension(272, 24));
+						serverListMenu.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+						add(new JPanel() {{
+							s(this, 20, 0);
+							setBackground(UIScheme.EMPTY);
+						}});
+						add(selectedServerName = new JLabel("") {{
+							setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+							setForeground(UIScheme.TITLE_COLOR);
+						}});
+						add(Box.createHorizontalGlue());
+						add(new JPanelBG("/res/menu.arrow.png") {{
+							s(this, 22, 22);
+							setBackground(UIScheme.EMPTY);
+						}});
 					}});
 				}
-				// TODO : Add server selection panel
+				updateServerList();
 			} else if(serverSelect != null){
 				serverSelect.getParent().remove(serverSelect);
 				serverSelect = null;
 			}
 		}
+	}
+	
+	private void updateServerList() {
+		selectedServerName.setText(LauncherMain.this.currentClient.getSelectedServer().name);
+		final List<Server> servers = currentClient.getServers();
+		Server current = currentClient.getSelectedServer();
+		if(current != lastSelectedServer || !servers.containsAll(currentServerList) || !currentServerList.containsAll(servers)) {
+			lastSelectedServer = current;
+			serverListMenu.removeAll();
+			for(int i = 0; i < servers.size(); ++i) {
+				JMenuItem item = serverListMenu.addItem(servers.get(i).name, servers.get(i) == current ? "/res/menu.check.png" : "/res/menu.empty.png");
+				item.setIconTextGap(0);
+				final int i1 = i;
+				item.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						currentClient.selectServer(servers.get(i1));
+						updateServerList();
+					}
+				});
+			}
+			currentServerList.clear();
+			currentServerList.addAll(servers);
+		}
+		serverListMenu.validate();
 	}
 	
 	private void openClientBrowser(final Client client, final JFXPanel panel) {

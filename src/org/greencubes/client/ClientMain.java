@@ -51,9 +51,48 @@ public class ClientMain extends Client {
 	public ClientMain(String name, String localizedName) {
 		super(name, localizedName);
 		status = new MainClinetStatus();
-		servers.add(new Server("GreenCubes", "5.9.22.202", 25565));
+	}
+	
+	@Override
+	public void updateServerList() {
+		servers.clear();
+		addServers(new File(getWorkingDirectory(), "serverlist.json"));
+		addServers(new File(getWorkingDirectory(), "customservers.json"));
 		if(LauncherOptions.showLocalServer || Main.TEST)
-			servers.add(new Server("Local", "127.0.0.1", 25565));
+			servers.add(new Server(I18n.get("servers.local"), "127.0.0.1", 25565));
+		selectServer(servers.get(0));
+	}
+	
+	private void addServers(File serversFile) {
+		if(serversFile.exists()) {
+			FileReader fr = null;
+			try {
+				fr = new FileReader(serversFile);
+				JSONObject obj = new JSONObject(new JSONTokener(fr));
+				JSONArray serversArray = obj.optJSONArray("servers");
+				for(int i = 0; i < serversArray.length(); ++i) {
+					JSONObject serverObj = serversArray.getJSONObject(i);
+					JSONObject names = serverObj.optJSONObject("names");
+					String selectedName = "Unknown";
+					if(names != null) {
+						if(names.has("lang") && I18n.hasLang(names.optString("lang"))) {
+							selectedName = I18n.get(names.optString("lang"));
+						} else if(names.has(I18n.currentLanguage)) {
+							selectedName = names.optString(I18n.currentLanguage);
+						} else if(names.has("lang")) {
+							selectedName = names.optString("lang");
+						}
+					}
+					servers.add(new Server(selectedName, serverObj.optString("address"), serverObj.optInt("port")));
+				}
+			} catch(IOException e) {
+				// Ignore
+			} catch(JSONException e) {
+				// Ignore
+			} finally {
+				Util.close(fr);
+			}
+		}
 	}
 	
 	@Override
@@ -269,6 +308,7 @@ public class ClientMain extends Client {
 		if(filesToDownload != 0) {
 			status(Status.NEED_UPDATE, I18n.get("Требуется обновление (" + filesToDownload + " файлов, " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload) + ")"), 0f);
 		} else {
+			updateServerList();
 			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
 		}
 	}
@@ -380,7 +420,7 @@ public class ClientMain extends Client {
 							status(Status.ERROR, e.getLocalizedMessage(), -1f);
 							break;
 						}
-						command.addAll(getLaunchParameters(LauncherOptions.sessionUser, jo.optString("ssid"), servers.get(0)));
+						command.addAll(getLaunchParameters(LauncherOptions.sessionUser, jo.optString("ssid"), getSelectedServer()));
 						ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 						pb.directory(getWorkingDirectory());
 						try {

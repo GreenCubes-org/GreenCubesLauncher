@@ -22,6 +22,11 @@ public class UIScheme {
 	
 	public static final Color TOP_PANEL_BG = getColor(0x3F5856);
 	
+	public static final Color MENU_BG = getColor(0x1A2B2B);
+	public static final Color MENU_DD_BG = getColor(0x3D5654);
+	public static final Color MENU_BORDER = getColor(0x283C3D);
+	public static final Color MENU_DD_BG_SEL = getColor(0x649494);
+	
 	public static final Color getColor(int rgb, int alpha) {
 		return new Color((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, alpha);
 	}

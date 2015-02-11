@@ -20,6 +20,7 @@ public abstract class Client {
 	public final String localizedName;
 	
 	protected LauncherMain launcherWindow;
+	protected Server selectedServer;
 	
 	protected Client(String name, String localizedName) {
 		this.name = name;
@@ -34,6 +35,8 @@ public abstract class Client {
 		this.launcherWindow = launcherWindow;
 	}
 	
+	public abstract void updateServerList();
+	
 	public abstract File getWorkingDirectory();
 	
 	public abstract List<Server> getServers();
@@ -45,6 +48,14 @@ public abstract class Client {
 	public abstract IClientStatus getStatus();
 	
 	public abstract void doJob();
+	
+	public Server getSelectedServer() {
+		return selectedServer;
+	}
+	
+	public void selectServer(Server server) {
+		selectedServer = server;
+	}
 	
 	protected void clientStatusUpdate() {
 		SwingUtilities.invokeLater(new Runnable() {
