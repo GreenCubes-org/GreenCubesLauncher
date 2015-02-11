@@ -18,6 +18,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.binary.Base64;
 import org.greencubes.client.Client;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
@@ -25,8 +26,6 @@ import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import biz.source_code.base64Coder.Base64Coder;
 
 @SuppressWarnings("restriction")
 /**
@@ -127,7 +126,7 @@ public class LauncherOptions {
 	public static void auth(String userName, char[] password) throws IOException, AuthError {
 		Map<String, String> post = new HashMap<String, String>();
 		post.put("user", String.valueOf(userName));
-		post.put("passwordE1", Base64Coder.encodeString(new String(password)));
+		post.put("passwordE1", Base64.encodeBase64String(new String(password).getBytes()));
 		String answer = getDownloader().readURL("login.php", post);
 		JSONObject jo;
 		try {
