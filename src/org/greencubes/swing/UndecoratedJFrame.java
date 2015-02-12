@@ -36,7 +36,7 @@ public class UndecoratedJFrame extends JFrame {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if(e.isConsumed() || !resizer.isEnabled()) {
+				if(e.isConsumed()) {
 					initialClick = null;
 					return;
 				}
@@ -48,7 +48,7 @@ public class UndecoratedJFrame extends JFrame {
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if(e.isConsumed() || !resizer.isEnabled() || initialClick == null)
+				if(e.isConsumed() || initialClick == null)
 					return;
 				int thisX = UndecoratedJFrame.this.getLocation().x;
 				int thisY = UndecoratedJFrame.this.getLocation().y;

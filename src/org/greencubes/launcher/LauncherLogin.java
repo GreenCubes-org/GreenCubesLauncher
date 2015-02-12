@@ -1,15 +1,12 @@
 package org.greencubes.launcher;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,31 +14,33 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
+import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
+import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.JPanelBG;
+import org.greencubes.swing.RoundedCornerBorder;
+import org.greencubes.swing.UIScheme;
+import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
-import org.greencubes.util.Util;
 
 public class LauncherLogin {
 	
@@ -50,65 +49,63 @@ public class LauncherLogin {
 	private JTextField userField;
 	private JPasswordField passwordField;
 	private JCheckBox autoLoginCheckBox;
-	private String errorString;
 	private JTextPane errorPane;
+	private boolean isLoginDisplayed = false;
 	
 	//@formatter:off
 	/**
 	 * Should not be invoked in AWT thread
 	 */
 	public LauncherLogin(JFrame previousFrame) {
-		frame = new JFrame(I18n.get("title"));
+		frame = new UndecoratedJFrame(I18n.get("title"));
 		Main.currentFrame = frame;
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(true);
-		frame.add(new JPanelBG("/res/login.bg.png") {{
-			setPreferredSize(new Dimension(560, 384));
-			setLayout(new GridBagLayout());
-			setBackground(new Color(0, 1, 1, 0));
+		frame.setResizable(false);
+		frame.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
+			setPreferredSize(new Dimension(400, 340));
 			// Top line
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(128, 25));
-				setBackground(new Color(0, 1, 0, 0));
-			}}, gbc(1, 1, 0, 0));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(305, 25));
-				setBackground(new Color(1, 0, 0, 0));
-			}}, gbc(1, 1, 1, 0));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(102, 25));
-				setBackground(new Color(1, 0.5f, 0, 0));
-			}}, gbc(1, 1, 2, 0));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(25, 25));
-				setBackground(new Color(0, 0, 0, 0));
-				add(new JPanelBG("/res/cross.png") {{
-					setPreferredSize(new Dimension(14, 14));
-					setBackground(new Color(0, 0, 0, 0));
+			add(new JPanelBG("/res/login.top.png") {{ // Window buttons
+				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+				s(this, 400, 32);
+				add(Box.createHorizontalGlue());
+				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Minimize button
+					s(this, 30, 30);
+					setAlignmentX(JComponent.CENTER_ALIGNMENT);
+					add(Box.createVerticalGlue());
+					add(new JPanelBG("/res/minimize.png") {{
+						s(this, 14, 14);
+						setBackground(UIScheme.EMPTY);
+					}});
+					add(Box.createVerticalGlue());
+					addMouseListener(GAWTUtil.createMinimizeListener(frame));
+				}});
+				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Close button
+					s(this, 30, 30);
+					add(Box.createVerticalGlue());
+					add(new JPanelBG("/res/cross.png") {{
+						s(this, 14, 14);
+						setBackground(UIScheme.EMPTY);
+						addMouseListener(GAWTUtil.createCloseListener(frame));
+					}});
+					add(Box.createVerticalGlue());
 					addMouseListener(GAWTUtil.createCloseListener(frame));
 				}});
-				addMouseListener(GAWTUtil.createCloseListener(frame));
-			}}, gbc(1, 1, 3, 0));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(128, 25));
-				setBackground(new Color(0, 1, 0.5f, 0));
-			}}, gbc(1, 1, 0, 1));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(128, 287));
-				setBackground(new Color(0.5f, 1, 0, 0));
-			}}, gbc(1, 1, 0, 2));
-			add(new JPanel() {{
-				setPreferredSize(new Dimension(128, 45));
-				setBackground(new Color(1, 1, 0, 0));
-			}}, gbc(1, 1, 0, 3));
-			
+			}});
+			add(Box.createVerticalStrut(20));
+			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+				max(this, null, 26);
+				add(Box.createHorizontalStrut(20));
+				add(new JLabel(I18n.get("login.title").toUpperCase()) {{
+					setForeground(UIScheme.TEXT_COLOR);
+					setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+				}});
+				add(Box.createHorizontalGlue());
+			}});
+			add(Box.createVerticalStrut(15));
 			// Center panel
-			add(centerPanel = new JPanel() {{
-				setPreferredSize(new Dimension(305, 287));
-				setBackground(new Color(0.3f, 0.6f, 0.5f, 0));
-				setOpaque(false);
-				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			}}, gbc(1, 1, 1, 2));
+			add(centerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null));
+			add(Box.createVerticalGlue());
 		}}, BorderLayout.CENTER);
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
@@ -160,6 +157,7 @@ public class LauncherLogin {
 			if(userField.getText().length() > 0) {
 				// joinOffline() runs in window thread, so we need to start new thread to allow progress update
 				new Thread() {
+					@Override
 					public void run() {
 						displayProgress(I18n.get("login.loading"));
 						if(LauncherOptions.sessionUser != null && !LauncherOptions.sessionUser.equals(userField.getText()))
@@ -169,8 +167,8 @@ public class LauncherLogin {
 					}
 				}.start();				
 			} else {
-				if(errorPane != null)
-					errorPane.setText(I18n.get("login.nousername"));
+				GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.nousername"), new Object[] {"OK"}, JOptionPane.ERROR_MESSAGE, 300);
+				displayLogin();
 			}
 		}
 	}
@@ -180,6 +178,7 @@ public class LauncherLogin {
 			if(userField.getText().length() > 0 && passwordField.getPassword().length > 0) {
 				// goLogin() runs in window thread, so we need to start new thread to allow progress update
 				new Thread() {
+					@Override
 					public void run() {
 						displayProgress(I18n.get("login.authorization"));
 						try {
@@ -191,32 +190,32 @@ public class LauncherLogin {
 							launcherMain();
 							return;
 						} catch(IOException e) {
-							errorString = I18n.get("login.exception", e.getLocalizedMessage());
-							if(Main.TEST)
-								e.printStackTrace();
+							int select = GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.exception", e.getLocalizedMessage()), new Object[] {I18n.get("login.error.repeat"), I18n.get("login.error.offline")}, JOptionPane.ERROR_MESSAGE, 300);
+							if(select == 1) {
+								joinOffline();
+								return;
+							}
 						} catch(AuthError e) {
-							errorString = I18n.get("login.exception", I18n.get("login.error." + e.errorCode));
-							if(Main.TEST)
-								e.printStackTrace();
+							GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.exception", I18n.get("login.error." + e.errorCode)), new Object[] {"OK"}, JOptionPane.ERROR_MESSAGE, 300);
 						}
 						displayLogin();
 					}
 				}.start();
 			} else if(userField.getText().length() == 0 && passwordField.getPassword().length == 0) {
+				GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.nousernamepassword"), new Object[] {"OK"}, JOptionPane.ERROR_MESSAGE, 300);
 				if(errorPane != null)
 					errorPane.setText(I18n.get("login.nousernamepassword"));
 			} else if(userField.getText().length() == 0) {
-				if(errorPane != null)
-					errorPane.setText(I18n.get("login.nousername"));
+				GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.nousername"), new Object[] {"OK"}, JOptionPane.ERROR_MESSAGE, 300);
 			} else if(passwordField.getPassword().length == 0) {
-				if(errorPane != null)
-					errorPane.setText(I18n.get("login.nopassword"));
+				GAWTUtil.showDialog(I18n.get("login.error.title"), I18n.get("login.nopassword"), new Object[] {"OK"}, JOptionPane.ERROR_MESSAGE, 300);
 			}
 		}
 	}
 	
 	//@formatter:off
 	private void displayProgress(final String progressString) {
+		isLoginDisplayed = false;
 		centerPanel.removeAll();
 		centerPanel.invalidate();
 		centerPanel.add(new JPanel() {{
@@ -225,10 +224,9 @@ public class LauncherLogin {
 			add(new JLabel() {{
 				setOpaque(false);
 				setAlignmentX(JLabel.CENTER_ALIGNMENT);
-				setBackground(new Color(0, 0, 0, 0));
-				setForeground(new Color(25, 97, 14, 255));
+				setForeground(UIScheme.TITLE_COLOR);
 				setText(progressString);
-				setFont(new Font("ClearSans", Font.BOLD, 30));
+				setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
 			}}, new GridBagConstraints() {{
 				weighty = 1.0d;
 			}});
@@ -240,286 +238,176 @@ public class LauncherLogin {
 	
 	//@formatter:off
 	private void displayLogin() {
+		if(isLoginDisplayed)
+			return;
+		isLoginDisplayed = true;
 		centerPanel.removeAll();
-		centerPanel.add(new JPanel() {{ // GC LOGO
-			s(this, 305, 42);
-			setBackground(new Color(0, 0, 0, 0));
-		}});
 		final String savedUser = userField != null ? userField.getText() : LauncherOptions.sessionUser;
-		centerPanel.add(new JPanel() {{
-			setOpaque(false);
-			setLayout(new GridBagLayout());
-			setBackground(Util.debugColor());
-			add(new JLabel() {{
-				setOpaque(false);
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
+			add(Box.createHorizontalGlue());
+			add(new JLabel(I18n.get("login.login")) {{
+				setVerticalAlignment(JLabel.CENTER);
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+			}});
+			add(Box.createHorizontalStrut(5));
+			add(userField = new JTextField() {{
+				s(this, 250, 24);
+				setForeground(UIScheme.TEXT_COLOR);
+				setBackground(UIScheme.INPUT_BG);
+				setCaretColor(UIScheme.TEXT_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
+				if(savedUser != null)
+					setText(savedUser);
+			}});
+			add(Box.createHorizontalStrut(20));
+		}});
+		
+		centerPanel.add(Box.createVerticalStrut(20));
+		
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
+			add(Box.createHorizontalGlue());
+			add(new JLabel(I18n.get("login.password")) {{
 				setAlignmentX(JLabel.CENTER_ALIGNMENT);
-				setBackground(Util.debugColor());
-				setForeground(new Color(25, 97, 14, 255));
-				setText(I18n.get("login.login"));
-				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}}, gbc(1, 1, 0, 0));
-			add(userField = new JTextField(0) {
-				Image bg;
-				{
-					try {
-						bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
-					} catch(Exception e) {
-					}
-					setBackground(Util.debugColor());
-					s(this, 158, 23);
-					setBorder(new EmptyBorder(0, 5, 0, 0));
-					setOpaque(false);
-					setForeground(new Color(170, 255, 102));
-					setCaretColor(new Color(170, 255, 102));
-					setFont(new Font("ClearSans", Font.PLAIN, 16));
-					if(savedUser != null)
-						setText(savedUser);
-				}
-				
-				@Override
-				public void paintComponent(Graphics g) {
-					g.drawImage(bg, 0, 0, this);
-					super.paintComponent(g);
-			}}, gbc(1, 1, 1, 0));
-			add(new JLabel() {{
-				setOpaque(false);
-				setAlignmentX(JLabel.CENTER_ALIGNMENT);
-				setBackground(Util.debugColor());
-				setForeground(new Color(25, 97, 14, 255));
-				setText(I18n.get("login.password"));
-				setFont(new Font("ClearSans", Font.PLAIN, 18));
-			}}, gbc(1, 1, 0, 1));
-			add(passwordField = new JPasswordField(0) {
-				Image bg;
-				{
-					try {
-						bg = ImageIO.read(JPanelBG.class.getResource("/res/textfield.png"));
-					} catch(Exception e) {
-					}
-					setBackground(Util.debugColor());
-					s(this, 158, 23);
-					setBorder(new EmptyBorder(0, 5, 0, 0));
-					setOpaque(false);
-					setForeground(new Color(170, 255, 102));
-					setCaretColor(new Color(170, 255, 102));
-					setFont(new Font("ClearSans", Font.PLAIN, 16));
-				}
-				
-				@Override
-				public void paintComponent(Graphics g) {
-					g.drawImage(bg, 0, 0, this);
-					super.paintComponent(g);
-			}}, gbc(1, 1, 1, 1));
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+			}});
+			add(Box.createHorizontalStrut(5));
+			add(passwordField = new JPasswordField() {{
+				s(this, 250, 24);
+				setForeground(UIScheme.TEXT_COLOR);
+				setBackground(UIScheme.INPUT_BG);
+				setCaretColor(UIScheme.TEXT_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
+			}});
+			add(Box.createHorizontalStrut(20));
 		}});
-
-		// Forgot password and registration
-		centerPanel.add(new JPanel() {{
-			setOpaque(false);
-			setBackground(Util.debugColor());
-			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		
+		centerPanel.add(Box.createVerticalStrut(10));
+		
+		final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
+		final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
+		
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 20);
 			add(Box.createHorizontalGlue());
-			add(new JPanel() {{
-				setLayout(new BorderLayout());
-				setOpaque(false);
-				setBackground(new Color(0, 0, 0, 0));
-				add(new JTextPane() {{
-					setHighlighter(null);
+			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+				s(this, 250, 24);
+				boolean checked = LauncherOptions.autoLogin;
+				add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), checked ? iconChecked : iconUnchecked, checked) {{
 					setOpaque(false);
-					StyledDocument doc = getStyledDocument();
-					SimpleAttributeSet center = new SimpleAttributeSet();
-					StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-					StyleConstants.setUnderline(center, true);
-					StyleConstants.setLineSpacing(center, -1f);
-					doc.setParagraphAttributes(0, doc.getLength(), center, false);
-					setBackground(new Color(0, 0, 0, 0));
-					setForeground(new Color(0, 18, 255, 255));
-					setEditable(false);
-					setFont(new Font("ClearSans", Font.PLAIN, 12));
-					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-					if(LauncherUtil.canOpenBrowser()) {
-						setText(I18n.get("login.forgot"));
-						addMouseListener(new AbstractMouseListener() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
-							}
-						});
-					}
-				}}, BorderLayout.LINE_END);	
+					setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+					setForeground(UIScheme.TITLE_COLOR);
+					addItemListener(new ItemListener() {
+						@Override
+						public void itemStateChanged(ItemEvent e) {
+							if(autoLoginCheckBox.isSelected())
+								setIcon(iconChecked);
+							else
+								setIcon(iconUnchecked);
+						}
+					});
+					setMargin(new Insets(2, 0, 2, 0));
+					setToolTipText(I18n.get("login.autologin.tip"));
+				}});
 			}});
-			add(new JPanel() {{
-				s(this, 10, 10);
-				setBackground(new Color(0, 0, 0, 0));
-			}});
+			add(Box.createHorizontalStrut(20));
 		}});
 		
-		centerPanel.add(new JPanel() {{
-			setOpaque(false);
-			setBackground(Util.debugColor());
-			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+		centerPanel.add(Box.createVerticalStrut(10));
+		
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 36);
 			add(Box.createHorizontalGlue());
-			add(new JPanel() {{
-				setLayout(new BorderLayout());
-				setOpaque(false);
-				setBackground(new Color(0, 0, 0, 0));
-				add(new JTextPane() {{
-					setOpaque(false);
-					setHighlighter(null);
-					StyledDocument doc = getStyledDocument();
-					SimpleAttributeSet center = new SimpleAttributeSet();
-					StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-					StyleConstants.setUnderline(center, true);
-					StyleConstants.setLineSpacing(center, -1f);
-					doc.setParagraphAttributes(0, doc.getLength(), center, false);
-					setBackground(new Color(0, 0, 0, 0));
-					setForeground(new Color(0, 18, 255, 255));
-					setEditable(false);
-					setFont(new Font("ClearSans", Font.PLAIN, 12));
-					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-					if(LauncherUtil.canOpenBrowser()) {
-						setText(I18n.get("login.register"));
-						addMouseListener(new AbstractMouseListener() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
-							}
-						});
-					}
-					setMargin(new Insets(0, 0, 0, 0));
-				}}, BorderLayout.LINE_END);
+			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+				s(this, 250, 36);
+				add(new JPanel() {{
+					s(this, 200, 36);
+					setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, null, 4));
+					setBackground(UIScheme.BIG_BUTTON);
+					setLayout(new GridBagLayout());
+					add(new JLabel() {{
+						setOpaque(false);
+						setAlignmentX(JLabel.CENTER_ALIGNMENT);
+						setForeground(UIScheme.TEXT_COLOR);
+						setText(I18n.get("login.dologin").toUpperCase());
+						setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
+					}}, new GridBagConstraints() {{
+						weightx = 1;
+						weighty = 1;
+					}});
+					addMouseListener(new AbstractMouseListener() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							doLogin();
+						}
+					});
+				}});
 			}});
-			add(new JPanel() {{
-				s(this, 10, 10);
-				setBackground(new Color(0, 0, 0, 0));
-			}});
+			add(Box.createHorizontalStrut(20));
 		}});
 		
-		centerPanel.add(new JPanel() {{
-			setOpaque(false);
-			setBackground(Util.debugColor());
-			add(errorPane = new JTextPane() {{
-				setHighlighter(null);
-				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(Util.debugColor());
-				setForeground(new Color(0, 0, 0, 255));
-				setEditable(false);
-				if(errorString != null) {
-					setText(errorString);
-					errorString = null;
-				}
-				setFont(new Font("ClearSans", Font.PLAIN, 12));
-			}});
-		}});
+		centerPanel.add(Box.createVerticalStrut(10));
 		
-		// Checkboxes
-		ImageIcon icon = null;
-		try {
-			icon = new ImageIcon(ImageIO.read(JPanelBG.class.getResource("/res/checkbox.png")));
-		} catch(IOException e) {
-		}
-		final ImageIcon iconUnchecked = icon;
-		try {
-			icon = new ImageIcon(ImageIO.read(JPanelBG.class.getResource("/res/checkbox.checked.png")));
-		} catch(IOException e) {
-		}
-		final ImageIcon iconChecked = icon;
-		centerPanel.add(new JPanel() {{
-			setOpaque(false);
-			setBackground(new Color(0, 0, 0, 0));
-			setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-			add(new JPanel() {{
-				s(this, 25, 5);
-				setBackground(new Color(0, 0, 0, 0));
-			}});
-			add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), LauncherOptions.autoLogin ? iconChecked : iconUnchecked, LauncherOptions.autoLogin) {{
-				setBackground(Util.debugColor());
-				setOpaque(false);
-				setFont(new Font("ClearSans", Font.PLAIN, 16));
-				setForeground(new Color(25, 97, 14, 255));
-				addItemListener(new ItemListener() {
-					@Override
-					public void itemStateChanged(ItemEvent e) {
-						if(autoLoginCheckBox.isSelected())
-							setIcon(iconChecked);
-						else
-							setIcon(iconUnchecked);
-					}
-				});
-				setMargin(new Insets(2, 0, 2, 0));
-				setToolTipText(I18n.get("login.autologin.tip"));
-			}});
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
 			add(Box.createHorizontalGlue());
-		}});
-		
-		
-		// Login button
-		centerPanel.add(new JPanelBG("/res/button.png") {{
-			paddingTop = 5;
-			s(this, 253, 35);
-			setBackground(new Color(0, 0, 0, 0));
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			addMouseListener(new AbstractMouseListener() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					doLogin();
-				}
-			});
-			add(new JTextPane() {{
-				setHighlighter(null);
-				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(Util.debugColor());
-				setForeground(new Color(170, 255, 102));
-				setEditable(false);
-				setText(I18n.get("login.dologin"));
-				setFont(new Font("ClearSans", Font.PLAIN, 16));
+			add(new JLabel(I18n.get("login.forgot")) {{
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				underline(this);
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						doLogin();
+						LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
 					}
 				});
-			}}, BorderLayout.PAGE_START);
+			}});
+			add(Box.createHorizontalStrut(20));
 		}});
-		// Login button
-		centerPanel.add(new JPanelBG("/res/button.png") {{
-			paddingTop = 5;
-			s(this, 253, 35);
-			setBackground(new Color(0, 0, 0, 0));
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			addMouseListener(new AbstractMouseListener() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					joinOffline();
-				}
-			});
-			add(new JTextPane() {{
-				setHighlighter(null);
-				setOpaque(false);
-				StyledDocument doc = getStyledDocument();
-				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-				doc.setParagraphAttributes(0, doc.getLength(), center, false);
-				setBackground(Util.debugColor());
-				setForeground(new Color(170, 255, 102));
-				setEditable(false);
-				setText(I18n.get("login.dologinoffline"));
-				setFont(new Font("ClearSans", Font.PLAIN, 16));
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
+			add(Box.createHorizontalGlue());
+			add(new JLabel(I18n.get("login.register")) {{
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				underline(this);
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				addMouseListener(new AbstractMouseListener() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
+					}
+				});
+			}});
+			add(Box.createHorizontalStrut(20));
+		}});
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
+			add(Box.createHorizontalGlue());
+			add(new JLabel(I18n.get("login.dologinoffline")) {{
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				underline(this);
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						joinOffline();
 					}
 				});
-			}}, BorderLayout.PAGE_START);
+			}});
+			add(Box.createHorizontalStrut(20));
 		}});
+		
+		centerPanel.add(Box.createVerticalGlue());
+		centerPanel.revalidate();
+		frame.repaint();
 		
 		passwordField.setActionCommand("OK");
 		passwordField.addActionListener(new ActionListener() {
@@ -538,8 +426,6 @@ public class LauncherLogin {
 			}
 		});
 		
-		centerPanel.revalidate();
-		frame.repaint();
 		if(LauncherOptions.sessionUser != null)
 			passwordField.requestFocusInWindow();
 		else
@@ -547,13 +433,8 @@ public class LauncherLogin {
 	}
 	//@formatter:on
 	
-	private static GridBagConstraints gbc(int width, int height, int x, int y) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridwidth = width;
-		c.gridheight = height;
-		c.gridx = x;
-		c.gridy = y;
-		return c;
+	private static void max(Component c, Integer width, Integer height) {
+		c.setMaximumSize(new Dimension(width != null ? width.intValue() : Short.MAX_VALUE, height != null ? height.intValue() : Short.MAX_VALUE));
 	}
 	
 	private static void s(Component c, int width, int height) {
@@ -562,5 +443,13 @@ public class LauncherLogin {
 		c.setPreferredSize(d);
 		c.setMaximumSize(d);
 		c.setMinimumSize(d);
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static void underline(JLabel label) {
+		Font font = label.getFont();
+		Map attributes = font.getAttributes();
+		attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+		label.setFont(font.deriveFont(attributes));
 	}
 }

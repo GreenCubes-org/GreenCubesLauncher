@@ -7,6 +7,7 @@ public class UIScheme {
 	public static final Color BACKGROUND = getColor(0x0B1818);
 	public static final Color BIG_BUTTON = getColor(0x649494);
 	public static final Color EMPTY = getColor(0, 0);
+	public static final Color TEXT_COLOR = getColor(0xE5FFFF);
 	
 	public static final String TEXT_FONT = "Clear Sans Light";
 	public static final String TITLE_FONT = "Lato";
@@ -26,6 +27,9 @@ public class UIScheme {
 	public static final Color MENU_DD_BG = getColor(0x3D5654);
 	public static final Color MENU_BORDER = getColor(0x283C3D);
 	public static final Color MENU_DD_BG_SEL = getColor(0x649494);
+	
+	public static final Color INPUT_BG = getColor(0x395352);
+	public static final Color INPUT_BORDER = getColor(0x628589);
 	
 	public static final Color getColor(int rgb, int alpha) {
 		return new Color((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, alpha);
