@@ -17,6 +17,7 @@ public interface IClientStatus {
 		LOADING("client.status.loading", null),
 		RUNNING("client.status.running", null),
 		ERROR("client.status.error", null),
+		OFFLINE("client.status.offline.subtitle", "client.status.offline"),
 		;
 		//@formatter:on
 		

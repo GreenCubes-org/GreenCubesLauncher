@@ -33,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.greencubes.client.Client;
@@ -372,17 +373,17 @@ public class LauncherMain {
 				add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 					add(Box.createHorizontalGlue());
 					add(clientStatusLine = new JLabel() {{
-						setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 						setOpaque(false);
 						setBackground(Util.debugColor());
-						setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-						setAlignmentY(JLabel.CENTER_ALIGNMENT);
+						setHorizontalAlignment(SwingConstants.RIGHT);
+						setVerticalAlignment(SwingConstants.CENTER);
 						setForeground(new Color(176, 230, 238, 255));
 						setText(currentClient.getStatus().getStatusTitle());
 						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						setMinimumSize(new Dimension(0, 66));
 					}});
+					add(Box.createHorizontalStrut(24));
 					add(new JPanel() {{
 						s(this, 272, 66);
 						setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, null, 4));
@@ -438,7 +439,7 @@ public class LauncherMain {
 			IClientStatus clientStatus = client.getStatus();
 			Status s = clientStatus.getStatus();
 			clientButtonText.setText(I18n.get(s.statusActionName == null ? s.statusName : s.statusActionName).toUpperCase());
-			clientStatusLine.setText(client.getStatus().getStatusTitle());
+			clientStatusLine.setText("<html><div style=\"text-align: right; width: 100%;\">" + client.getStatus().getStatusTitle().replace("\n", "<br>") + "</div></html>");
 			if(clientStatus.getStatusProgress() < 0 && progressBarContainer != null) {
 				clientStatusPanel.remove(progressBarContainer);
 				clientStatusPanel.revalidate();

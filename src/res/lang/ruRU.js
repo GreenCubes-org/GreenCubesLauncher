@@ -59,6 +59,8 @@
 "client.status.loading": "Загрузка",
 "client.status.running": "Запущено",
 "client.status.error": "Ошибка",
+"client.status.offline": "Оффлайн",
+"client.status.offline.subtitle": "В режиме оффлайн вы можете играть только в одиночном режиме.\n(Не доступен на данный момент)",
 
 "main.online": "Онлайн",
 "main.offline": "Оффлайн",

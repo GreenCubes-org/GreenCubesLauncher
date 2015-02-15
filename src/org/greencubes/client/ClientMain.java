@@ -157,6 +157,8 @@ public class ClientMain extends Client {
 	@Override
 	public void doJob() {
 		switch(status.getStatus()) {
+		case OFFLINE:
+			break;
 		case CHECK:
 			break;
 		case LOADING:
@@ -311,7 +313,10 @@ public class ClientMain extends Client {
 			status(Status.NEED_UPDATE, I18n.get("Требуется обновление (" + filesToDownload + " файлов, " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload) + ")"), 0f);
 		} else {
 			updateServerList();
-			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
+			if(LauncherOptions.sessionId == null)
+				status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
+			else
+				status(Status.READY, I18n.get(Status.READY.statusName), -1f);
 		}
 	}
 	
@@ -386,6 +391,8 @@ public class ClientMain extends Client {
 		public void run() {
 			while(true) {
 				switch(status.getStatus()) {
+				case OFFLINE:
+					break;
 				case CHECK:
 					prepareClientUpdate();
 					break;

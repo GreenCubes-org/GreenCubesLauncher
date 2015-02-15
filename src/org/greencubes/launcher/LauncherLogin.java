@@ -14,9 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.awt.font.TextAttribute;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
