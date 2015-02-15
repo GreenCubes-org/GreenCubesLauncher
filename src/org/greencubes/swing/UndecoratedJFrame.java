@@ -15,8 +15,8 @@ import sun.java2d.SunGraphicsEnvironment;
 @SuppressWarnings("restriction")
 public class UndecoratedJFrame extends JFrame {
 	
-	private Point initialClick;
-	private ComponentResizer resizer;
+	protected Point initialClick;
+	protected ComponentResizer resizer;
 	
 	public UndecoratedJFrame(String title) {
 		super(title);
@@ -66,6 +66,8 @@ public class UndecoratedJFrame extends JFrame {
 	 * {@code setExtendedState(Frame.MAXIMIZED_BOTH)}
 	 */
 	public void maximize() {
+		// We reset the bounds in case launcher run on
+		// multi-monitor system and has ben moved since startup
 		GraphicsConfiguration config = getGraphicsConfiguration();
 		Rectangle usableBounds = SunGraphicsEnvironment.getUsableBounds(config.getDevice());
 		setMaximizedBounds(new Rectangle(0, 0, usableBounds.width, usableBounds.height));
@@ -75,6 +77,7 @@ public class UndecoratedJFrame extends JFrame {
 	@Override
 	public void setResizable(boolean resizable) {
 		resizer.setEnabled(resizable);
+		super.setResizable(resizable);
 	}
 	
 	@Override

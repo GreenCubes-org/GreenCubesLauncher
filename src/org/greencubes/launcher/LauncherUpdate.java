@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -374,6 +376,9 @@ public class LauncherUpdate {
 	private List<String> getLaunchParameters() {
 		List<String> command = new ArrayList<String>();
 		command.add(OperatingSystem.getJavaExecutable(false));
+		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+		List<String> arguments = runtimeMxBean.getInputArguments();
+		command.addAll(arguments);
 		command.add("-jar");
 		command.add(Main.launcherFile.getAbsolutePath());
 		command.add("-updated");
