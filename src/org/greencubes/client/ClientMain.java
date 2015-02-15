@@ -313,10 +313,7 @@ public class ClientMain extends Client {
 			status(Status.NEED_UPDATE, I18n.get("Требуется обновление (" + filesToDownload + " файлов, " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload) + ")"), 0f);
 		} else {
 			updateServerList();
-			if(LauncherOptions.sessionId == null)
-				status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
-			else
-				status(Status.READY, I18n.get(Status.READY.statusName), -1f);
+			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
 		}
 	}
 	
@@ -394,7 +391,10 @@ public class ClientMain extends Client {
 				case OFFLINE:
 					break;
 				case CHECK:
-					prepareClientUpdate();
+					if(LauncherOptions.sessionId == null)
+						status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
+					else
+						prepareClientUpdate();
 					break;
 				case LOADING:
 					if(processMonitor == null) {
