@@ -16,6 +16,8 @@ import java.nio.channels.FileLock;
 import java.security.Security;
 import java.util.Random;
 
+import javafx.application.Platform;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.SecretKey;
@@ -152,19 +154,18 @@ public class Main {
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);
 		
-		if(!LauncherOptions.noUpdateLauncher) {
-			String classPath = System.getProperty("java.class.path");
-			File f = new File(classPath);
-			if(!f.exists()) {
-				LauncherOptions.noUpdateLauncher = true;
-				if(LauncherOptions.debug)
-					System.out.println("Update declined, launching not from jar");
-			} else {
-				launcherFile = f.getAbsoluteFile();
-				if(LauncherOptions.debug)
-					System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
-			}
+		String classPath = System.getProperty("java.class.path");
+		File f = new File(classPath);
+		if(!f.exists()) {
+			if(LauncherOptions.debug && !LauncherOptions.noUpdateLauncher)
+				System.out.println("Update declined, launching not from jar");
+			LauncherOptions.noUpdateLauncher = true;
+		} else {
+			launcherFile = f.getAbsoluteFile();
+			if(LauncherOptions.debug)
+				System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 		}
+		Platform.setImplicitExit(false);
 		// Start launcher from updating
 		new LauncherUpdate();
 	}
@@ -198,6 +199,7 @@ public class Main {
 			fw.close();
 		} catch(Exception e) {
 		}
+		Platform.exit();
 		System.exit(0);
 	}
 	

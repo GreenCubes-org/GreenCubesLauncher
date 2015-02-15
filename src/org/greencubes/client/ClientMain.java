@@ -1,10 +1,12 @@
 package org.greencubes.client;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,9 +67,9 @@ public class ClientMain extends Client {
 	
 	private void addServers(File serversFile) {
 		if(serversFile.exists()) {
-			FileReader fr = null;
+			Reader fr = null;
 			try {
-				fr = new FileReader(serversFile);
+				fr = new InputStreamReader(new FileInputStream(serversFile), "UTF-8");
 				JSONObject obj = new JSONObject(new JSONTokener(fr));
 				JSONArray serversArray = obj.optJSONArray("servers");
 				for(int i = 0; i < serversArray.length(); ++i) {
@@ -217,9 +219,9 @@ public class ClientMain extends Client {
 		Map<String, byte[]> localHashes = new HashMap<String, byte[]>();
 		List<String> remoteFiles = new ArrayList<String>();
 		List<GameFile> newGameFiles = new ArrayList<GameFile>();
-		FileReader fr = null;
+		Reader fr = null;
 		try {
-			fr = new FileReader(new File("version.json"));
+			fr = new InputStreamReader(new FileInputStream(new File("version.json")), "UTF-8");
 		} catch(IOException e) {
 		}
 		JSONObject localVersion = null;

@@ -101,6 +101,12 @@ public class LauncherMain {
 					mainPopup.setMenuBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 					
 					JMenuItem item = mainPopup.addItem(I18n.get("menu.settings"), "/res/menu.settings.png");
+					item.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							new LauncherConfig(frame);
+						}
+					});
 					//item = mainPopup.addItem(I18n.get("menu.help"), "/res/menu.help.png");
 					item = mainPopup.addItem(I18n.get("menu.support"), "/res/menu.support.png");
 					item.addActionListener(new ActionListener() {
