@@ -27,8 +27,8 @@
 "client.start": "Начать играть",
 "client.loading": "Загрузка",
 
-"login.login": "Имя аккаунта:",
-"login.password": "Пароль:",
+"login.login": "Имя аккаунта",
+"login.password": "Пароль",
 "login.forgot": "Забыли пароль?",
 "login.register": "Зарегистрироваться",
 "login.dologin": "Войти",

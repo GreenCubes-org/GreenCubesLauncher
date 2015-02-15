@@ -8,6 +8,7 @@ public class UIScheme {
 	public static final Color BIG_BUTTON = getColor(0x649494);
 	public static final Color EMPTY = getColor(0, 0);
 	public static final Color TEXT_COLOR = getColor(0xE5FFFF);
+	public static final Color TEXT_COLOR_DISABLED = getColor(0x0c1313);
 	
 	public static final String TEXT_FONT = "Clear Sans Light";
 	public static final String TITLE_FONT = "Lato";

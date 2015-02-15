@@ -37,6 +37,8 @@ import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.JPanelBG;
+import org.greencubes.swing.PlaceholderPasswordField;
+import org.greencubes.swing.PlaceholderTextField;
 import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.swing.UndecoratedJFrame;
@@ -63,7 +65,7 @@ public class LauncherLogin {
 		frame.setUndecorated(true);
 		frame.setResizable(false);
 		frame.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
-			setPreferredSize(new Dimension(400, 340));
+			setPreferredSize(new Dimension(400, 300));
 			// Top line
 			add(new JPanelBG("/res/login.top.png") {{ // Window buttons
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
@@ -95,7 +97,7 @@ public class LauncherLogin {
 			add(Box.createVerticalStrut(20));
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 				max(this, null, 26);
-				add(Box.createHorizontalStrut(20));
+				add(Box.createHorizontalGlue());
 				add(new JLabel(I18n.get("login.title").toUpperCase()) {{
 					setForeground(UIScheme.TEXT_COLOR);
 					setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
@@ -246,14 +248,8 @@ public class LauncherLogin {
 		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 			max(this, null, 24);
 			add(Box.createHorizontalGlue());
-			add(new JLabel(I18n.get("login.login")) {{
-				setVerticalAlignment(JLabel.CENTER);
-				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-			}});
-			add(Box.createHorizontalStrut(5));
-			add(userField = new JTextField() {{
-				s(this, 250, 24);
+			add(userField = new PlaceholderTextField() {{
+				s(this, 200, 24);
 				setForeground(UIScheme.TEXT_COLOR);
 				setBackground(UIScheme.INPUT_BG);
 				setCaretColor(UIScheme.TEXT_COLOR);
@@ -261,33 +257,32 @@ public class LauncherLogin {
 				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
 				if(savedUser != null)
 					setText(savedUser);
+				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
+				setPlaceholder(I18n.get("login.login"));
 			}});
-			add(Box.createHorizontalStrut(20));
+			add(Box.createHorizontalGlue());
 		}});
 		
-		centerPanel.add(Box.createVerticalStrut(20));
+		centerPanel.add(Box.createVerticalStrut(12));
 		
 		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 			max(this, null, 24);
 			add(Box.createHorizontalGlue());
-			add(new JLabel(I18n.get("login.password")) {{
-				setAlignmentX(JLabel.CENTER_ALIGNMENT);
-				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-			}});
-			add(Box.createHorizontalStrut(5));
-			add(passwordField = new JPasswordField() {{
-				s(this, 250, 24);
+			add(passwordField = new PlaceholderPasswordField() {{
+				s(this, 200, 24);
 				setForeground(UIScheme.TEXT_COLOR);
 				setBackground(UIScheme.INPUT_BG);
 				setCaretColor(UIScheme.TEXT_COLOR);
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
 				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
+				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
+				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
+				setPlaceholder(I18n.get("login.password"));
 			}});
-			add(Box.createHorizontalStrut(20));
+			add(Box.createHorizontalGlue());
 		}});
 		
-		centerPanel.add(Box.createVerticalStrut(10));
+		centerPanel.add(Box.createVerticalStrut(4));
 		
 		final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
 		final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
@@ -296,7 +291,6 @@ public class LauncherLogin {
 			max(this, null, 20);
 			add(Box.createHorizontalGlue());
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-				s(this, 250, 24);
 				boolean checked = LauncherOptions.autoLogin;
 				add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), checked ? iconChecked : iconUnchecked, checked) {{
 					setOpaque(false);
@@ -315,85 +309,48 @@ public class LauncherLogin {
 					setToolTipText(I18n.get("login.autologin.tip"));
 				}});
 			}});
-			add(Box.createHorizontalStrut(20));
+			add(Box.createHorizontalGlue());
 		}});
 		
-		centerPanel.add(Box.createVerticalStrut(10));
+		centerPanel.add(Box.createVerticalStrut(4));
 		
 		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 			max(this, null, 36);
 			add(Box.createHorizontalGlue());
-			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-				s(this, 250, 36);
-				add(new JPanel() {{
-					s(this, 200, 36);
-					setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, null, 4));
-					setBackground(UIScheme.BIG_BUTTON);
-					setLayout(new GridBagLayout());
-					add(new JLabel() {{
-						setOpaque(false);
-						setAlignmentX(JLabel.CENTER_ALIGNMENT);
-						setForeground(UIScheme.TEXT_COLOR);
-						setText(I18n.get("login.dologin").toUpperCase());
-						setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
-					}}, new GridBagConstraints() {{
-						weightx = 1;
-						weighty = 1;
-					}});
-					addMouseListener(new AbstractMouseListener() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							doLogin();
-						}
-					});
+			add(new JPanel() {{
+				s(this, 200, 36);
+				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, null, 4));
+				setBackground(UIScheme.BIG_BUTTON);
+				setLayout(new GridBagLayout());
+				add(new JLabel() {{
+					setOpaque(false);
+					setAlignmentX(JLabel.CENTER_ALIGNMENT);
+					setForeground(UIScheme.TEXT_COLOR);
+					setText(I18n.get("login.dologin").toUpperCase());
+					setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
+				}}, new GridBagConstraints() {{
+					weightx = 1;
+					weighty = 1;
 				}});
-			}});
-			add(Box.createHorizontalStrut(20));
-		}});
-		
-		centerPanel.add(Box.createVerticalStrut(10));
-		
-		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-			max(this, null, 24);
-			add(Box.createHorizontalGlue());
-			add(new JLabel(I18n.get("login.forgot")) {{
-				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-				underline(this);
-				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
+						doLogin();
 					}
 				});
 			}});
-			add(Box.createHorizontalStrut(20));
-		}});
-		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-			max(this, null, 24);
 			add(Box.createHorizontalGlue());
-			add(new JLabel(I18n.get("login.register")) {{
-				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-				underline(this);
-				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				addMouseListener(new AbstractMouseListener() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
-					}
-				});
-			}});
-			add(Box.createHorizontalStrut(20));
 		}});
+		
+		centerPanel.add(Box.createVerticalStrut(4));
+		
 		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 			max(this, null, 24);
 			add(Box.createHorizontalGlue());
 			add(new JLabel(I18n.get("login.dologinoffline")) {{
 				setForeground(UIScheme.TITLE_COLOR);
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-				underline(this);
+				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
 					@Override
@@ -402,8 +359,42 @@ public class LauncherLogin {
 					}
 				});
 			}});
-			add(Box.createHorizontalStrut(20));
+			add(Box.createHorizontalGlue());
 		}});
+		
+		centerPanel.add(Box.createVerticalStrut(4));
+		
+		centerPanel.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+			max(this, null, 24);
+			add(Box.createHorizontalStrut(25));
+			add(new JLabel(I18n.get("login.register")) {{
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				//underline(this);
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				addMouseListener(new AbstractMouseListener() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
+					}
+				});
+			}});
+			add(Box.createHorizontalGlue());
+			add(new JLabel(I18n.get("login.forgot")) {{
+				setForeground(UIScheme.TITLE_COLOR);
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				//underline(this);
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				addMouseListener(new AbstractMouseListener() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
+					}
+				});
+			}});
+			add(Box.createHorizontalStrut(25));
+		}});
+		
 		
 		centerPanel.add(Box.createVerticalGlue());
 		centerPanel.revalidate();
@@ -445,11 +436,11 @@ public class LauncherLogin {
 		c.setMinimumSize(d);
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	/*@SuppressWarnings({"unchecked", "rawtypes"})
 	private static void underline(JLabel label) {
 		Font font = label.getFont();
 		Map attributes = font.getAttributes();
 		attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 		label.setFont(font.deriveFont(attributes));
-	}
+	}*/
 }
