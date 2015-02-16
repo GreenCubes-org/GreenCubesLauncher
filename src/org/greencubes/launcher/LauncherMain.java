@@ -1,13 +1,16 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -29,6 +32,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -78,6 +82,7 @@ public class LauncherMain {
 	private GPopupMenu serverListMenu;
 	private List<Server> currentServerList = new ArrayList<Server>();
 	private Server lastSelectedServer;
+	private JPanelBG logoPanel;
 	
 	//@formatter:off
 	/**
@@ -93,7 +98,7 @@ public class LauncherMain {
 			setPreferredSize(new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640)));
 			// Top line
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.EMPTY) {{
-				add(new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
+				add(logoPanel = new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
 					s(this, 96, 96);
 					final GPopupMenu mainPopup = new GPopupMenu(false);
 					addMouseListener(new DropdownListener(mainPopup, 0, 89, 200L, 0, 0));
@@ -246,7 +251,69 @@ public class LauncherMain {
 			public void run() {
 				displayPlayPanel();
 			}
-		});	
+		});
+		if(!Main.getConfig().optBoolean("tipshown") || Main.TEST) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					final JDialog dialog = new JDialog(frame, Dialog.ModalityType.APPLICATION_MODAL);
+					dialog.setUndecorated(true);
+					dialog.getRootPane().setLayout(new BorderLayout());
+					dialog.getRootPane().setOpaque(false);
+					dialog.getContentPane().setBackground(UIScheme.EMPTY);
+					dialog.setBackground(UIScheme.EMPTY);
+					dialog.getRootPane().add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+						setBorder(GAWTUtil.popupBorder());
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
+							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+							add(new JLabel() {{
+								setHorizontalAlignment(SwingConstants.RIGHT);
+								setVerticalAlignment(SwingConstants.CENTER);
+								setForeground(new Color(176, 230, 238, 255));
+								setText("<html><div style=\"width: 300px;\">" + I18n.get("menu.tip") + "</div></html>");
+								setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 14));
+								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							}});
+							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+								add(Box.createHorizontalGlue());
+								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.BACKGROUND) {{
+									add(Box.createHorizontalGlue());
+									s(this, 50, 28);
+									add(new JLabel() {{
+										setOpaque(false);
+										setAlignmentX(JLabel.CENTER_ALIGNMENT);
+										setForeground(UIScheme.TEXT_COLOR);
+										setText(I18n.get("menu.tip.ok"));
+										setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 20));
+									}}, new GridBagConstraints() {{
+										weightx = 1;
+										weighty = 1;
+									}});
+									add(Box.createHorizontalGlue());
+									addMouseListener(new AbstractMouseListener() {
+										@Override
+										public void mouseClicked(MouseEvent e) {
+											try {
+												Main.getConfig().put("tipshown", true);
+											} catch(JSONException e1) {}
+											dialog.setVisible(false);
+											dialog.dispose();
+										}
+									});
+								}});
+							}});
+							
+						}});						
+					}});
+					dialog.pack();
+					dialog.validate();
+					Point p = logoPanel.getLocationOnScreen();
+					dialog.setLocation(p.x, p.y + logoPanel.getHeight());
+					dialog.setVisible(true);
+				}
+			});
+		}
 	}
 	//@formatter:on
 	
@@ -446,21 +513,27 @@ public class LauncherMain {
 				progressBarContainer = null;
 			} else if(clientStatus.getStatusProgress() >= 0) {
 				if(progressBarContainer == null) {
-					clientStatusPanel.add(progressBarContainer = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.PROGRESSBAR_BG) {{
-						Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
-						s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
-						setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.PROGRESSBAR_BORDER, 4));
-						add(new JPanel() {{
-							s(this, 1, 1);
-							setBackground(UIScheme.EMPTY);
-						}});
-						add(progressBar = new JPanel() {{
-							setBackground(UIScheme.PROGRESSBAR_BAR);
-							s(this, 18, 18);
-							setBorder(new RoundedCornerBorder(UIScheme.PROGRESSBAR_BG, null, 4));
-						}});
-						
-					}});
+					clientStatusPanel.add(progressBarContainer = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.PROGRESSBAR_BG) {
+						{
+							Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
+							s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
+							setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.PROGRESSBAR_BORDER, 4));
+							add(new JPanel() {
+								{
+									s(this, 1, 1);
+									setBackground(UIScheme.EMPTY);
+								}
+							});
+							add(progressBar = new JPanel() {
+								{
+									setBackground(UIScheme.PROGRESSBAR_BAR);
+									s(this, 18, 18);
+									setBorder(new RoundedCornerBorder(UIScheme.PROGRESSBAR_BG, null, 4));
+								}
+							});
+							
+						}
+					});
 					clientStatusPanel.getLayout().layoutContainer(clientStatusPanel);
 				}
 				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 18);
@@ -468,46 +541,54 @@ public class LauncherMain {
 			}
 			if(clientStatus.getStatus() == Status.READY && currentClient.getServers().size() > 0) {
 				if(serverSelect == null) {
-					serverSelectPanel.add(serverSelect = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {{
-						setBorder(BorderFactory.createLineBorder(UIScheme.MENU_BORDER, 1));
-						s(this, 272, 24);
-						serverListMenu = new GPopupMenu(true);
-						serverListMenu.setMenuColors(UIScheme.MENU_DD_BG, UIScheme.TITLE_COLOR, UIScheme.MENU_DD_BG_SEL, UIScheme.TITLE_COLOR_SEL);
-						addMouseListener(new MouseAdapter() {
-							@Override
-							public void mousePressed(MouseEvent e) {
-								if(e.isConsumed())
-									return;
-								if(e.getButton() == MouseEvent.BUTTON1) {
-									if(serverListMenu.isVisible()) {
-										serverListMenu.setVisible(false);
-									} else {
-										serverListMenu.show(serverSelect, false);
+					serverSelectPanel.add(serverSelect = new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
+						{
+							setBorder(BorderFactory.createLineBorder(UIScheme.MENU_BORDER, 1));
+							s(this, 272, 24);
+							serverListMenu = new GPopupMenu(true);
+							serverListMenu.setMenuColors(UIScheme.MENU_DD_BG, UIScheme.TITLE_COLOR, UIScheme.MENU_DD_BG_SEL, UIScheme.TITLE_COLOR_SEL);
+							addMouseListener(new MouseAdapter() {
+								@Override
+								public void mousePressed(MouseEvent e) {
+									if(e.isConsumed())
+										return;
+									if(e.getButton() == MouseEvent.BUTTON1) {
+										if(serverListMenu.isVisible()) {
+											serverListMenu.setVisible(false);
+										} else {
+											serverListMenu.show(serverSelect, false);
+										}
 									}
 								}
-							}
-						});
-						serverListMenu.setBorder(BorderFactory.createEmptyBorder());
-						serverListMenu.setOpaque(false);
-						serverListMenu.setMenuSize(new Dimension(272, 24));
-						serverListMenu.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
-						add(new JPanel() {{
-							s(this, 20, 0);
-							setBackground(UIScheme.EMPTY);
-						}});
-						add(selectedServerName = new JLabel("") {{
-							setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
-							setForeground(UIScheme.TITLE_COLOR);
-						}});
-						add(Box.createHorizontalGlue());
-						add(new JPanelBG("/res/menu.arrow.png") {{
-							s(this, 22, 22);
-							setBackground(UIScheme.EMPTY);
-						}});
-					}});
+							});
+							serverListMenu.setBorder(BorderFactory.createEmptyBorder());
+							serverListMenu.setOpaque(false);
+							serverListMenu.setMenuSize(new Dimension(272, 24));
+							serverListMenu.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+							add(new JPanel() {
+								{
+									s(this, 20, 0);
+									setBackground(UIScheme.EMPTY);
+								}
+							});
+							add(selectedServerName = new JLabel("") {
+								{
+									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+									setForeground(UIScheme.TITLE_COLOR);
+								}
+							});
+							add(Box.createHorizontalGlue());
+							add(new JPanelBG("/res/menu.arrow.png") {
+								{
+									s(this, 22, 22);
+									setBackground(UIScheme.EMPTY);
+								}
+							});
+						}
+					});
 				}
 				updateServerList();
-			} else if(serverSelect != null){
+			} else if(serverSelect != null) {
 				serverSelect.getParent().remove(serverSelect);
 				serverSelect = null;
 			}
@@ -540,17 +621,17 @@ public class LauncherMain {
 	}
 	
 	private void openClientBrowser(final Client client, final JFXPanel panel) {
-		 Platform.runLater(new Runnable() {
-            @Override 
-            public void run() {
-                browser = new WebView();
-                WebEngine engine = browser.getEngine();
-                Scene sc = new Scene(browser);
-                sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
-                panel.setScene(sc);
-                client.openBrowserPage(engine);
-            }
-        });
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				browser = new WebView();
+				WebEngine engine = browser.getEngine();
+				Scene sc = new Scene(browser);
+				sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
+				panel.setScene(sc);
+				client.openBrowserPage(engine);
+			}
+		});
 	}
 	
 	private static void s(Component c, int width, int height) {

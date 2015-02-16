@@ -1,5 +1,6 @@
 package org.greencubes.swing;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,50 +38,54 @@ public class DropdownListener extends MouseAdapter {
 		this.startY = startY;
 	}
 	
+	public void show(Component component, int x, int y) {
+		int targetX;
+		int targetY;
+		if(useCustomOffset) {
+			targetX = offsetX;
+			targetY = offsetY;
+		} else {
+			targetX = x;
+			targetY = y;
+		}
+		if(animation > 0) {
+			popup.show(component, startX, startY);
+			final long steps = animation / 5;
+			final float stepX = (targetX - startX) / (float) steps;
+			final float stepY = (targetY - startY) / (float) steps;
+			final Timer t = new Timer(5, null);
+			t.addActionListener(new ActionListener() {
+				
+				int i = 0;
+				float mvX;
+				float mvY;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					mvX += stepX;
+					mvY += stepY;
+					int mx = (int) mvX;
+					int my = (int) mvY;
+					mvX -= mx;
+					mvY -= my;
+					Point pos = popup.getLocationOnScreen();
+					popup.setLocation(pos.x + mx, pos.y + my);
+					if(++i == steps)
+						t.stop();
+				}
+			});
+			t.start();
+		} else {
+			popup.show(component, targetX, targetY);
+		}
+	}
+	
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.isConsumed())
 			return;
 		if(e.getButton() == MouseEvent.BUTTON1) {
-			int targetX;
-			int targetY;
-			if(useCustomOffset) {
-				targetX = offsetX;
-				targetY = offsetY;
-			} else {
-				targetX = e.getX();
-				targetY = e.getY();
-			}
-			if(animation > 0) {
-				popup.show(e.getComponent(), startX, startY);
-				final long steps = animation / 5;
-				final float stepX = (targetX - startX) / (float) steps;
-				final float stepY = (targetY - startY) / (float) steps;
-				final Timer t = new Timer(5, null);
-				t.addActionListener(new ActionListener() {
-					
-					int i = 0;
-					float mvX;
-					float mvY;
-	
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						mvX += stepX;
-						mvY += stepY;
-						int mx = (int) mvX;
-						int my = (int) mvY;
-						mvX -= mx;
-						mvY -= my;
-						Point pos = popup.getLocationOnScreen();
-						popup.setLocation(pos.x + mx, pos.y + my);
-						if(++i == steps)
-							t.stop();
-					}
-				});
-				t.start();
-			} else {
-				popup.show(e.getComponent(), targetX, targetY);
-			}
+			show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
 }
