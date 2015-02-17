@@ -1,10 +1,8 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -37,6 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -256,24 +255,18 @@ public class LauncherMain {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					final JDialog dialog = new JDialog(frame, Dialog.ModalityType.APPLICATION_MODAL);
+					final JDialog dialog = new JDialog(frame, true);
 					dialog.setUndecorated(true);
-					dialog.getRootPane().setLayout(new BorderLayout());
-					dialog.getRootPane().setOpaque(false);
-					dialog.getContentPane().setBackground(UIScheme.EMPTY);
 					dialog.setBackground(UIScheme.EMPTY);
-					dialog.getRootPane().add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+					dialog.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 						setBorder(GAWTUtil.popupBorder());
 						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
 							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-							add(new JLabel() {{
-								setHorizontalAlignment(SwingConstants.RIGHT);
-								setVerticalAlignment(SwingConstants.CENTER);
-								setForeground(new Color(176, 230, 238, 255));
-								setText("<html><div style=\"width: 300px;\">" + I18n.get("menu.tip") + "</div></html>");
-								setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 14));
-								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-							}});
+							JTextPane pane = GAWTUtil.fixedWidthTextPane(I18n.get("menu.tip"), 300);
+							pane.setForeground(new Color(176, 230, 238, 255));
+							pane.setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 14));
+							GAWTUtil.fixtTextPaneWidth(pane, 300);
+							add(pane);
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 								setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
 								add(Box.createHorizontalGlue());
@@ -306,11 +299,19 @@ public class LauncherMain {
 							
 						}});						
 					}});
+					//dialog.revalidate();
 					dialog.pack();
-					dialog.validate();
 					Point p = logoPanel.getLocationOnScreen();
 					dialog.setLocation(p.x, p.y + logoPanel.getHeight());
 					dialog.setVisible(true);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							dialog.pack();
+							dialog.revalidate();
+							
+							dialog.repaint();
+						}
+					});
 				}
 			});
 		}

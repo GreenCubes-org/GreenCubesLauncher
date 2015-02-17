@@ -21,11 +21,11 @@ public class DropdownListener extends MouseAdapter {
 	private int startY;
 	
 	public DropdownListener(JPopupMenu popupMenu) {
-		popup = popupMenu;
+		this.popup = popupMenu;
 	}
 	
 	public DropdownListener(JPopupMenu popupMenu, int offsetX, int offsetY) {
-		popup = popupMenu;
+		this.popup = popupMenu;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.useCustomOffset = true;
@@ -41,42 +41,40 @@ public class DropdownListener extends MouseAdapter {
 	public void show(Component component, int x, int y) {
 		int targetX;
 		int targetY;
-		if(useCustomOffset) {
-			targetX = offsetX;
-			targetY = offsetY;
+		if(this.useCustomOffset) {
+			targetX = this.offsetX;
+			targetY = this.offsetY;
 		} else {
 			targetX = x;
 			targetY = y;
 		}
-		if(animation > 0) {
-			popup.show(component, startX, startY);
-			final long steps = animation / 5;
-			final float stepX = (targetX - startX) / (float) steps;
-			final float stepY = (targetY - startY) / (float) steps;
+		if(this.animation > 0) {
+			this.popup.show(component, this.startX, this.startY);
+			final long steps = this.animation / 5;
+			final float stepX = (targetX - this.startX) / (float) steps;
+			final float stepY = (targetY - this.startY) / (float) steps;
 			final Timer t = new Timer(5, null);
 			t.addActionListener(new ActionListener() {
-				
 				int i = 0;
 				float mvX;
 				float mvY;
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					mvX += stepX;
-					mvY += stepY;
-					int mx = (int) mvX;
-					int my = (int) mvY;
-					mvX -= mx;
-					mvY -= my;
-					Point pos = popup.getLocationOnScreen();
-					popup.setLocation(pos.x + mx, pos.y + my);
-					if(++i == steps)
+					this.mvX += stepX;
+					this.mvY += stepY;
+					int mx = (int) this.mvX;
+					int my = (int) this.mvY;
+					this.mvX -= mx;
+					this.mvY -= my;
+					Point pos = DropdownListener.this.popup.getLocationOnScreen();
+					DropdownListener.this.popup.setLocation(pos.x + mx, pos.y + my);
+					if(++this.i == steps)
 						t.stop();
 				}
 			});
 			t.start();
 		} else {
-			popup.show(component, targetX, targetY);
+			this.popup.show(component, targetX, targetY);
 		}
 	}
 	
@@ -84,8 +82,7 @@ public class DropdownListener extends MouseAdapter {
 	public void mousePressed(MouseEvent e) {
 		if(e.isConsumed())
 			return;
-		if(e.getButton() == MouseEvent.BUTTON1) {
+		if(e.getButton() == MouseEvent.BUTTON1)
 			show(e.getComponent(), e.getX(), e.getY());
-		}
 	}
 }

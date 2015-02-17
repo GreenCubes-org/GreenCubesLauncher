@@ -63,7 +63,7 @@ public class LauncherLogin {
 		frame.setUndecorated(true);
 		frame.setResizable(false);
 		frame.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
-			setPreferredSize(new Dimension(400, 300));
+			//setPreferredSize(new Dimension(400, 300));
 			// Top line
 			add(new JPanelBG("/res/login.top.png") {{ // Window buttons
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
@@ -105,7 +105,7 @@ public class LauncherLogin {
 			add(Box.createVerticalStrut(15));
 			// Center panel
 			add(centerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null));
-			add(Box.createVerticalGlue());
+			add(Box.createVerticalStrut(15));
 		}}, BorderLayout.CENTER);
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
@@ -232,6 +232,7 @@ public class LauncherLogin {
 			}});
 		}});
 		centerPanel.revalidate();
+		frame.pack();
 		frame.repaint();
 	}
 	//@formatter:on
@@ -347,7 +348,7 @@ public class LauncherLogin {
 			add(Box.createHorizontalGlue());
 			add(new JLabel(I18n.get("login.dologinoffline")) {{
 				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
@@ -367,7 +368,7 @@ public class LauncherLogin {
 			add(Box.createHorizontalStrut(25));
 			add(new JLabel(I18n.get("login.register")) {{
 				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
@@ -380,7 +381,7 @@ public class LauncherLogin {
 			add(Box.createHorizontalGlue());
 			add(new JLabel(I18n.get("login.forgot")) {{
 				setForeground(UIScheme.TITLE_COLOR);
-				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				addMouseListener(new AbstractMouseListener() {
@@ -396,6 +397,7 @@ public class LauncherLogin {
 		
 		centerPanel.add(Box.createVerticalGlue());
 		centerPanel.revalidate();
+		frame.pack();
 		frame.repaint();
 		
 		passwordField.setActionCommand("OK");

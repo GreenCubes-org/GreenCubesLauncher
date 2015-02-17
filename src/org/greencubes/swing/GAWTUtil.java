@@ -28,20 +28,29 @@ import org.greencubes.main.Main;
 
 public class GAWTUtil {
 	
-	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxHeight) {
-		try {
-			JTextPane jtp = new JTextPane();
-			jtp.setEditable(false);
-			jtp.setOpaque(false);
-			jtp.setHighlighter(null);
-		    Document doc = jtp.getDocument();
-		    doc.insertString(doc.getLength(), dialogText, new SimpleAttributeSet());
-		    jtp.setSize(new Dimension(maxHeight, 10));
-		    jtp.setPreferredSize(new Dimension(maxHeight, jtp.getPreferredSize().height));
-		    return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
-	    } catch(BadLocationException e) {
-			throw new IllegalArgumentException(e);
+	public static JTextPane fixedWidthTextPane(String text, int width) {
+		JTextPane jtp = new JTextPane();
+		jtp.setEditable(false);
+		jtp.setOpaque(false);
+		jtp.setHighlighter(null);
+	    Document doc = jtp.getDocument();
+	    try {
+			doc.insertString(doc.getLength(), text, new SimpleAttributeSet());
+		} catch(BadLocationException e) {
+			throw new AssertionError(e);
 		}
+	    fixtTextPaneWidth(jtp, width);
+	    return jtp;
+	}
+	
+	public static void fixtTextPaneWidth(JTextPane pane, int width) {
+		pane.setSize(new Dimension(width, 10));
+		pane.setPreferredSize(new Dimension(width, pane.getPreferredSize().height));
+	}
+	
+	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxWidth) {
+		JTextPane jtp = fixedWidthTextPane(dialogText, maxWidth);
+		return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
 	}
 	
 	public static void removeMouseListeners(JComponent c) {

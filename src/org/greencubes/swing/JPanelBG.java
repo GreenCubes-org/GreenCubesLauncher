@@ -34,10 +34,10 @@ public class JPanelBG extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if(fill)
-			g.drawImage(bg, paddingLeft, paddingTop, g.getClipBounds().width, g.getClipBounds().height, this);
+		if(this.fill)
+			g.drawImage(this.bg, this.paddingLeft, this.paddingTop, g.getClipBounds().width, g.getClipBounds().height, this);
 		else
-			g.drawImage(bg, paddingLeft, paddingTop, this);
+			g.drawImage(this.bg, this.paddingLeft, this.paddingTop, this);
 	}
 	
 }
