@@ -251,7 +251,7 @@ public class LauncherMain {
 				displayPlayPanel();
 			}
 		});
-		if(!Main.getConfig().optBoolean("tipshown") || Main.TEST) {
+		if(!Main.getConfig().optBoolean("tipshown")) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

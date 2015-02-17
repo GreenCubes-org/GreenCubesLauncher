@@ -1,11 +1,13 @@
 package org.greencubes.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.ScrollBarUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
@@ -33,14 +37,14 @@ public class GAWTUtil {
 		jtp.setEditable(false);
 		jtp.setOpaque(false);
 		jtp.setHighlighter(null);
-	    Document doc = jtp.getDocument();
-	    try {
+		Document doc = jtp.getDocument();
+		try {
 			doc.insertString(doc.getLength(), text, new SimpleAttributeSet());
 		} catch(BadLocationException e) {
 			throw new AssertionError(e);
 		}
-	    fixtTextPaneWidth(jtp, width);
-	    return jtp;
+		fixtTextPaneWidth(jtp, width);
+		return jtp;
 	}
 	
 	public static void fixtTextPaneWidth(JTextPane pane, int width) {
@@ -51,6 +55,32 @@ public class GAWTUtil {
 	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxWidth) {
 		JTextPane jtp = fixedWidthTextPane(dialogText, maxWidth);
 		return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
+	}
+	
+	public static ScrollBarUI customScrollBarUI(final Color customBackgroundColor, final Color customThumbColor) {
+		return new BasicScrollBarUI() {
+			@Override
+			protected void installComponents() {
+				super.installComponents();
+				scrollbar.remove(decrButton);
+				decrButton.setPreferredSize(new Dimension(0, 0));
+				scrollbar.remove(incrButton);
+			}
+			
+			@Override
+			protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+				g.translate(thumbBounds.x, thumbBounds.y);
+				g.setColor(customThumbColor);
+				g.fillRect(0, 0, thumbBounds.width, thumbBounds.height);
+				g.translate(-thumbBounds.x, -thumbBounds.y);
+			}
+			
+			@Override
+			protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+				g.setColor(customBackgroundColor);
+		        g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+			}
+		};
 	}
 	
 	public static void removeMouseListeners(JComponent c) {
@@ -115,6 +145,7 @@ public class GAWTUtil {
 					throw new AssertionError(e);
 				}
 			}
+			
 			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 				g.translate(x, y);
@@ -156,7 +187,7 @@ public class GAWTUtil {
 				// Left-top padding
 				g.drawImage(icon, 0, 10 + 13, 13, 10 + 13 + 7, 1, 25, 1 + 13, 25 + 7, c);
 			}
-
+			
 			@Override
 			public boolean isBorderOpaque() {
 				return false;

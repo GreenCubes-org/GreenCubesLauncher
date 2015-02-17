@@ -1,6 +1,5 @@
 package org.greencubes.main;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
@@ -58,12 +57,7 @@ public class Main {
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		UIManager.put("PopupMenu.consumeEventOnClose", true);
-		UIManager.put("ScrollBar.shadow", new Color(255, 0, 0, 255));
-        UIManager.put("ScrollBar.highlight", new Color(0, 255, 0, 255));
-        UIManager.put("ScrollBar.darkShadow", new Color(0, 0, 255, 255));
-        //UIManager.put("ScrollBar.thumb");
-        //UIManager.put("ScrollBar.thumbShadow");
-        //UIManager.put("ScrollBar.thumbHighlight");
+		UIManager.put("ScrollBar.width", 12);
 		// Check arguments
 		for(String arg : args) {
 			if(arg.equals("-debug"))
