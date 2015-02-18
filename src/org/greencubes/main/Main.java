@@ -26,6 +26,7 @@ import javax.crypto.spec.PBEParameterSpec;
 import javax.swing.UIManager;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherInstanceError;
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.launcher.LauncherUpdate;
@@ -53,9 +54,11 @@ public class Main {
 	public static Frame currentFrame;
 	
 	public static void main(String[] args) {
+		// Setup some system properties before real startup
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		Downloader.setupBetterKeystore();
 		UIManager.put("PopupMenu.consumeEventOnClose", true);
 		UIManager.put("ScrollBar.width", 12);
 		// Check arguments

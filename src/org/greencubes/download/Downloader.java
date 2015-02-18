@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 import org.greencubes.util.io.GByteArrayOutputStream;
 
@@ -363,5 +365,18 @@ public class Downloader {
 		if(lastError != null)
 			throw lastError;
 		return null;
+	}
+	
+	public static void setupBetterKeystore() {
+		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.WINDOWS) {
+			try {
+				KeyStore ks = KeyStore.getInstance("Windows-ROOT");
+				ks.load(null, null);
+				System.setProperty("javax.net.ssl.trustStoreType", "Windows-ROOT");
+				System.out.println("System ketsore is set up");
+			} catch(Exception e) {
+				// Ignore: windows keystore is bad, left default
+			}
+		}
 	}
 }
