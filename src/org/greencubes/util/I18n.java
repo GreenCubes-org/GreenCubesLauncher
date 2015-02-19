@@ -13,13 +13,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.greencubes.main.Main;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class I18n {
 	
 	public static final String DEFAULT_LANG = "ruRU";
-	public static final String[] supportedLanguages = new String[] {"ruRU"};
+	public static final String[] supportedLanguages = new String[] {"ruRU","enUS"};
 	
 	public static Map<String, String> langMap = new HashMap<String, String>();
 	public static Locale currentLocale;
@@ -66,7 +67,9 @@ public class I18n {
 	private static void loadLanguage(String lang) {
 		String l = Locale.getDefault().getLanguage();
 		String c = Locale.getDefault().getCountry();
-		if(isSupportedLang(l + c.toUpperCase())) {
+		if(isSupportedLang(lang)) {
+			currentLanguage = lang;
+		} else if(isSupportedLang(l + c.toUpperCase())) {
 			currentLanguage = l + c.toUpperCase();
 		} else {
 			for(String sl : supportedLanguages) {
@@ -98,5 +101,8 @@ public class I18n {
 	
 	static {
 		loadLanguage(Main.getConfig().optString("lang", null));
+		try {
+			Main.getConfig().put("lang", currentLanguage);
+		} catch(JSONException e) {}
 	}
 }

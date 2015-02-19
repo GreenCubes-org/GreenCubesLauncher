@@ -60,7 +60,13 @@ public class LauncherOptions {
 	public static JSONObject userInfo;
 	
 	public static enum OnStartAction {
-		CLOSE, MINIMIZE, HIDE, NO;
+		CLOSE("settings.onstart.close"), MINIMIZE("settings.onstart.minimize"), HIDE("settings.onstart.hide"), NO("settings.onstart.no");
+		
+		public final String langKey;
+		
+		private OnStartAction(String langKey) {
+			this.langKey = langKey;
+		}
 	}
 	
 	public static Downloader getClientDownloader(Client client) {

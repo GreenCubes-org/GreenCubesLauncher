@@ -2,7 +2,7 @@
 "title": "GreenCubes",
 "os.error": "Ваша операционная система не поддерживается!",
 
-"error": "Ошибка",
+"error": "Error",
 "oneinstance": "Только один лаунчер может быть запущен одновременно!",
 
 "launcher.update.title": "Обновление",
@@ -89,6 +89,6 @@
 "settings.onstart.hide": "Скрыть ланучер",
 "settings.onstart.no": "Ничего",
 
-"lang.ruRU": "Русский",
-"lang.enUS": "English (Английский)",
+"lang.ruRU": "Русский (Russian)",
+"lang.enUS": "English",
 }

@@ -103,7 +103,7 @@ public class GAWTUtil {
 	public static MouseListener createMinimizeListener(final Frame frame) {
 		return new AbstractMouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				frame.setState(Frame.ICONIFIED);
 			}
 		};
@@ -112,7 +112,7 @@ public class GAWTUtil {
 	public static MouseListener createCloseListener(final Frame lastFrame) {
 		return new AbstractMouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				lastFrame.dispose();
 				Main.close();
 			}
@@ -122,7 +122,7 @@ public class GAWTUtil {
 	public static MouseListener createMaximizeListener(final UndecoratedJFrame frame) {
 		return new AbstractMouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				int state = frame.getExtendedState();
 				if((state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
 					frame.setExtendedState(Frame.NORMAL);

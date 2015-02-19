@@ -1,12 +1,14 @@
 package org.greencubes.swing;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.border.Border;
@@ -23,6 +25,7 @@ public class GPopupMenu extends JPopupMenu {
 	private Dimension size;
 	private int menuPadding = 0;
 	private Border menuBorder = BorderFactory.createEmptyBorder();
+	private List<JMenuItem> items = new ArrayList<JMenuItem>();
 	
 	public GPopupMenu(boolean up) {
 		this.up = up;
@@ -30,6 +33,7 @@ public class GPopupMenu extends JPopupMenu {
 	
 	public JMenuItem addItem(String title, String iconPath) {
 		JMenuItem item = new JMenuItem(title, iconPath == null ? null : new ImageIcon(GPopupMenu.class.getResource(iconPath))) {{
+			setIconTextGap(0);
 			setBackground(GPopupMenu.this.background);
 			setForeground(GPopupMenu.this.foreground);
 			setFont(GPopupMenu.this.font);
@@ -44,8 +48,13 @@ public class GPopupMenu extends JPopupMenu {
 			}
 			setBorder(menuBorder);
 		}};
+		items.add(item);
 		add(item);
 		return item;
+	}
+	
+	public List<JMenuItem> getItems() {
+		return items;
 	}
 	
 	public void setMenuBorder(Border border) {
@@ -67,14 +76,14 @@ public class GPopupMenu extends JPopupMenu {
 		this.selectedForeground = selectedForeground;
 	}
 	
-	public void show(JComponent parent, boolean overlay) {
+	public void show(Component parent, boolean overlay) {
 		realShow(parent, overlay);
 		if(up) { // Repeat show for purpose!
 			realShow(parent, overlay);
 		}
 	}
 	
-	private void realShow(JComponent parent, boolean overlay) {
+	private void realShow(Component parent, boolean overlay) {
 		int y;
 		if(overlay) {
 			if(up) {

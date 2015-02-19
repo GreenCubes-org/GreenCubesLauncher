@@ -12,9 +12,9 @@ public class UIScheme {
 	public static final String TEXT_FONT = "Clear Sans Light";
 	public static final String TITLE_FONT = "Lato";
 	
-	public static final Color MAIN_MENU_BG = getColor(0x649494);
+	public static final Color MAIN_MENU_BG = getColor(0x739292);
 	public static final Color TITLE_COLOR = getColor(0xc0e5ed);
-	public static final Color MAIN_MENU_BG_SEL = getColor(0x89C2C2);
+	public static final Color MAIN_MENU_BG_SEL = getColor(0x9bc1c1);
 	public static final Color TITLE_COLOR_SEL = TEXT_COLOR;
 	
 	public static final Color PROGRESSBAR_BG = getColor(0x3A5352);
