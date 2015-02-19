@@ -267,11 +267,10 @@ public class LauncherMain$Play {
 						{
 							Insets isc = clientStatusPanel.getBorder().getBorderInsets(clientStatusPanel);
 							s(this, clientStatusPanel.getWidth() - isc.left - isc.right, 22);
-							setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.PROGRESSBAR_BORDER, 4));
-							add(new JPanel() {
-								{
-									s(this, 1, 1);
-									setBackground(UIScheme.EMPTY);
+							setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.PROGRESSBAR_BORDER, 4) {
+								@Override
+								public Insets getBorderInsets(Component c) {
+									return new Insets(1, 2, 1, 2);
 								}
 							});
 							add(progressBar = new JPanel() {
@@ -286,7 +285,7 @@ public class LauncherMain$Play {
 					});
 					clientStatusPanel.getLayout().layoutContainer(clientStatusPanel);
 				}
-				s(progressBar, (int) ((progressBarContainer.getWidth() - 4) * clientStatus.getStatusProgress()), 18);
+				s(progressBar, (int) ((progressBarContainer.getWidth() - 2) * clientStatus.getStatusProgress()), 18);
 				clientStatusPanel.revalidate();
 			}
 			if(clientStatus.getStatus() == Status.READY && currentClient.getServers().size() > 0) {

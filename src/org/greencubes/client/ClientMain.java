@@ -214,7 +214,7 @@ public class ClientMain extends Client {
 			if(!workingDirectory.mkdirs())
 				status(Status.ERROR, I18n.get("client.update.error.folder"), -1f);
 			else
-				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), 0f);
+				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), -1f);
 			return;
 		}
 		boolean needUpdate = false;
@@ -310,7 +310,7 @@ public class ClientMain extends Client {
 			//status(Status.CHECK, I18n.get("client.update.counting"), (float) i / gameFiles.size());
 		}
 		if(filesToDownload != 0) {
-			status(Status.NEED_UPDATE, I18n.get("client.update.required", filesToDownload, (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload)), 0f);
+			status(Status.NEED_UPDATE, I18n.get("client.update.required", filesToDownload, (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload)), -1f);
 		} else {
 			updateServerList();
 			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
@@ -341,7 +341,7 @@ public class ClientMain extends Client {
 			if(!workingDirectory.mkdirs())
 				status(Status.ERROR, I18n.get("client.update.error.folder"), -1f);
 			else
-				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), 0f);
+				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), -1f);
 			return;
 		}
 		currentVersion = remoteVersion;
