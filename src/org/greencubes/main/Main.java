@@ -177,7 +177,22 @@ public class Main {
 			currentFrame.setState(Frame.ICONIFIED);
 			break;
 		case HIDE:
-			// TODO : Implement hiding?
+			currentFrame.setVisible(false);
+			break;
+		case NO:
+			break;
+		}
+	}
+	
+	public static void performOnClientClose() {
+		switch(LauncherOptions.onClientStart) {
+		case CLOSE:
+			break;
+		case MINIMIZE:
+			currentFrame.setState(Frame.NORMAL);
+			break;
+		case HIDE:
+			currentFrame.setVisible(true);
 			break;
 		case NO:
 			break;

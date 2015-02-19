@@ -26,6 +26,7 @@ public class GPopupMenu extends JPopupMenu {
 	private int menuPadding = 0;
 	private Border menuBorder = BorderFactory.createEmptyBorder();
 	private List<JMenuItem> items = new ArrayList<JMenuItem>();
+	private int iconTextGap = -1;
 	
 	public GPopupMenu(boolean up) {
 		this.up = up;
@@ -33,7 +34,8 @@ public class GPopupMenu extends JPopupMenu {
 	
 	public JMenuItem addItem(String title, String iconPath) {
 		JMenuItem item = new JMenuItem(title, iconPath == null ? null : new ImageIcon(GPopupMenu.class.getResource(iconPath))) {{
-			setIconTextGap(0);
+			if(GPopupMenu.this.iconTextGap != -1)
+				setIconTextGap(GPopupMenu.this.iconTextGap);
 			setBackground(GPopupMenu.this.background);
 			setForeground(GPopupMenu.this.foreground);
 			setFont(GPopupMenu.this.font);
@@ -51,6 +53,10 @@ public class GPopupMenu extends JPopupMenu {
 		items.add(item);
 		add(item);
 		return item;
+	}
+	
+	public void setIconTextGap(int gap) {
+		iconTextGap = gap;
 	}
 	
 	public List<JMenuItem> getItems() {

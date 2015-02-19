@@ -23,6 +23,14 @@
 "client.update.title": "Обновление",
 "client.update.check": "Проверка",
 "client.update.subtitle": "Загрузка",
+"client.update.ready": "Готово к установке",
+"client.update.counting": "Подсчёт размера обновления",
+"client.update.required": "Требуется обновление (%d файлов, %s)",
+"client.update.downloading": "Загрузка %s (%s/%s),\nпрогрес: %s/%s, %s/%s",
+
+"client.update.error.folder": "Невозможно создать папку клиента",
+"client.update.error.generic": "Ошибка обновления #%d",
+"client.update.error.generic2": "Ошибка обновление #%d (%s)",
 
 "client.start": "Начать играть",
 "client.loading": "Загрузка",
@@ -89,6 +97,35 @@
 "settings.onstart.hide": "Скрыть ланучер",
 "settings.onstart.no": "Ничего",
 
+"settings.launcher.language": "Язык лаунчера:",
+"settings.launcher.onstart": "После запуска игры:",
+"settings.launcher.restart.title": "Необходим перезапуск",
+"settings.launcher.restart": "Для вступления некоторых настроек в силу, необходимо перезапустить лаунчер.",
+"settings.launcher.restart.do": "Перезапустить",
+"settings.launcher.restart.skip": "Отложить",
+
+"settings.client.generic": "Общие настройки",
+"settings.client.language": "Язык:",
+"settings.client.graphics": "Настройки графики",
+"settings.client.resolution": "Разрешение экрана:",
+"settings.client.fullscreen": "На весь экран",
+"settings.client.quality": "Качество графики:",
+"settings.client.shadows": "Динамические тени",
+"settings.client.textures": "Качество текстур:",
+
+"quality.high": "Высоко",
+"quality.normal": "Нормально",
+"quality.low": "Низко",
+
+"settings.client.needupdate": "Прежде чем управлять настройками клиента, его необходимо обновить. Вернитесь на страницу игры и выполните обновление.",
+
 "lang.ruRU": "Русский",
 "lang.enUS": "English (Английский)",
+"lang.ukUA": "Українська (Украинский)",
+"lang.itIT": "Italiano (Итальянский)",
+"lang.beBY": "Беларуская (Белорусский)",
+"lang.deDE": "Deutsch (Немецкий)",
+"lang.unselected": "Не выбрано",
+
+"32alert": "Ваша операционная система или версия Java не поддерживает 64-битную архитектуру. Вам могут быть не доступны высокие настройки графики."
 }

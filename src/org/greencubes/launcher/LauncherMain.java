@@ -242,7 +242,7 @@ public class LauncherMain {
 									setForeground(clientPanel != null ? UIScheme.TITLE_COLOR_SEL : UIScheme.TITLE_COLOR);
 								}
 								@Override
-								public void mouseClicked(MouseEvent e) {
+								public void mousePressed(MouseEvent e) {
 									play.displayPlayPanel();
 								}
 							});

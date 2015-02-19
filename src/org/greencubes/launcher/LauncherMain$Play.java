@@ -296,6 +296,7 @@ public class LauncherMain$Play {
 							setBorder(BorderFactory.createLineBorder(UIScheme.MENU_BORDER, 1));
 							s(this, 272, 24);
 							serverListMenu = new GPopupMenu(true);
+							serverListMenu.setIconTextGap(0);
 							serverListMenu.setMenuColors(UIScheme.MENU_DD_BG, UIScheme.TITLE_COLOR, UIScheme.MENU_DD_BG_SEL, UIScheme.TITLE_COLOR_SEL);
 							addMouseListener(new MouseAdapter() {
 								@Override

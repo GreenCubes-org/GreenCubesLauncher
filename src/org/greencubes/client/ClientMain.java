@@ -212,9 +212,9 @@ public class ClientMain extends Client {
 		File workingDirectory = getWorkingDirectory();
 		if(!workingDirectory.exists()) {
 			if(!workingDirectory.mkdirs())
-				status(Status.ERROR, I18n.get("Невозможно создать папку клиента"), -1f);
+				status(Status.ERROR, I18n.get("client.update.error.folder"), -1f);
 			else
-				status(Status.NEED_UPDATE, I18n.get("Готово к установке"), 0f);
+				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), 0f);
 			return;
 		}
 		boolean needUpdate = false;
@@ -264,14 +264,14 @@ public class ClientMain extends Client {
 		this.remoteVersion = remoteVersion;
 		hashesArray = remoteVersion.optJSONArray("files");
 		if(hashesArray == null) {
-			status(Status.ERROR, I18n.get("Ошибка обновления #1"), -1f);
+			status(Status.ERROR, I18n.get("client.update.error.generic", 1), -1f);
 			return;
 		}
 		
 		for(int i = 0; i < hashesArray.length(); ++i) {
 			JSONObject fileObject = hashesArray.optJSONObject(i);
 			if(fileObject == null) {
-				status(Status.ERROR, I18n.get("Ошибка обновления #2 (" + i + ")"), -1f);
+				status(Status.ERROR, I18n.get("client.update.error.generic2", 2, i), -1f);
 				return;
 			}
 			GameFile file = GameFile.getFile(fileObject, workingDirectory, localHashes);
@@ -292,7 +292,7 @@ public class ClientMain extends Client {
 		gameFiles.addAll(newGameFiles);
 		assert checkGameFilesCorrectness();
 		if(needUpdate)
-			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), 0f);
+			status(Status.CHECK, I18n.get("client.update.counting"), 0f);
 		// Fetch file sizes
 		bytesToDownload = 0;
 		filesToDownload = 0;
@@ -307,10 +307,10 @@ public class ClientMain extends Client {
 				}
 				filesToDownload++;
 			}
-			status(Status.CHECK, I18n.get("Подсчёт размера обновления..."), (float) i / gameFiles.size());
+			//status(Status.CHECK, I18n.get("client.update.counting"), (float) i / gameFiles.size());
 		}
 		if(filesToDownload != 0) {
-			status(Status.NEED_UPDATE, I18n.get("Требуется обновление (" + filesToDownload + " файлов, " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload) + ")"), 0f);
+			status(Status.NEED_UPDATE, I18n.get("client.update.required", filesToDownload, (isEstimate ? "~" : "") + Util.getBytesAsString(bytesToDownload)), 0f);
 		} else {
 			updateServerList();
 			status(Status.READY, I18n.get(Status.READY.statusName), -1f);
@@ -339,9 +339,9 @@ public class ClientMain extends Client {
 		File workingDirectory = getWorkingDirectory();
 		if(!workingDirectory.exists()) {
 			if(!workingDirectory.mkdirs())
-				status(Status.ERROR, I18n.get("Невозможно создать папку клиента"), -1f);
+				status(Status.ERROR, I18n.get("client.update.error.folder"), -1f);
 			else
-				status(Status.NEED_UPDATE, I18n.get("Готово к установке"), 0f);
+				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), 0f);
 			return;
 		}
 		currentVersion = remoteVersion;
@@ -457,8 +457,11 @@ public class ClientMain extends Client {
 						prepareClientUpdate();
 					break;
 				case RUNNING:
-					if(processMonitor == null || processMonitor.getExitValue() >= 0)
+					if(processMonitor == null || processMonitor.getExitValue() >= 0) {
+						processMonitor = null;
+						Main.performOnClientClose();
 						status(Status.CHECK, "", -1f);
+					}
 					break;
 				case UPDATING:
 					updateAborted = false;
@@ -467,15 +470,15 @@ public class ClientMain extends Client {
 						downloader.start();
 					} else {
 						//@formatter:off
-						status(Status.UPDATING, "Загрузка " + downloader.downloading + " (" + Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded)
-								+ "/" + Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded) + "), прогресс: " + filesDownloaded
-								+ "/" + filesToDownload + ", " + (isEstimate ? "~" : "") + Util.getBytesAsString(bytesDownloaded) + "/" + Util.getBytesAsString(bytesToDownload)
-								+ " " + downloader.error, ((float) filesDownloaded / filesToDownload + (float) bytesDownloaded / bytesToDownload) / 2);
+						status(Status.UPDATING, I18n.get("client.update.downloading", downloader.downloading, Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded),
+								Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded), filesDownloaded,
+								filesToDownload, (isEstimate ? "~" : "") + Util.getBytesAsString(bytesDownloaded), Util.getBytesAsString(bytesToDownload))
+								+ (downloader.error.isEmpty() ? "" : "\n" + downloader.error), ((float) filesDownloaded / filesToDownload + (float) bytesDownloaded / bytesToDownload) / 2);
 						//@formatter:on
 					}
 					if(downloader.finished) {
 						downloader = null;
-						status(Status.CHECK, "Проверка...", -1f);
+						status(Status.CHECK, I18n.get(Status.CHECK.statusName), -1f);
 					}
 					break;
 				default:
