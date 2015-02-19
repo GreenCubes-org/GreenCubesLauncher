@@ -2,6 +2,9 @@ package org.greencubes.swing;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -22,6 +25,8 @@ public class JPanelBG extends JPanel {
 	 */
 	public boolean fill = false;
 	public Image bg;
+	public Image activeBg;
+	public Image inactiveBg;
 	
 	public JPanelBG(String bg) {
 		try {
@@ -29,6 +34,32 @@ public class JPanelBG extends JPanel {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public JPanelBG(String defaultBg, String activeBg) {
+		this(defaultBg);
+		this.inactiveBg = this.bg;
+		try {
+			this.activeBg = ImageIO.read(JPanelBG.class.getResource(activeBg));
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public MouseListener getActiveMouseListener() {
+		return new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				bg = activeBg;
+				repaint();
+			}
+
+			@Override
+		    public void mouseExited(MouseEvent e) {
+		    	bg = inactiveBg;
+		    	repaint();
+		    }
+		};
 	}
 	
 	@Override

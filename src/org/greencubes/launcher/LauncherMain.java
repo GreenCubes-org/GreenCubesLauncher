@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,6 +18,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,6 +41,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
@@ -97,47 +102,99 @@ public class LauncherMain {
 			setPreferredSize(new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640)));
 			// Top line
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.EMPTY) {{
-				add(logoPanel = new JPanelBG("/res/main.logo.png") {{ // GreenCubes logo
-					s(this, 96, 96);
-					final GPopupMenu mainPopup = new GPopupMenu(false);
-					addMouseListener(new DropdownListener(mainPopup, 0, 89, 200L, 0, 0));
-					mainPopup.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
-					mainPopup.setMenuColors(UIScheme.MAIN_MENU_BG, UIScheme.TITLE_COLOR, UIScheme.MAIN_MENU_BG_SEL, UIScheme.TITLE_COLOR_SEL);
-					mainPopup.setMenuBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-					
-					JMenuItem item = mainPopup.addItem(I18n.get("menu.settings"), "/res/menu.settings.png");
-					item.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							new LauncherConfig(frame);
+				add(logoPanel = new JPanelBG("/res/main.logo.png") {
+					// GreenCubes logo
+					Image highlightBg;
+					Image activeBg;
+					Image highlighedActiveBg;
+					Image defaultBg = bg;
+					boolean mouseActive = false;
+					{ 
+						try {
+							this.highlightBg = ImageIO.read(JPanelBG.class.getResource("/res/main.logo.highlighted.png"));
+							this.activeBg = ImageIO.read(JPanelBG.class.getResource("/res/main.logo.active.png"));
+							this.highlighedActiveBg = ImageIO.read(JPanelBG.class.getResource("/res/main.logo.active.highlighted.png"));
+						} catch(IOException e) {
+							throw new RuntimeException(e);
 						}
-					});
-					//item = mainPopup.addItem(I18n.get("menu.help"), "/res/menu.help.png");
-					item = mainPopup.addItem(I18n.get("menu.support"), "/res/menu.support.png");
-					item.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							LauncherUtil.onenURLInBrowser(Main.SUPPORT_SYSTEM_URL);
-						}
-					});
-					item = mainPopup.addItem(I18n.get("menu.relogin"), "/res/menu.relogin.png");
-					item.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							LauncherOptions.logOff();
-							frame.dispose();
-							new Thread() {
-								@Override
-								public void run() {
-									new LauncherLogin(null);
-								}
-							}.start();
-						}
-					});
-					//item = mainPopup.addItem(I18n.get("menu.offline"), "/res/menu.offline.png");
-					mainPopup.setOpaque(false);
-					mainPopup.setBorder(GAWTUtil.popupBorder());
-					mainPopup.validate();
+						setBackground(UIScheme.TOP_PANEL_BG_LOGO);
+						s(this, 96, 96);
+						final GPopupMenu mainPopup = new GPopupMenu(false);
+						DropdownListener ddl = new DropdownListener(mainPopup, 0, 89, 200L, 0, 0);
+						addMouseListener(ddl);
+						mainPopup.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+						mainPopup.setMenuColors(UIScheme.MAIN_MENU_BG, UIScheme.TITLE_COLOR, UIScheme.MAIN_MENU_BG_SEL, UIScheme.TITLE_COLOR_SEL);
+						mainPopup.setMenuBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+						
+						JMenuItem item = mainPopup.addItem(I18n.get("menu.settings"), "/res/menu.settings.png");
+						item.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								new LauncherConfig(frame);
+							}
+						});
+						//item = mainPopup.addItem(I18n.get("menu.help"), "/res/menu.help.png");
+						item = mainPopup.addItem(I18n.get("menu.support"), "/res/menu.support.png");
+						item.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								LauncherUtil.onenURLInBrowser(Main.SUPPORT_SYSTEM_URL);
+							}
+						});
+						item = mainPopup.addItem(I18n.get("menu.relogin"), "/res/menu.relogin.png");
+						item.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								LauncherOptions.logOff();
+								frame.dispose();
+								new Thread() {
+									@Override
+									public void run() {
+										new LauncherLogin(null);
+									}
+								}.start();
+							}
+						});
+						//item = mainPopup.addItem(I18n.get("menu.offline"), "/res/menu.offline.png");
+						mainPopup.setOpaque(false);
+						mainPopup.setBorder(GAWTUtil.popupBorder());
+						mainPopup.validate();
+						mainPopup.addPopupMenuListener(new PopupMenuListener() {
+							@Override
+							public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+								//bg = mouseActive ? highlighedActiveBg : activeBg;
+								//repaint();
+							}
+							@Override
+							public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+								bg = mouseActive ? highlightBg : defaultBg;
+								repaint();
+							}
+							@Override
+							public void popupMenuCanceled(PopupMenuEvent e) {
+							}
+						});
+						ddl.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								bg = getMousePosition() != null ? highlighedActiveBg : activeBg;
+								repaint();
+							}
+						});
+						addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseEntered(MouseEvent e) {
+								mouseActive = true;
+								bg = mainPopup.isVisible() ? highlighedActiveBg : highlightBg;
+								repaint();
+							}
+							@Override
+						    public void mouseExited(MouseEvent e) {
+								mouseActive = false;
+						    	bg = mainPopup.isVisible() ? activeBg : defaultBg;
+						    	repaint();
+						    }
+						});
 				}});
 				
 				add(new JPanelBG("/res/main.top.png") {{ // Everything else on top
@@ -146,37 +203,42 @@ public class LauncherMain {
 					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{ // Window buttons
 						add(Box.createHorizontalGlue());
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Minimize button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Minimize button
 							s(this, 30, 30);
 							setAlignmentX(JComponent.CENTER_ALIGNMENT);
 							add(Box.createVerticalGlue());
-							add(new JPanelBG("/res/minimize.png") {{
+							JPanelBG panel;
+							add(panel = new JPanelBG("/res/minimize.png", "/res/minimize.active.png") {{
 								s(this, 14, 14);
-								setBackground(UIScheme.EMPTY);
+								setOpaque(false);
 							}});
 							add(Box.createVerticalGlue());
 							addMouseListener(GAWTUtil.createMinimizeListener(frame));
+							addMouseListener(panel.getActiveMouseListener());
 						}});
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Maximize button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
 							s(this, 30, 30);
 							add(Box.createVerticalGlue());
-							add(new JPanelBG("/res/expand.png") {{
+							JPanelBG panel;
+							add(panel = new JPanelBG("/res/expand.png", "/res/expand.active.png") {{
 								s(this, 14, 14);
-								setBackground(UIScheme.EMPTY);
+								setOpaque(false);
 							}});
 							add(Box.createVerticalGlue());
 							addMouseListener(GAWTUtil.createMaximizeListener(frame));
+							addMouseListener(panel.getActiveMouseListener());
 						}});
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Close button
+						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Close button
 							s(this, 30, 30);
 							add(Box.createVerticalGlue());
-							add(new JPanelBG("/res/cross.png") {{
+							JPanelBG panel;
+							add(panel = new JPanelBG("/res/cross.png", "/res/cross.active.png") {{
 								s(this, 14, 14);
-								setBackground(UIScheme.EMPTY);
-								addMouseListener(GAWTUtil.createCloseListener(frame));
+								setOpaque(false);
 							}});
 							add(Box.createVerticalGlue());
 							addMouseListener(GAWTUtil.createCloseListener(frame));
+							addMouseListener(panel.getActiveMouseListener());
 						}});
 					}});
 					
@@ -185,7 +247,7 @@ public class LauncherMain {
 					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 						add(new JLabel() {{
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(UIScheme.TITLE_COLOR);
+							setForeground(UIScheme.TITLE_COLOR_SEL);
 							setText(I18n.get("main.title.game"));
 							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);

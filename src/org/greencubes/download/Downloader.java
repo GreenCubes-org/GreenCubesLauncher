@@ -373,7 +373,7 @@ public class Downloader {
 				KeyStore ks = KeyStore.getInstance("Windows-ROOT");
 				ks.load(null, null);
 				System.setProperty("javax.net.ssl.trustStoreType", "Windows-ROOT");
-				System.out.println("System ketsore is set up");
+				//System.out.println("System keysore is set up");
 			} catch(Exception e) {
 				// Ignore: windows keystore is bad, left default
 			}

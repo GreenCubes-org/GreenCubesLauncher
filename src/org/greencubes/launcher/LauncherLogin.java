@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -69,43 +70,50 @@ public class LauncherLogin {
 				setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 				s(this, 400, 32);
 				add(Box.createHorizontalGlue());
-				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Minimize button
+				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Minimize button
 					s(this, 30, 30);
 					setAlignmentX(JComponent.CENTER_ALIGNMENT);
 					add(Box.createVerticalGlue());
-					add(new JPanelBG("/res/minimize.png") {{
+					JPanelBG panel;
+					add(panel = new JPanelBG("/res/minimize.png", "/res/minimize.active.png") {{
 						s(this, 14, 14);
-						setBackground(UIScheme.EMPTY);
+						setOpaque(false);
 					}});
 					add(Box.createVerticalGlue());
 					addMouseListener(GAWTUtil.createMinimizeListener(frame));
+					addMouseListener(panel.getActiveMouseListener());
 				}});
-				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{ // Close button
+				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Close button
 					s(this, 30, 30);
 					add(Box.createVerticalGlue());
-					add(new JPanelBG("/res/cross.png") {{
+					JPanelBG panel;
+					add(panel = new JPanelBG("/res/cross.png", "/res/cross.active.png") {{
 						s(this, 14, 14);
-						setBackground(UIScheme.EMPTY);
-						addMouseListener(GAWTUtil.createCloseListener(frame));
+						setOpaque(false);
 					}});
 					add(Box.createVerticalGlue());
 					addMouseListener(GAWTUtil.createCloseListener(frame));
+					addMouseListener(panel.getActiveMouseListener());
 				}});
 			}});
-			add(Box.createVerticalStrut(20));
-			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-				max(this, null, 26);
-				add(Box.createHorizontalGlue());
-				add(new JLabel(I18n.get("login.title").toUpperCase()) {{
-					setForeground(UIScheme.TEXT_COLOR);
-					setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+			add(new JPanelBG("/res/login.top.shadow.png") {{
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+				setBackground(UIScheme.BACKGROUND);
+				add(Box.createVerticalStrut(20));
+				add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+					max(this, null, 26);
+					add(Box.createHorizontalGlue());
+					add(new JLabel(I18n.get("login.title").toUpperCase()) {{
+						setForeground(UIScheme.TEXT_COLOR);
+						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+					}});
+					add(Box.createHorizontalGlue());
 				}});
-				add(Box.createHorizontalGlue());
+				add(Box.createVerticalStrut(15));
+				// Center panel
+				add(centerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null));
+				add(Box.createVerticalStrut(15));
 			}});
-			add(Box.createVerticalStrut(15));
-			// Center panel
-			add(centerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null));
-			add(Box.createVerticalStrut(15));
 		}}, BorderLayout.CENTER);
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
@@ -256,7 +264,7 @@ public class LauncherLogin {
 				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
 				if(savedUser != null)
 					setText(savedUser);
-				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
+				setDisabledTextColor(UIScheme.BACKGROUND);
 				setPlaceholder(I18n.get("login.login"));
 			}});
 			add(Box.createHorizontalGlue());
@@ -274,8 +282,7 @@ public class LauncherLogin {
 				setCaretColor(UIScheme.TEXT_COLOR);
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
 				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
-				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
-				setDisabledTextColor(UIScheme.TEXT_COLOR_DISABLED);
+				setDisabledTextColor(UIScheme.BACKGROUND);
 				setPlaceholder(I18n.get("login.password"));
 			}});
 			add(Box.createHorizontalGlue());
@@ -304,6 +311,16 @@ public class LauncherLogin {
 								setIcon(iconUnchecked);
 						}
 					});
+					addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseEntered(MouseEvent e) {
+							setForeground(UIScheme.TITLE_COLOR_SEL);
+						}
+						@Override
+					    public void mouseExited(MouseEvent e) {
+							setForeground(UIScheme.TITLE_COLOR);
+					    }
+					});
 					setMargin(new Insets(2, 0, 2, 0));
 					setToolTipText(I18n.get("login.autologin.tip"));
 				}});
@@ -327,6 +344,9 @@ public class LauncherLogin {
 					setForeground(UIScheme.TEXT_COLOR);
 					setText(I18n.get("login.dologin").toUpperCase());
 					setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
+					addMouseListener(new MouseAdapter() {
+						
+					});
 				}}, new GridBagConstraints() {{
 					weightx = 1;
 					weighty = 1;
@@ -356,6 +376,14 @@ public class LauncherLogin {
 					public void mouseClicked(MouseEvent e) {
 						joinOffline();
 					}
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR_SEL);
+					}
+					@Override
+				    public void mouseExited(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR);
+				    }
 				});
 			}});
 			add(Box.createHorizontalGlue());
@@ -376,6 +404,14 @@ public class LauncherLogin {
 					public void mouseClicked(MouseEvent e) {
 						LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
 					}
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR_SEL);
+					}
+					@Override
+				    public void mouseExited(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR);
+				    }
 				});
 			}});
 			add(Box.createHorizontalGlue());
@@ -389,6 +425,14 @@ public class LauncherLogin {
 					public void mouseClicked(MouseEvent e) {
 						LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);
 					}
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR_SEL);
+					}
+					@Override
+				    public void mouseExited(MouseEvent e) {
+						setForeground(UIScheme.TITLE_COLOR);
+				    }
 				});
 			}});
 			add(Box.createHorizontalStrut(25));

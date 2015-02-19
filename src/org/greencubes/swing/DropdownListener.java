@@ -6,8 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class DropdownListener extends MouseAdapter {
@@ -19,6 +22,7 @@ public class DropdownListener extends MouseAdapter {
 	private long animation = -1;
 	private int startX;
 	private int startY;
+	private List<ActionListener> listeners = new ArrayList<ActionListener>();
 	
 	public DropdownListener(JPopupMenu popupMenu) {
 		this.popup = popupMenu;
@@ -36,6 +40,10 @@ public class DropdownListener extends MouseAdapter {
 		this.animation = animation;
 		this.startX = startX;
 		this.startY = startY;
+	}
+	
+	public void addActionListener(ActionListener listener) {
+		listeners.add(listener);
 	}
 	
 	public void show(Component component, int x, int y) {
@@ -68,13 +76,23 @@ public class DropdownListener extends MouseAdapter {
 					this.mvY -= my;
 					Point pos = DropdownListener.this.popup.getLocationOnScreen();
 					DropdownListener.this.popup.setLocation(pos.x + mx, pos.y + my);
-					if(++this.i == steps)
+					if(++this.i == steps) {
 						t.stop();
+						if(listeners.size() > 0)
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									for(int i = 0; i < listeners.size(); ++i)
+										listeners.get(i).actionPerformed(new ActionEvent(DropdownListener.this.popup, ActionEvent.ACTION_FIRST, "shown"));
+								}
+							});
+					}
 				}
 			});
 			t.start();
 		} else {
 			this.popup.show(component, targetX, targetY);
+			for(int i = 0; i < listeners.size(); ++i)
+				listeners.get(i).actionPerformed(new ActionEvent(DropdownListener.this.popup, ActionEvent.ACTION_FIRST, "shown"));
 		}
 	}
 	
