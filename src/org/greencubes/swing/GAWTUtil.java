@@ -32,7 +32,7 @@ import org.greencubes.main.Main;
 
 public class GAWTUtil {
 	
-	public static JTextPane fixedWidthTextPane(String text, int width) {
+	public static JTextPane getNiceTextPane(String text, final int width) {
 		JTextPane jtp = new JTextPane();
 		jtp.setEditable(false);
 		jtp.setOpaque(false);
@@ -48,12 +48,13 @@ public class GAWTUtil {
 	}
 	
 	public static void fixtTextPaneWidth(JTextPane pane, int width) {
+		pane.setPreferredSize(null);
 		pane.setSize(new Dimension(width, 10));
 		pane.setPreferredSize(new Dimension(width, pane.getPreferredSize().height));
 	}
 	
 	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxWidth) {
-		JTextPane jtp = fixedWidthTextPane(dialogText, maxWidth);
+		JTextPane jtp = getNiceTextPane(dialogText, maxWidth);
 		return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
 	}
 	

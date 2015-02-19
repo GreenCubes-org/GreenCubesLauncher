@@ -1,7 +1,6 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -32,6 +31,8 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.greencubes.client.Client;
 import org.greencubes.main.Main;
@@ -315,25 +316,31 @@ public class LauncherMain {
 					final JDialog dialog = new JDialog(frame, true);
 					dialog.setUndecorated(true);
 					dialog.setBackground(UIScheme.EMPTY);
-					dialog.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+					dialog.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 						setBorder(GAWTUtil.popupBorder());
 						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
 							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-							JTextPane pane = GAWTUtil.fixedWidthTextPane(I18n.get("menu.tip"), 300);
-							pane.setForeground(new Color(176, 230, 238, 255));
-							pane.setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 14));
+							JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("menu.tip"), 300);
+							SimpleAttributeSet attribs = new SimpleAttributeSet();
+							StyleConstants.setFontFamily(attribs, UIScheme.TITLE_FONT);
+							StyleConstants.setFontSize(attribs, 18);
+							StyleConstants.setForeground(attribs, UIScheme.TEXT_COLOR);
+							StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
+
+							pane.setParagraphAttributes(attribs, true);
 							GAWTUtil.fixtTextPaneWidth(pane, 300);
 							add(pane);
+							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 								setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
 								add(Box.createHorizontalGlue());
-								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.BACKGROUND) {{
+								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MAIN_MENU_BG_SEL) {{
 									add(Box.createHorizontalGlue());
 									s(this, 50, 28);
 									add(new JLabel() {{
 										setOpaque(false);
 										setAlignmentX(JLabel.CENTER_ALIGNMENT);
-										setForeground(UIScheme.TEXT_COLOR);
+										setForeground(UIScheme.TITLE_COLOR_SEL);
 										setText(I18n.get("menu.tip.ok"));
 										setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 20));
 									}}, new GridBagConstraints() {{
@@ -343,7 +350,7 @@ public class LauncherMain {
 									add(Box.createHorizontalGlue());
 									addMouseListener(new AbstractMouseListener() {
 										@Override
-										public void mouseClicked(MouseEvent e) {
+										public void mousePressed(MouseEvent e) {
 											try {
 												Main.getConfig().put("tipshown", true);
 											} catch(JSONException e1) {}
@@ -356,18 +363,18 @@ public class LauncherMain {
 							
 						}});						
 					}});
-					//dialog.revalidate();
+					dialog.revalidate();
 					dialog.pack();
 					Point p = logoPanel.getLocationOnScreen();
 					dialog.setLocation(p.x, p.y + logoPanel.getHeight());
 					dialog.setVisible(true);
-					SwingUtilities.invokeLater(new Runnable() {
+					/*SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							dialog.pack();
 							dialog.revalidate();
 							dialog.repaint();
 						}
-					});
+					});*/
 				}
 			});
 		}
