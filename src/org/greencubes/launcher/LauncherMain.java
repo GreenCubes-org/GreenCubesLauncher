@@ -303,6 +303,13 @@ public class LauncherMain {
 		if(previousFrame != null)
 			previousFrame.dispose();
 		frame.setVisible(true);
+		java.awt.EventQueue.invokeLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	frame.toFront();
+		    	frame.repaint();
+		    }
+		});
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

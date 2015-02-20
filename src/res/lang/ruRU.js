@@ -114,7 +114,7 @@
 "settings.client.textures": "Качество текстур:",
 
 "quality.high": "Высоко",
-"quality.normal": "Нормально",
+"quality.medium": "Нормально",
 "quality.low": "Низко",
 
 "settings.client.needupdate": "Прежде чем управлять настройками клиента, его необходимо обновить. Вернитесь на страницу игры и выполните обновление.",

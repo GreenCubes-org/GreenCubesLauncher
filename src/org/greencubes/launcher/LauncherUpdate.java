@@ -301,6 +301,13 @@ public class LauncherUpdate {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		java.awt.EventQueue.invokeLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	frame.toFront();
+		    	frame.repaint();
+		    }
+		});
 		frame.addWindowListener(new AbstractWindowListener() {
 			@Override
 			public void windowClosing(WindowEvent e) {

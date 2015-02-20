@@ -12,13 +12,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EventListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -53,10 +56,59 @@ public class GAWTUtil {
 		pane.setPreferredSize(new Dimension(width, pane.getPreferredSize().height));
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int showDialog(String title, String dialogText, Object[] options, int dialogType, int maxWidth) {
 		JTextPane jtp = getNiceTextPane(dialogText, maxWidth);
-		return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
+		JOptionPane pane = new JOptionPane(jtp, dialogType, JOptionPane.NO_OPTION, null, options, options[0]);
+
+		pane.setInitialValue(options[0]);
+		pane.setComponentOrientation(JOptionPane.getRootFrame().getComponentOrientation());
+		
+		int style = styleFromMessageType(dialogType);
+		// We not always show dialogs in application
+		// But when we do - we did it with reflection
+		JDialog dialog;
+		try {
+			Method m = pane.getClass().getDeclaredMethod("createDialog", Component.class, String.class, Integer.TYPE);
+			m.setAccessible(true);
+			dialog = (JDialog) m.invoke(pane, null, title, style);
+			
+		} catch(Exception e) {
+			throw new AssertionError(e);
+		}
+		dialog.setAlwaysOnTop(true);
+		pane.selectInitialValue();
+		dialog.show();
+		dialog.dispose();
+		
+		Object selectedValue = pane.getValue();
+		
+		if(selectedValue == null)
+			return JOptionPane.CLOSED_OPTION;
+		for(int counter = 0, maxCounter = options.length; counter < maxCounter; counter++) {
+			if(options[counter].equals(selectedValue))
+				return counter;
+		}
+		return JOptionPane.CLOSED_OPTION;
+		
+		//return JOptionPane.showOptionDialog(null, jtp, title, JOptionPane.NO_OPTION, dialogType, null, options, options[0]);
 	}
+	
+	private static int styleFromMessageType(int messageType) {
+        switch (messageType) {
+        case JOptionPane.ERROR_MESSAGE:
+            return JRootPane.ERROR_DIALOG;
+        case JOptionPane.QUESTION_MESSAGE:
+            return JRootPane.QUESTION_DIALOG;
+        case JOptionPane.WARNING_MESSAGE:
+            return JRootPane.WARNING_DIALOG;
+        case JOptionPane.INFORMATION_MESSAGE:
+            return JRootPane.INFORMATION_DIALOG;
+        case JOptionPane.PLAIN_MESSAGE:
+        default:
+            return JRootPane.PLAIN_DIALOG;
+        }
+    }
 	
 	public static ScrollBarUI customScrollBarUI(final Color customBackgroundColor, final Color customThumbColor) {
 		return new BasicScrollBarUI() {

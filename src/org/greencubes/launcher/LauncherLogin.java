@@ -127,7 +127,13 @@ public class LauncherLogin {
 		if(previousFrame != null)
 			previousFrame.dispose();
 		frame.setVisible(true);
-		//displayLogin();
+		java.awt.EventQueue.invokeLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	frame.toFront();
+		    	frame.repaint();
+		    }
+		});
 		if(LauncherOptions.autoLogin) {
 			LauncherOptions.loadSession();
 			if(LauncherOptions.sessionUserId > 0) {

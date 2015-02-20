@@ -3,6 +3,7 @@ package org.greencubes.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.greencubes.util.Util;
 
@@ -45,7 +46,12 @@ public class ProcessMonitorThread extends Thread {
 	
 	@Override
 	public void run() {
-		InputStreamReader reader = new InputStreamReader(this.process.getInputStream());
+		InputStreamReader reader;
+		try {
+			reader = new InputStreamReader(this.process.getInputStream(), "UTF-8");
+		} catch(UnsupportedEncodingException e) {
+			throw new AssertionError(e);
+		}
 		BufferedReader buf = new BufferedReader(reader);
 		String line = null;
 		while(isProcessRunning()) {
