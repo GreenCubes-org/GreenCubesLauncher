@@ -350,9 +350,6 @@ public class LauncherLogin {
 					setForeground(UIScheme.TEXT_COLOR);
 					setText(I18n.get("login.dologin").toUpperCase());
 					setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
-					addMouseListener(new MouseAdapter() {
-						
-					});
 				}}, new GridBagConstraints() {{
 					weightx = 1;
 					weighty = 1;
