@@ -3,13 +3,19 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "GreenCubes"
 !define PRODUCT_PUBLISHER "GreenCubes"
-!define PRODUCT_VERSION ""
 !define PRODUCT_WEB_SITE "https://greencubes.org"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\greencubes.exe"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define PRODUCT_UNINST_ROOT_KEY "HKCU"
+!define PRODUCT_UNINST_KEY "Software\GreenCubes"
+!define PRODUCT_DIR_REGKEY "Software\GreenCubes"
+;Get installation folder from registry if available
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 SetCompressor lzma
+
+;--------------------------------
+;Variables
+
+  Var StartMenuFolder
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -20,53 +26,106 @@ SetCompressor lzma
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Language Selection Dialog Settings
+
 !define MUI_LANGDLL_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
-; Welcome page
-!insertmacro MUI_PAGE_WELCOME
-; License page
-;!insertmacro MUI_PAGE_LICENSE "c:\path\to\licence\YourSoftwareLicence.txt"
-; Directory page
-!insertmacro MUI_PAGE_DIRECTORY
-; Instfiles page
-!insertmacro MUI_PAGE_INSTFILES
-; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\greencubes.exe"
-!insertmacro MUI_PAGE_FINISH
+;Pages
+  ; Welcome page
+    ;!insertmacro MUI_PAGE_WELCOME
+  ; License page
+    ;!insertmacro MUI_PAGE_LICENSE "c:\path\to\licence\YourSoftwareLicence.txt"
+  ; Directory page
+    !insertmacro MUI_PAGE_DIRECTORY
+  ;Start Menu Folder Page
+    !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
+    !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+    !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+
+    !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
+
+  ; Instfiles page
+    !insertmacro MUI_PAGE_INSTFILES
+
+  ; Finish page
+    !define MUI_FINISHPAGE_RUN "$INSTDIR\greencubes.exe"
+    Function finishpageaction
+      CreateShortcut "$DESKTOP\GreenCubes.lnk" "$INSTDIR\greencubes.exe"
+    FunctionEnd
+
+    !define MUI_FINISHPAGE_SHOWREADME ""
+    !define MUI_FINISHPAGE_SHOWREADME_TEXT "Создать ярлык на Рабочем столе"
+    !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
+
+    !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
-!insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
 !insertmacro MUI_LANGUAGE "Russian"
 !insertmacro MUI_LANGUAGE "English"
-!insertmacro MUI_LANGUAGE "Ukrainian"
 
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
 ; MUI end ------
 
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+Name "${PRODUCT_NAME}"
 OutFile "C:\_Greencubes\Git\GreenCubesLauncher\install\greencubes-setup.exe"
 InstallDir "$PROGRAMFILES\GreenCubes"
 ShowInstDetails show
+ShowUnInstDetails show
 
 Function .onInit
-  !insertmacro MUI_LANGDLL_DISPLAY
+  ;!insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
 Section "MainSection" SEC01
+  AddSize 1048576 ; Add 1Gb as we don't have files in section
   SetOutPath "$INSTDIR"
-  inetc::get /RESUME "" /QUESTION "" "https://greencubes.org/client/windows-installer.zip" "package.zip"
+  inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/client/windows-installer.zip" "package.zip"
     Pop $0
     StrCmp $0 "OK" dlok
-    MessageBox MB_OK|MB_ICONEXCLAMATION "http upload Error, click OK to abort installation" /SD IDOK
     Abort
   dlok:
+  nsUnzip::Extract / "package.zip" /END
+  ; TODO : Check sucess
+  Delete "package.zip"
+  WriteUninstaller $INSTDIR\uninstall.exe
+  
   ;CreateDirectory "$SMPROGRAMS\GreenCubes"
   ;CreateShortCut "$SMPROGRAMS\GreenCubes\GreenCubes.lnk" "$INSTDIR\greencubes.exe"
   ;CreateShortCut "$DESKTOP\GreenCubes.lnk" "$INSTDIR\greencubes.exe"
+SectionEnd
+
+Section -Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    ;Create shortcuts
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\GreenCubes.lnk" "$INSTDIR\greencubes.exe"
+    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section -CreateUninstall
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\greencubes.exe"
+SectionEnd
+
+Section "un.MainSection"
+  Delete "$INSTDIR\Uninstall.exe"
+
+  ;RMDir "$INSTDIR"
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+
+  Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$StartMenuFolder\GreenCubes.lnk"
+  Delete "$DESKTOP\GreenCubes.lnk"
+  RMDir "$SMPROGRAMS\$StartMenuFolder"
+  
+  DeleteRegKey HKCU "${PRODUCT_DIR_REGKEY}"
+  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
 SectionEnd
