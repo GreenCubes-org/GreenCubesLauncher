@@ -260,6 +260,7 @@ public class LauncherMain$Play {
 			if(clientStatus.getStatusProgress() < 0 && progressBarContainer != null) {
 				clientStatusPanel.remove(progressBarContainer);
 				clientStatusPanel.revalidate();
+				superClass.frame.repaint();
 				progressBarContainer = null;
 			} else if(clientStatus.getStatusProgress() >= 0) {
 				if(progressBarContainer == null) {
