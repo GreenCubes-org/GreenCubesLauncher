@@ -143,21 +143,23 @@ Section "un.MainSection"
   RMDir /r "$INSTDIR\resources"
   RMDir /r "$INSTDIR\cache"
   RMDir /r "$INSTDIR\libraries"
+  RMDir /r "$INSTDIR\patch"
   ; Remove installed files
   Delete "$INSTDIR\debug.bat"
   Delete "$INSTDIR\greencubes.exe"
   Delete "$INSTDIR\greencubes.jar"
   Delete "$INSTDIR\patcher.jr"
   Delete "$INSTDIR\greencubes.sh"
+  Delete "$INSTDIR\NOTICE.txt"
   ; Remove some files that could be created in work
   Delete "$INSTDIR\version.json"
   Delete "$INSTDIR\user.dat"
   Delete "$INSTDIR\launcherUpdateError.txt"
-
   Delete "$INSTDIR\lwjgl64.dll"
   Delete "$INSTDIR\lwjgl32.dll"
   Delete "$INSTDIR\OpenAL64.dll"
   Delete "$INSTDIR\OpenAL32.dll"
+  Delete "$INSTDIR\patch.json"
   
   RMDir "$INSTDIR" ; Remove install dir only if it is empty now (in most cases it's not)
   
