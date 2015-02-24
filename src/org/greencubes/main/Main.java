@@ -3,6 +3,7 @@ package org.greencubes.main;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.awt.TrayIcon;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,12 +24,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherInstanceError;
 import org.greencubes.launcher.LauncherOptions;
+import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.launcher.LauncherUpdate;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
@@ -54,6 +57,9 @@ public class Main {
 	public static File launcherFile = null;
 	public static Frame currentFrame;
 	
+	public static TrayIcon trayIcon;
+	public static SingleInstanceWorker siw;
+	
 	public static void main(String[] args) {
 		// Setup some system properties before real startup
 		System.setProperty("awt.useSystemAAFontSettings","on");
@@ -70,6 +76,12 @@ public class Main {
 				LauncherOptions.noUpdateLauncher = true;
 			if(arg.equals("-local"))
 				LauncherOptions.showLocalServer = true;
+		}
+		siw = new SingleInstanceWorker(args);
+		if(siw.isAlreadyRunning()) {
+			System.out.println("Other instance is already running, shutting down");
+			siw.close();
+			return;
 		}
 		// Load fonts
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -150,6 +162,7 @@ public class Main {
 		if(config.optBoolean("debug") || TEST)
 			LauncherOptions.debug = true;
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
+		LauncherOptions.onLauncherClose = LauncherOptions.OnStartAction.values()[config.optInt("onclose", LauncherOptions.onLauncherClose.ordinal())];
 		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);
 		
 		String classPath = System.getProperty("java.class.path");
@@ -168,8 +181,20 @@ public class Main {
 		new LauncherUpdate();
 	}
 	
-	public static void performOnClientStart() {
-		switch(LauncherOptions.onClientStart) {
+	public static void newInstanceCreated(String[] args) {
+		System.out.println("New instance created with args: " + Util.toString(args));
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				undoWindowAction(OnStartAction.HIDE);
+			}
+		});
+	}
+	
+	public static void performWindowAction(OnStartAction action) {
+		if(currentFrame == null)
+			return;
+		switch(action) {
 		case CLOSE:
 			currentFrame.dispose();
 			close();
@@ -178,21 +203,27 @@ public class Main {
 			currentFrame.setState(Frame.ICONIFIED);
 			break;
 		case HIDE:
-			currentFrame.setVisible(false);
+			if(trayIcon != null)
+				currentFrame.setVisible(false);
+			else
+				currentFrame.setState(Frame.ICONIFIED);
 			break;
 		case NO:
 			break;
 		}
 	}
 	
-	public static void performOnClientClose() {
-		switch(LauncherOptions.onClientStart) {
+	public static void undoWindowAction(OnStartAction action) {
+		if(currentFrame == null)
+			return;
+		switch(action) {
 		case CLOSE:
 			break;
 		case MINIMIZE:
 			currentFrame.setState(Frame.NORMAL);
 			break;
 		case HIDE:
+			currentFrame.setState(Frame.NORMAL);
 			currentFrame.setVisible(true);
 			break;
 		case NO:
@@ -205,11 +236,11 @@ public class Main {
 	}
 	
 	public static void close() {
-		Util.close(userFileChannel, userFile);
+		Util.close(userFileChannel, userFile, siw);
 		try {
 			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"), "launcher.json"));
 			config.write(fw);
-			fw.close();
+			Util.close(fw);
 		} catch(Exception e) {
 		}
 		Platform.exit();

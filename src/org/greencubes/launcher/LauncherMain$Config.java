@@ -70,6 +70,7 @@ public class LauncherMain$Config {
 	private JLabel about;
 	private String newLanguage = I18n.currentLanguage;
 	private OnStartAction newOnStartAction = LauncherOptions.onClientStart;
+	private OnStartAction newOnCloseAction = LauncherOptions.onLauncherClose;
 	private ScreenSize newScreenSize ;
 	private List<ScreenSize> screenSizes = new ArrayList<ScreenSize>();
 	private YamlFile newClientConfig;
@@ -203,7 +204,9 @@ public class LauncherMain$Config {
 									try {
 										Main.getConfig().put("lang", newLanguage);
 										Main.getConfig().put("onstart", newOnStartAction.ordinal());
+										Main.getConfig().put("onclose", newOnCloseAction.ordinal());
 										LauncherOptions.onClientStart = newOnStartAction;
+										LauncherOptions.onLauncherClose = newOnCloseAction;
 									} catch(JSONException e1) {
 										// Is it even possible?
 									}
@@ -375,6 +378,77 @@ public class LauncherMain$Config {
 												}
 												item.setIcon(checked);
 												newOnStartAction = action;
+											}
+										});
+									}
+								}
+							});
+							
+							add(Box.createHorizontalGlue());
+						}});
+						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+							add(new JLabel(I18n.get("settings.launcher.onclose")) {{
+								setForeground(UIScheme.TEXT_COLOR);
+								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+							}});
+							add(Box.createHorizontalGlue());
+						}});
+						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
+								{
+									final JLabel selectedOnStart;;
+									setBorder(BorderFactory.createLineBorder(UIScheme.MENU_BORDER, 1));
+									s(this, 272, 24);
+									final GPopupMenu onStartSelect = new GPopupMenu(false);
+									onStartSelect.setIconTextGap(0);
+									onStartSelect.setMenuColors(UIScheme.MENU_DD_BG, UIScheme.TITLE_COLOR, UIScheme.MENU_DD_BG_SEL, UIScheme.TITLE_COLOR_SEL);
+									addMouseListener(new MouseAdapter() {
+										@Override
+										public void mousePressed(MouseEvent e) {
+											if(e.isConsumed())
+												return;
+											onStartSelect.show(e.getComponent(), false);
+										}
+									});
+									onStartSelect.setBorder(BorderFactory.createEmptyBorder());
+									onStartSelect.setOpaque(false);
+									onStartSelect.setMenuSize(new Dimension(272, 24));
+									onStartSelect.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+									add(new JPanel() {
+										{
+											s(this, 20, 0);
+											setBackground(UIScheme.EMPTY);
+										}
+									});
+									add(selectedOnStart = new JLabel(I18n.get(newOnCloseAction.langKey)) {
+										{
+											setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+											setForeground(UIScheme.TITLE_COLOR);
+										}
+									});
+									add(Box.createHorizontalGlue());
+									add(new JPanelBG("/res/menu.arrow.png") {
+										{
+											s(this, 22, 22);
+											setBackground(UIScheme.EMPTY);
+										}
+									});
+									final ImageIcon empty = new ImageIcon(GPopupMenu.class.getResource("/res/menu.empty.png"));
+									final ImageIcon checked = new ImageIcon(GPopupMenu.class.getResource("/res/menu.check.png"));
+									for(final OnStartAction action : new OnStartAction[] {OnStartAction.CLOSE, OnStartAction.HIDE}) {
+										final JMenuItem item = onStartSelect.addItem(I18n.get(action.langKey), newOnCloseAction == action ? "/res/menu.check.png" : "/res/menu.empty.png");
+										item.addActionListener(new ActionListener() {
+											@Override
+											public void actionPerformed(ActionEvent e) {
+												selectedOnStart.setText(I18n.get(action.langKey));
+												for(JMenuItem item1 : onStartSelect.getItems()) {
+													if(item1 != item)
+														item1.setIcon(empty);
+												}
+												item.setIcon(checked);
+												newOnCloseAction = action;
 											}
 										});
 									}

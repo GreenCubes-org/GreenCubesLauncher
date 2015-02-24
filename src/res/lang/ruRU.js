@@ -84,6 +84,7 @@
 "menu.support": "Система поддержки",
 "menu.relogin": "Сменить пользователя",
 "menu.offline": "Оффлайн",
+"menu.exit": "Выход",
 
 "menu.tip": "Нажмите кнопку для вызова настроек или помощи.",
 "menu.tip.ok": "OK",
@@ -96,11 +97,12 @@
 
 "settings.onstart.close": "Закрыть лаунчер",
 "settings.onstart.minimize": "Свернуть лаунчер",
-"settings.onstart.hide": "Скрыть ланучер",
+"settings.onstart.hide": "Свернуть в панель задач",
 "settings.onstart.no": "Ничего",
 
 "settings.launcher.language": "Язык лаунчера:",
-"settings.launcher.onstart": "После запуска игры:",
+"settings.launcher.onstart": "При запуске игры:",
+"settings.launcher.onclose": "При нажатии на [X] вверху окна:",
 "settings.launcher.restart.title": "Необходим перезапуск",
 "settings.launcher.restart": "Для вступления некоторых настроек в силу, необходимо перезапустить лаунчер.",
 "settings.launcher.restart.do": "Перезапустить",

@@ -1,13 +1,18 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
+import java.awt.AWTException;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
+import java.awt.MenuItem;
 import java.awt.Point;
+import java.awt.PopupMenu;
 import java.awt.Rectangle;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +40,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import org.greencubes.client.Client;
+import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
 import org.greencubes.swing.AbstractMouseListener;
@@ -72,6 +78,7 @@ public class LauncherMain {
 	public LauncherMain(Window previousFrame) {
 		frame = new UndecoratedJFrame(I18n.get("title"));
 		Main.currentFrame = frame;
+		systemTrayInit();
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
@@ -131,6 +138,10 @@ public class LauncherMain {
 							public void actionPerformed(ActionEvent e) {
 								LauncherOptions.logOff();
 								frame.dispose();
+								if(Main.trayIcon != null) {
+									SystemTray.getSystemTray().remove(Main.trayIcon);
+									Main.trayIcon = null;
+								}
 								new Thread() {
 									@Override
 									public void run() {
@@ -140,6 +151,13 @@ public class LauncherMain {
 							}
 						});
 						//item = mainPopup.addItem(I18n.get("menu.offline"), "/res/menu.offline.png");
+						item = mainPopup.addItem(I18n.get("menu.exit"), "/res/menu.exit.png");
+						item.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								Main.performWindowAction(OnStartAction.CLOSE);
+							}
+						});
 						mainPopup.setOpaque(false);
 						mainPopup.setBorder(GAWTUtil.popupBorder());
 						mainPopup.validate();
@@ -197,7 +215,12 @@ public class LauncherMain {
 								setOpaque(false);
 							}});
 							add(Box.createVerticalGlue());
-							addMouseListener(GAWTUtil.createMinimizeListener(frame));
+							addMouseListener(new AbstractMouseListener() {
+								@Override
+								public void mousePressed(MouseEvent e) {
+									Main.performWindowAction(LauncherOptions.onLauncherMinimize);
+								}
+							});
 							addMouseListener(panel.getActiveMouseListener());
 						}});
 						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
@@ -221,7 +244,12 @@ public class LauncherMain {
 								setOpaque(false);
 							}});
 							add(Box.createVerticalGlue());
-							addMouseListener(GAWTUtil.createCloseListener(frame));
+							addMouseListener(new AbstractMouseListener() {
+								@Override
+								public void mousePressed(MouseEvent e) {
+									Main.performWindowAction(LauncherOptions.onLauncherClose);
+								}
+							});
 							addMouseListener(panel.getActiveMouseListener());
 						}});
 					}});
@@ -411,6 +439,39 @@ public class LauncherMain {
 	}
 	//@formatter:on
 	
+	private void systemTrayInit() {
+		if(Main.trayIcon != null) {
+			SystemTray.getSystemTray().remove(Main.trayIcon);
+			Main.trayIcon = null;
+		}
+		if(SystemTray.isSupported()) {
+			try {
+				Image img = ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico256x256.png"));
+				Main.trayIcon = new TrayIcon(img, I18n.get("title"));
+				Main.trayIcon.setImageAutoSize(true);
+				final PopupMenu trayMenu = new PopupMenu();
+				MenuItem item = new MenuItem(I18n.get("menu.exit"));
+				item.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Main.performWindowAction(OnStartAction.CLOSE);
+					}
+				});
+				trayMenu.add(item);
+				Main.trayIcon.setPopupMenu(trayMenu);
+				SystemTray.getSystemTray().add(Main.trayIcon);
+				Main.trayIcon.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Main.undoWindowAction(OnStartAction.HIDE);
+					}
+				});
+			} catch(IOException e1) {
+			} catch(AWTException e1) {
+			}
+		}
+	}
+	
 	private void saveFrameInfo() {
 		JSONObject config = Main.getConfig();
 		Rectangle b = frame.getBounds();
@@ -426,6 +487,14 @@ public class LauncherMain {
 			config.put("maximized", maximized);
 		} catch(JSONException e) {
 		}
+	}
+	
+	public void onHide() {
+		// TODO : Call and implement
+	}
+	
+	public void onUnhide() {
+		// TODO : Call and implement
 	}
 	
 	/**

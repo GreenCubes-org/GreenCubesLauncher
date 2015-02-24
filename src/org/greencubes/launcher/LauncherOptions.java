@@ -48,26 +48,18 @@ public class LauncherOptions {
 	
 	public static boolean debug = false;
 	public static boolean noUpdateLauncher = false;
-	public static OnStartAction onClientStart;;
+	public static OnStartAction onClientStart;
 	public static boolean autoLogin = false;
 	public static boolean showLocalServer = false;
 	public static boolean autoUpdate = false;
+	public static OnStartAction onLauncherClose = OnStartAction.CLOSE;
+	public static OnStartAction onLauncherMinimize = OnStartAction.MINIMIZE;
 	
 	private static long sessionKeyAddress = -1;
 	public static String sessionId;
 	public static String sessionUser;
 	public static int sessionUserId;
 	public static JSONObject userInfo;
-	
-	public static enum OnStartAction {
-		CLOSE("settings.onstart.close"), MINIMIZE("settings.onstart.minimize"), HIDE("settings.onstart.hide"), NO("settings.onstart.no");
-		
-		public final String langKey;
-		
-		private OnStartAction(String langKey) {
-			this.langKey = langKey;
-		}
-	}
 	
 	public static Downloader getClientDownloader(Client client) {
 		synchronized(clientDownloaders) {
@@ -399,6 +391,16 @@ public class LauncherOptions {
 			if(Main.TEST)
 				System.out.println("Less than 3Gb memory, setting default start action to close.");
 			onClientStart = OnStartAction.CLOSE;
+		}
+	}
+
+	public static enum OnStartAction {
+		CLOSE("settings.onstart.close"), MINIMIZE("settings.onstart.minimize"), HIDE("settings.onstart.hide"), NO("settings.onstart.no");
+		
+		public final String langKey;
+		
+		private OnStartAction(String langKey) {
+			this.langKey = langKey;
 		}
 	}
 }

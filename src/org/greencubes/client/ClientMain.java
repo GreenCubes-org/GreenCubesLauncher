@@ -444,7 +444,7 @@ public class ClientMain extends Client {
 						}
 					} else if(processMonitor.isStarted()) {
 						status(Status.RUNNING, "", -1f);
-						Main.performOnClientStart();
+						Main.performWindowAction(LauncherOptions.onClientStart);
 					}
 					break;
 				case NEED_UPDATE:
@@ -459,7 +459,7 @@ public class ClientMain extends Client {
 				case RUNNING:
 					if(processMonitor == null || processMonitor.getExitValue() >= 0) {
 						processMonitor = null;
-						Main.performOnClientClose();
+						Main.undoWindowAction(LauncherOptions.onClientStart);
 						status(Status.CHECK, "", -1f);
 					}
 					break;
