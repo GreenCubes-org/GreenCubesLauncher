@@ -221,10 +221,12 @@ public class Main {
 			break;
 		case MINIMIZE:
 			currentFrame.setState(Frame.NORMAL);
+			currentFrame.toFront();
 			break;
 		case HIDE:
 			currentFrame.setState(Frame.NORMAL);
 			currentFrame.setVisible(true);
+			currentFrame.toFront();
 			break;
 		case NO:
 			break;
