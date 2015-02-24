@@ -11,6 +11,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -34,6 +35,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -41,6 +43,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus.Status;
@@ -76,6 +80,7 @@ public class LauncherMain$Config {
 	private YamlFile newClientConfig;
 	private List<String> supportedClientLanguages = new ArrayList<String>();
 	private String textureQuality = Main.IS_64_BIT_JAVA ? "high" : "medium";
+	private boolean newAutoLogin = LauncherOptions.autoLogin;
 	
 	LauncherMain$Config(LauncherMain superClass) {
 		this.superClass = superClass;
@@ -205,6 +210,8 @@ public class LauncherMain$Config {
 										Main.getConfig().put("lang", newLanguage);
 										Main.getConfig().put("onstart", newOnStartAction.ordinal());
 										Main.getConfig().put("onclose", newOnCloseAction.ordinal());
+										Main.getConfig().put("login", newAutoLogin);
+										LauncherOptions.autoLogin = newAutoLogin;
 										LauncherOptions.onClientStart = newOnStartAction;
 										LauncherOptions.onLauncherClose = newOnCloseAction;
 									} catch(JSONException e1) {
@@ -455,6 +462,88 @@ public class LauncherMain$Config {
 								}
 							});
 							
+							add(Box.createHorizontalGlue());
+						}});
+						final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
+						final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
+						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							final JCheckBox autoLoginCheckBox;
+							add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), newAutoLogin ?  iconChecked : iconUnchecked, newAutoLogin) {{
+								setFocusPainted(false);
+								setOpaque(false);
+								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+								setForeground(UIScheme.TITLE_COLOR);
+								addItemListener(new ItemListener() {
+									@Override
+									public void itemStateChanged(ItemEvent e) {
+										if(isSelected())
+											setIcon(iconChecked);
+										else
+											setIcon(iconUnchecked);
+										newAutoLogin = isSelected();
+									}
+								});
+								addMouseListener(new MouseAdapter() {
+									@Override
+									public void mouseEntered(MouseEvent e) {
+										setForeground(UIScheme.TITLE_COLOR_SEL);
+									}
+									@Override
+								    public void mouseExited(MouseEvent e) {
+										setForeground(UIScheme.TITLE_COLOR);
+								    }
+								});
+								setMargin(new Insets(2, 0, 2, 0));
+							}});
+							add(Box.createRigidArea(new Dimension(4, 4)));
+							add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.png"))) {
+								JDialog toolTip;
+								{
+									setSize(new Dimension(getIcon().getIconWidth(), getIcon().getIconHeight()));
+									final JLabel lbl = this;
+									addMouseListener(new MouseAdapter() {
+										@Override
+										public void mousePressed(MouseEvent e) {
+											autoLoginCheckBox.setSelected(!autoLoginCheckBox.isSelected());
+										}
+										@Override
+										public void mouseEntered(MouseEvent e) {
+											if(toolTip == null) {
+												 toolTip = new JDialog(superClass.frame, false);
+												 toolTip.setUndecorated(true);
+												 toolTip.setBackground(UIScheme.EMPTY);
+												 toolTip.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+													 setBorder(GAWTUtil.popupBorder());
+													 add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
+														 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+														 JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("login.autologin.tip"), 300);
+														 SimpleAttributeSet attribs = new SimpleAttributeSet();
+														 StyleConstants.setFontFamily(attribs, UIScheme.TITLE_FONT);
+														 StyleConstants.setFontSize(attribs, 14);
+														 StyleConstants.setForeground(attribs, UIScheme.TEXT_COLOR);
+														 StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
+				
+														 pane.setParagraphAttributes(attribs, true);
+														 GAWTUtil.fixtTextPaneWidth(pane, 300);
+														 add(pane);
+													 }});						
+												 }});
+												 toolTip.revalidate();
+												 toolTip.pack();	
+											}
+											Point p = lbl.getLocationOnScreen();
+											toolTip.setLocation(p.x - 38, p.y + lbl.getHeight());
+											toolTip.setVisible(true);
+										}
+				
+										public void mouseExited(MouseEvent e) {
+											if(toolTip != null)
+												toolTip.setVisible(false);
+										}
+									});
+								}
+							});
 							add(Box.createHorizontalGlue());
 						}});
 					}}, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {{
@@ -720,7 +809,8 @@ public class LauncherMain$Config {
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
-								add(new JCheckBox(I18n.get("settings.client.fullscreen"), newClientConfig.getBoolean("graphics.fullscreen", true) ?  iconChecked : iconUnchecked) {{
+								add(new JCheckBox(I18n.get("settings.client.fullscreen"), newClientConfig.getBoolean("graphics.fullscreen", true) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.fullscreen", true)) {{
+									setFocusPainted(false);
 									setOpaque(false);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 									setForeground(UIScheme.TITLE_COLOR);
@@ -825,7 +915,8 @@ public class LauncherMain$Config {
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
-								add(new JCheckBox(I18n.get("settings.client.shadows"), newClientConfig.getBoolean("graphics.shadows", false) ?  iconChecked : iconUnchecked) {{
+								add(new JCheckBox(I18n.get("settings.client.shadows"), newClientConfig.getBoolean("graphics.shadows", false) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.shadows", false)) {{
+									setFocusPainted(false);
 									setOpaque(false);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 									setForeground(UIScheme.TITLE_COLOR);

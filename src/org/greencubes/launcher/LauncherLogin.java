@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,11 +18,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
@@ -305,6 +310,7 @@ public class LauncherLogin {
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 				boolean checked = LauncherOptions.autoLogin;
 				add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), checked ? iconChecked : iconUnchecked, checked) {{
+					setFocusPainted(false);
 					setOpaque(false);
 					setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
 					setForeground(UIScheme.TITLE_COLOR);
@@ -328,8 +334,55 @@ public class LauncherLogin {
 					    }
 					});
 					setMargin(new Insets(2, 0, 2, 0));
-					setToolTipText(I18n.get("login.autologin.tip"));
+					//setToolTipText(I18n.get("login.autologin.tip"));
 				}});
+				add(Box.createHorizontalStrut(4));
+				add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.png"))) {
+					JDialog toolTip;
+					{
+						final JLabel lbl = this;
+						addMouseListener(new MouseAdapter() {
+							@Override
+							public void mousePressed(MouseEvent e) {
+								autoLoginCheckBox.setSelected(!autoLoginCheckBox.isSelected());
+							}
+							@Override
+							public void mouseEntered(MouseEvent e) {
+								if(toolTip == null) {
+									 toolTip = new JDialog(frame, false);
+									 toolTip.setUndecorated(true);
+									 toolTip.setBackground(UIScheme.EMPTY);
+									 toolTip.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+										 setBorder(GAWTUtil.popupBorder());
+										 add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
+											 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+											 JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("login.autologin.tip"), 300);
+											 SimpleAttributeSet attribs = new SimpleAttributeSet();
+											 StyleConstants.setFontFamily(attribs, UIScheme.TITLE_FONT);
+											 StyleConstants.setFontSize(attribs, 14);
+											 StyleConstants.setForeground(attribs, UIScheme.TEXT_COLOR);
+											 StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
+	
+											 pane.setParagraphAttributes(attribs, true);
+											 GAWTUtil.fixtTextPaneWidth(pane, 300);
+											 add(pane);
+										 }});						
+									 }});
+									 toolTip.revalidate();
+									 toolTip.pack();	
+								}
+								Point p = lbl.getLocationOnScreen();
+								toolTip.setLocation(p.x - 38, p.y + lbl.getHeight());
+								toolTip.setVisible(true);
+							}
+	
+							public void mouseExited(MouseEvent e) {
+								if(toolTip != null)
+									toolTip.setVisible(false);
+							}
+						});
+					}
+				});
 			}});
 			add(Box.createHorizontalGlue());
 		}});
