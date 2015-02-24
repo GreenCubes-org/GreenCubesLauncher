@@ -2,6 +2,7 @@ package org.greencubes.launcher;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
@@ -20,10 +21,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus.Status;
@@ -49,6 +54,7 @@ import org.greencubes.swing.JPanelBG;
 import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.util.I18n;
+import org.greencubes.util.Util;
 import org.greencubes.yaml.YamlException;
 import org.greencubes.yaml.YamlFile;
 import org.json.JSONException;
@@ -61,6 +67,7 @@ public class LauncherMain$Config {
 	private int configPageId = -1;
 	private JLabel launcherConfig;
 	private JLabel clientConfig;
+	private JLabel about;
 	private String newLanguage = I18n.currentLanguage;
 	private OnStartAction newOnStartAction = LauncherOptions.onClientStart;
 	private ScreenSize newScreenSize ;
@@ -78,29 +85,29 @@ public class LauncherMain$Config {
 			return;
 		configPageId = -1;
 		if(superClass.clientPanel != null) {
-			superClass.clientPanel.getParent().remove(superClass.clientPanel);
-			superClass.clientPanel = null;
+			Container parent = superClass.clientPanel.getParent();
+			if(parent != null)
+				parent.remove(superClass.clientPanel);
 		}
+		superClass.configLabel.setVisible(true);
 		superClass.topGame.setForeground(UIScheme.TITLE_COLOR);
 		superClass.mainPanel.add(superClass.configPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 			setBackground(UIScheme.BACKGROUND);
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-				add(new JLabel("НАСТРОЙКИ".toUpperCase()) {{
-					setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-					setForeground(UIScheme.TEXT_COLOR);
-					setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
-				}});
-				add(Box.createHorizontalGlue());
-			}});
-			add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+					setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 					setMaximumSize(new Dimension(200, Short.MAX_VALUE));
 					add(launcherConfig = new JLabel("Настройки лаунчера") {{
 						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 						setForeground(UIScheme.TITLE_COLOR);
 					}});
-					add(clientConfig = new JLabel("Настройки клиента") {{
+					add(clientConfig = new JLabel("Настройки игры") {{
+						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
+						setForeground(UIScheme.TITLE_COLOR);
+					}});
+					add(about = new JLabel("О программе") {{
 						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 						setForeground(UIScheme.TITLE_COLOR);
@@ -141,10 +148,28 @@ public class LauncherMain$Config {
 							}
 						}
 					});
+					about.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							displayConfigPage(2);
+						}
+						@Override
+					    public void mouseEntered(MouseEvent e) {
+							if(configPageId != 2) {
+								about.setForeground(UIScheme.TITLE_COLOR_SEL);
+							}
+						}
+						@Override
+					    public void mouseExited(MouseEvent e) {
+							if(configPageId != 2) {
+								about.setForeground(UIScheme.TITLE_COLOR);
+							}
+						}
+					});
 					add(Box.createVerticalGlue());
 				}});
 				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.EMPTY) {{
-					setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5), BorderFactory.createMatteBorder(0, 1, 0, 0, UIScheme.TITLE_COLOR)));
+					setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0), BorderFactory.createMatteBorder(0, 1, 0, 0, UIScheme.TITLE_COLOR)));
 					add(Box.createVerticalGlue());
 				}});
 				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
@@ -211,11 +236,13 @@ public class LauncherMain$Config {
 			case 0:
 				launcherConfig.setForeground(UIScheme.TITLE_COLOR_SEL);
 				clientConfig.setForeground(UIScheme.TITLE_COLOR);
+				about.setForeground(UIScheme.TITLE_COLOR);
 				configPage.removeAll();
 				configPage.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 					JScrollPane scrollPane;
 					add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 							add(new JLabel(I18n.get("settings.launcher.language")) {{
 								setForeground(UIScheme.TEXT_COLOR);
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -286,6 +313,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 							add(new JLabel(I18n.get("settings.launcher.onstart")) {{
 								setForeground(UIScheme.TEXT_COLOR);
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -367,9 +395,11 @@ public class LauncherMain$Config {
 			case 1:
 				clientConfig.setForeground(UIScheme.TITLE_COLOR_SEL);
 				launcherConfig.setForeground(UIScheme.TITLE_COLOR);
+				about.setForeground(UIScheme.TITLE_COLOR);
 				configPage.removeAll();
 				if(Client.MAIN.getStatus().getStatus() != Status.READY && Client.MAIN.getStatus().getStatus() != Status.OFFLINE) {
 					configPage.add(new JTextPane() {{
+						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
 						setText(I18n.get("settings.client.needupdate"));
 						setForeground(UIScheme.TEXT_COLOR);
 						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -432,12 +462,13 @@ public class LauncherMain$Config {
 						textureQuality = newClientConfig.getString("graphics.items-quality", textureQuality);
 					}
 					configPage.add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
-						JScrollPane scrollPane;
+						final JScrollPane scrollPane;
 						add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 							final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
 							final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.generic")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
@@ -446,6 +477,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.language")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -527,6 +559,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.graphics")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
@@ -535,6 +568,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.resolution")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -642,6 +676,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.textures")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -751,8 +786,10 @@ public class LauncherMain$Config {
 						scrollPane.getViewport().setOpaque(false);
 						scrollPane.getVerticalScrollBar().setUI(GAWTUtil.customScrollBarUI(UIScheme.BACKGROUND, UIScheme.TOP_PANEL_BG));
 						scrollPane.getVerticalScrollBar().setOpaque(false);
+						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 						if(!Main.IS_64_BIT_JAVA)
 							add(new JTextPane() {{
+								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
 								setText(I18n.get("32alert"));
 								setForeground(new Color(255, 0, 0, 255));
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -760,8 +797,60 @@ public class LauncherMain$Config {
 								setOpaque(false);
 								setHighlighter(null);
 							}});
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								scrollPane.getVerticalScrollBar().setValue(0);
+							}
+						});
 					}});
 				}
+				break;
+			case 2:
+				clientConfig.setForeground(UIScheme.TITLE_COLOR);
+				launcherConfig.setForeground(UIScheme.TITLE_COLOR);
+				about.setForeground(UIScheme.TITLE_COLOR_SEL);
+				configPage.removeAll();
+				final String separator = System.getProperty("line.separator");
+				final StringBuilder aboutPage = new StringBuilder();
+				Scanner reader = null;
+				try {
+					reader = new Scanner(new InputStreamReader(Main.class.getResourceAsStream("/NOTICE"), "UTF-8"));
+					while(reader.hasNextLine()) {
+						if(aboutPage.length() > 0)
+							aboutPage.append(separator);
+						aboutPage.append(reader.nextLine());
+					}
+				} catch(IOException e) {
+					aboutPage.append(separator + separator + e.getLocalizedMessage());
+				} finally {
+					Util.close(reader);
+				}
+				final JScrollPane scrollPane;
+				configPage.add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
+					add(new JTextPane() {{
+						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+						setText(aboutPage.toString());
+						setForeground(UIScheme.TEXT_COLOR);
+						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 14));
+						setEditable(false);
+						setOpaque(false);
+						//setHighlighter(null);
+					}});
+				}}, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {{
+					setOpaque(false);
+					setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+				}});
+				scrollPane.getViewport().setOpaque(false);
+				scrollPane.getVerticalScrollBar().setUI(GAWTUtil.customScrollBarUI(UIScheme.BACKGROUND, UIScheme.TOP_PANEL_BG));
+				scrollPane.getVerticalScrollBar().setOpaque(false);
+				scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						scrollPane.getVerticalScrollBar().setValue(0);
+					}
+				});
 				break;
 		}
 		superClass.frame.pack();

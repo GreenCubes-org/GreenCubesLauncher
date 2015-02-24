@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.util.I18n;
 import org.greencubes.util.Util;
 
@@ -58,8 +59,11 @@ public class CrashReport extends Panel {
 		}
 		sb.append("\n--- CRASH REPORT END ---\n");
 		sb.append("Спасибо, что помогаете GreenCubes стать лучше!");
-		TextArea textarea = new TextArea(sb.toString().replace("\r\n","\n").replace("\n", System.getProperty("line.separator")), 0, 0, 1);
+		String s = sb.toString().replace("\r\n","\n").replace("\n", System.getProperty("line.separator"));
+		TextArea textarea = new TextArea(s, 0, 0, 1);
 		textarea.setFont(new Font("Monospaced", 0, 12));
 		add(textarea, "Center");
+		if(LauncherOptions.debug)
+			System.out.println(s);
 	}
 }

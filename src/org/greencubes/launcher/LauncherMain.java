@@ -63,6 +63,7 @@ public class LauncherMain {
 	JPanel clientPanel;
 	JPanel configPanel;
 	JLabel topGame;
+	JLabel configLabel;
 	
 	//@formatter:off
 	/**
@@ -240,7 +241,7 @@ public class LauncherMain {
 								}
 								@Override
 								public void mouseExited(MouseEvent e) {
-									setForeground(clientPanel != null ? UIScheme.TITLE_COLOR_SEL : UIScheme.TITLE_COLOR);
+									setForeground((clientPanel != null && clientPanel.getParent() != null) ? UIScheme.TITLE_COLOR_SEL : UIScheme.TITLE_COLOR);
 								}
 								@Override
 								public void mousePressed(MouseEvent e) {
@@ -252,6 +253,28 @@ public class LauncherMain {
 							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
 							setForeground(UIScheme.TITLE_COLOR);
 							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
+							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseEntered(MouseEvent e) {
+									setForeground(UIScheme.TITLE_COLOR_SEL);
+								}
+								@Override
+								public void mouseExited(MouseEvent e) {
+									setForeground(UIScheme.TITLE_COLOR);
+								}
+								@Override
+								public void mousePressed(MouseEvent e) {
+									LauncherUtil.onenURLInBrowser(Main.USER_CONTROL_PANEL_URL);
+								}
+							});
+						}});
+						add(configLabel = new JLabel() {{
+							setVisible(false);
+							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+							setForeground(UIScheme.TITLE_COLOR_SEL);
+							setText(I18n.get("settings.title").toUpperCase());
 							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});

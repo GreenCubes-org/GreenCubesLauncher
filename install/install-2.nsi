@@ -13,7 +13,7 @@
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 
 SetCompressor lzma
-RequestExecutionLevel admin
+RequestExecutionLevel admin ; Re-ask admin permissions so uninstaller runs under the same user as installer
 
 ;--------------------------------
 ;Variables
@@ -82,6 +82,7 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 Function .onInit
+  ; If running on x64 systems, install to Program Files, not Program Files (x86)
   ${If} ${RunningX64}
     StrCpy $INSTDIR "$PROGRAMFILES64\${PRODUCT_NAME}"
   ${EndIf}
@@ -91,48 +92,79 @@ FunctionEnd
 Section "MainSection" SEC01
   AddSize 1048576 ; Add 1Gb as we don't have files in section
   SetOutPath "$INSTDIR"
+  
+  ; Download main package
   inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/client/windows-installer.zip" "package.zip"
     Pop $0
-    StrCmp $0 "OK" dlok
+    StrCmp $0 "OK" dlok1
     Abort
-  dlok:
+  dlok1:
   nsUnzip::Extract / "package.zip" /END
-  ; TODO : Check sucess
+    Pop $0
+    IntCmp 0 $0 unzipok1
+    Abort
+  unzipok1:
+  ; TODO : Check unpacking success
+  
+  ; Update launcher
+  inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/login/files/launcher/version.json" "launcher.json"
+    Pop $0
+    StrCmp $0 "OK" dlok2
+    Abort
+  dlok2:
+  nsJSON::Set /file $INSTDIR\launcher.json
+    IfErrors error
+  nsJSON::Get /count "files" /end
+    IfErrors error
+    Pop $R0
+  ${For} $R1 0 $R0
+    nsJSON::Get `files` /index $R1 `name` /end
+      Pop $R2
+    StrCpy $R3 $R2
+    !insertmacro ReplaceSubStr $R3 "/" "\"
+    inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/login/files/launcher/$R2" "$R3"
+      Pop $0
+      StrCmp $0 "OK" dlok3
+      Abort
+    dlok3:
+  ${Next}
+  goto noerror
+  
+  ; Process errors
+  error:
+    ; TODO : Add error page?
+    Abort
+  noerror:
+  
+  ; Clear
+  Delete "launcher.json"
   Delete "package.zip"
-  WriteUninstaller $INSTDIR\uninstall.exe
-SectionEnd
-
-Section -Shortcuts
+  
+  ; Create shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
     CreateShortcut "$SMPROGRAMS\$StartMenuFolder\GreenCubes.lnk" "$INSTDIR\greencubes.exe"
-    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+    CreateShortcut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\uninstall.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
-SectionEnd
-
-Section -CreateUninstall
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  
+  ; Create uninstaller
+  WriteUninstaller "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\greencubes.exe"
 SectionEnd
 
 Section "un.MainSection"
-  Delete "$INSTDIR\Uninstall.exe"
+  Delete "$INSTDIR\uninstall.exe"
 
   ;Remove downloaded files
   ClearErrors
   nsJSON::Set /file $INSTDIR\version.json
-  ${If} ${Errors}
-    goto skipjson
-  ${EndIf}
+    IfErrors skipjson
   nsJSON::Get /count "files" /end
-  ${If} ${Errors}
-    goto skipjson
-  ${EndIf}
-  Pop $R0
+    IfErrors skipjson
+    Pop $R0
   ${For} $R1 0 $R0
     nsJSON::Get `files` /index $R1 `name` /end
-    Pop $R2
+      Pop $R2
     !insertmacro ReplaceSubStr $R2 "/" "\"
     Delete "$INSTDIR\$R2"
   ${Next}

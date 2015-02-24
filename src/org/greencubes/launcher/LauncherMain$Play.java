@@ -117,12 +117,24 @@ public class LauncherMain$Play {
 			
 			add(Box.createVerticalGlue());
 		}});*/
-		if(superClass.clientPanel != null)
+		if(superClass.clientPanel != null && superClass.clientPanel.getParent() != null)
 			return;
 		superClass.topGame.setForeground(UIScheme.TITLE_COLOR_SEL);
 		if(superClass.configPanel != null) {
 			superClass.configPanel.getParent().remove(superClass.configPanel);
 			superClass.configPanel = null;
+			superClass.configLabel.setVisible(false);
+		}
+		if(superClass.clientPanel != null) {
+			superClass.mainPanel.add(superClass.clientPanel);
+			superClass.frame.revalidate();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					superClass.frame.repaint();
+				}
+			});
+			return;
 		}
 		superClass.mainPanel.add(superClass.clientPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 			setBackground(UIScheme.BACKGROUND);
