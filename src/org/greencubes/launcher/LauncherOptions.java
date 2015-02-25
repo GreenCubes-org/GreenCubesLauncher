@@ -119,6 +119,10 @@ public class LauncherOptions {
 		}
 		sessionUser = userName;
 		sessionUserId = userId;
+		try {
+			Main.getConfig().put("user", userName);
+			Main.getConfig().put("login", autoLogin);
+		} catch(JSONException e) {}
 	}
 	
 	public static void auth(String userName, char[] password) throws IOException, AuthError {

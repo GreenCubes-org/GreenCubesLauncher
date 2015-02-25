@@ -19,7 +19,7 @@ public class UndecoratedJFrame extends JFrame {
 	protected ComponentResizer resizer;
 	
 	public UndecoratedJFrame(String title) {
-		super(title);
+		super(title, GAWTUtil.getBestConfiguration());
 		// Hack to use right maximized bound with udecorated window.
 		// Otherwise it will overlap system panel.
 		GraphicsConfiguration config = getGraphicsConfiguration();

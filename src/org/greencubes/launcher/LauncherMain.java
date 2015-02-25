@@ -159,7 +159,7 @@ public class LauncherMain {
 							}
 						});
 						mainPopup.setOpaque(false);
-						mainPopup.setBorder(GAWTUtil.popupBorder());
+						mainPopup.setBorder(GAWTUtil.safePopupBorder());
 						mainPopup.validate();
 						mainPopup.addPopupMenuListener(new PopupMenuListener() {
 							@Override
@@ -373,9 +373,9 @@ public class LauncherMain {
 				public void run() {
 					final JDialog dialog = new JDialog(frame, true);
 					dialog.setUndecorated(true);
-					dialog.setBackground(UIScheme.EMPTY);
+					GAWTUtil.safeTransparentBackground(dialog, UIScheme.EMPTY);
 					dialog.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-						setBorder(GAWTUtil.popupBorder());
+						setBorder(GAWTUtil.safePopupBorder());
 						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
 							setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 							JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("menu.tip"), 300);

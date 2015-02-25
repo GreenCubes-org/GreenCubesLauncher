@@ -273,7 +273,7 @@ public class LauncherLogin {
 				setCaretColor(UIScheme.TEXT_COLOR);
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
 				setBorder(new RoundedCornerBorder(UIScheme.BACKGROUND, UIScheme.INPUT_BORDER, 4));
-				if(savedUser != null)
+				if(savedUser != null && savedUser.length() > 0)
 					setText(savedUser);
 				setDisabledTextColor(UIScheme.BACKGROUND);
 				setPlaceholder(I18n.get("login.login"));
@@ -321,6 +321,7 @@ public class LauncherLogin {
 								setIcon(iconChecked);
 							else
 								setIcon(iconUnchecked);
+							LauncherOptions.autoLogin = autoLoginCheckBox.isSelected();
 						}
 					});
 					addMouseListener(new MouseAdapter() {
@@ -351,9 +352,9 @@ public class LauncherLogin {
 								if(toolTip == null) {
 									 toolTip = new JDialog(frame, false);
 									 toolTip.setUndecorated(true);
-									 toolTip.setBackground(UIScheme.EMPTY);
+									 GAWTUtil.safeTransparentBackground(toolTip, UIScheme.EMPTY);
 									 toolTip.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-										 setBorder(GAWTUtil.popupBorder());
+										 setBorder(GAWTUtil.safePopupBorder());
 										 add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
 											 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 											 JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("login.autologin.tip"), 300);
@@ -362,7 +363,6 @@ public class LauncherLogin {
 											 StyleConstants.setFontSize(attribs, 14);
 											 StyleConstants.setForeground(attribs, UIScheme.TEXT_COLOR);
 											 StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
-	
 											 pane.setParagraphAttributes(attribs, true);
 											 GAWTUtil.fixtTextPaneWidth(pane, 300);
 											 add(pane);
@@ -373,9 +373,9 @@ public class LauncherLogin {
 								}
 								Point p = lbl.getLocationOnScreen();
 								toolTip.setLocation(p.x - 38, p.y + lbl.getHeight());
-								toolTip.setVisible(true);
+								toolTip.setVisible(true);	
 							}
-	
+							@Override
 							public void mouseExited(MouseEvent e) {
 								if(toolTip != null)
 									toolTip.setVisible(false);
@@ -517,7 +517,7 @@ public class LauncherLogin {
 			}
 		});
 		
-		if(LauncherOptions.sessionUser != null)
+		if(savedUser != null && savedUser.length() > 0)
 			passwordField.requestFocusInWindow();
 		else
 			userField.requestFocusInWindow();

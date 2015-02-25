@@ -512,9 +512,9 @@ public class LauncherMain$Config {
 											if(toolTip == null) {
 												 toolTip = new JDialog(superClass.frame, false);
 												 toolTip.setUndecorated(true);
-												 toolTip.setBackground(UIScheme.EMPTY);
+												 GAWTUtil.safeTransparentBackground(toolTip, UIScheme.EMPTY);
 												 toolTip.add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-													 setBorder(GAWTUtil.popupBorder());
+													 setBorder(GAWTUtil.safePopupBorder());
 													 add(new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.MAIN_MENU_BG) {{
 														 setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 														 JTextPane pane = GAWTUtil.getNiceTextPane(I18n.get("login.autologin.tip"), 300);

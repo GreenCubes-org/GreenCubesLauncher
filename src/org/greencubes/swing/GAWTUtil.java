@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -18,6 +20,7 @@ import java.net.URL;
 import java.util.EventListener;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -34,6 +37,8 @@ import javax.swing.text.SimpleAttributeSet;
 import org.greencubes.main.Main;
 
 public class GAWTUtil {
+	
+	private static GraphicsConfiguration bestConfig;
 	
 	public static JTextPane getNiceTextPane(String text, final int width) {
 		JTextPane jtp = new JTextPane();
@@ -188,6 +193,23 @@ public class GAWTUtil {
 		};
 	}
 	
+	public static void safeTransparentBackground(Component c, Color newBg) {
+		try {
+			c.setBackground(newBg);
+		} catch(Exception e) {
+			newBg = new Color(newBg.getRed(), newBg.getGreen(), newBg.getBlue(), 255);
+			c.setBackground(newBg);
+		}
+	}
+	
+	public static Border safePopupBorder() {
+		return isTranslucencySupported() ? popupBorder() : mimicPopupBorder();
+	}
+	
+	public static Border mimicPopupBorder() {
+		return BorderFactory.createLineBorder(new Color(0, 0, 0, 255), 1);
+	}
+	
 	public static Border popupBorder() {
 		return new EmptyBorder(new Insets(23, 13, 13, 13)) {
 			Image icon;
@@ -246,5 +268,23 @@ public class GAWTUtil {
 				return false;
 			}
 		};
+	}
+	
+	public static boolean isTranslucencySupported() {
+		return getBestConfiguration().isTranslucencyCapable();
+	}
+	
+	public static GraphicsConfiguration getBestConfiguration() {
+		if(bestConfig != null)
+			return bestConfig;
+		GraphicsConfiguration defaultConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+		if(defaultConfig.isTranslucencyCapable())
+			return bestConfig = defaultConfig;
+		GraphicsConfiguration[] configs = defaultConfig.getDevice().getConfigurations();
+        for(int j = 0; j < configs.length; j++) {
+            if(configs[j].isTranslucencyCapable())
+                return bestConfig = configs[j];
+        }
+        return bestConfig = defaultConfig;
 	}
 }
