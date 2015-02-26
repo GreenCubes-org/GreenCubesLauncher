@@ -22,12 +22,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.greencubes.client.Client;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
+import org.greencubes.swing.MacOSX;
 import org.greencubes.util.Encryption;
+import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@SuppressWarnings("restriction")
 /**
  * <p>Most protected and encrypted class. Do not touch
  * if you are not an author.</p>
@@ -106,6 +107,8 @@ public class LauncherOptions {
 				if(Main.TEST)
 					e.printStackTrace();
 			}
+			if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
+				MacOSX.setIcons(icons);
 		}
 		return icons;
 	}

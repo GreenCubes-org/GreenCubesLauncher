@@ -22,7 +22,6 @@ public class CrashReport extends Panel {
 
 	private static final long serialVersionUID = 3420347234451905795L;
 
-	@SuppressWarnings("restriction")
 	public CrashReport(String error, Throwable t) {
 		setBackground(new Color(0x2e3444));
 		setPreferredSize(new Dimension(1024, 640));

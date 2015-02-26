@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 
 import sun.java2d.SunGraphicsEnvironment;
 
-@SuppressWarnings("restriction")
 public class UndecoratedJFrame extends JFrame {
 	
 	protected Point initialClick;
