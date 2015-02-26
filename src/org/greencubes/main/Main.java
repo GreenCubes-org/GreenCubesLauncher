@@ -35,6 +35,7 @@ import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.launcher.LauncherUpdate;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
+import org.greencubes.util.logging.LogManager;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -77,6 +78,8 @@ public class Main {
 			if(arg.equals("-local"))
 				LauncherOptions.showLocalServer = true;
 		}
+		if(LauncherOptions.debug)
+			LogManager.initialize(new File("debug.log"));
 		siw = new SingleInstanceWorker(args);
 		if(siw.isAlreadyRunning()) {
 			System.out.println("Other instance is already running, shutting down");
@@ -161,6 +164,8 @@ public class Main {
 		// Apply config
 		if(config.optBoolean("debug") || TEST)
 			LauncherOptions.debug = true;
+		if(LauncherOptions.debug)
+			LogManager.initialize(new File("debug.log"));
 		LauncherOptions.onClientStart = LauncherOptions.OnStartAction.values()[config.optInt("onstart", LauncherOptions.onClientStart.ordinal())];
 		LauncherOptions.onLauncherClose = LauncherOptions.OnStartAction.values()[config.optInt("onclose", LauncherOptions.onLauncherClose.ordinal())];
 		LauncherOptions.autoUpdate = config.optBoolean("autoupdate", LauncherOptions.autoUpdate);

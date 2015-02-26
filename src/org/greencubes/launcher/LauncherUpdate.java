@@ -78,6 +78,8 @@ public class LauncherUpdate {
 			updateError(101, e.getLocalizedMessage());
 			return false;
 		}
+		
+		// Update launcher files:
 		JSONArray hashesArray = remoteVersion.optJSONArray("files");
 		if(hashesArray == null) {
 			updateError(102, null);
@@ -97,8 +99,25 @@ public class LauncherUpdate {
 				needUpdate = true;
 			files.add(file);
 		}
+		// Update supporting files:
+		hashesArray = remoteVersion.optJSONArray("support");
+		List<GameFile> supportingFiles = new ArrayList<GameFile>();
+		if(hashesArray != null) {
+			for(int i = 0; i < hashesArray.length(); ++i) {
+				JSONObject fileObject = hashesArray.optJSONObject(i);
+				if(fileObject == null) {
+					updateError(103, null);
+					return false;
+				}
+				GameFile file = GameFile.getFile(fileObject, workingDirectory, null);
+				if(file.needUpdate)
+					needUpdate = true;
+				files.add(file);
+			}
+		}
+		
 		if(needUpdate) {
-			if(!downloadUpdate(files))
+			if(!downloadUpdate(files, supportingFiles))
 				return false;
 			processUpdate(files);
 			return false;
@@ -199,7 +218,7 @@ public class LauncherUpdate {
 		return false;
 	}
 	
-	private boolean downloadUpdate(List<GameFile> files) {
+	private boolean downloadUpdate(List<GameFile> files, List<GameFile> supportingFiles) {
 		Downloader d = LauncherOptions.getDownloader();
 		int updateSize = 0;
 		for(int i = 0; i < files.size(); ++i) {
@@ -209,7 +228,15 @@ public class LauncherUpdate {
 					updateSize += file.remoteFileSize;
 			}
 		}
+		for(int i = 0; i < supportingFiles.size(); ++i) {
+			GameFile file = supportingFiles.get(i);
+			if(file.needUpdate) {
+				if(file.remoteFileSize >= 0)
+					updateSize += file.remoteFileSize;
+			}
+		}
 		File patchDir = new File("patch");
+		File supportingDir = new File("");
 		if(patchDir.isFile()) {
 			updateError(201, null);
 			return false;
@@ -223,6 +250,31 @@ public class LauncherUpdate {
 			GameFile file = files.get(i);
 			if(file.needUpdate) {
 				File localFile = new File(patchDir, file.remoteFileUrl);
+				int trys = 0;
+				do {
+					DownloadThread dt = new DownloadThread(localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl), d);
+					dt.start();
+					while(!dt.downloaded) {
+						try {
+							Thread.sleep(100L);
+						} catch(InterruptedException e) {}
+						setDownloadStatus(downloaded + d.bytesDownloaded, updateSize);
+					}
+					if(dt.lastError == null)
+						break;
+					if(++trys > 3) {
+						updateError(104, null);
+						return false;
+					}
+					setStatus(I18n.get("launcher.update.repeat", trys, 3));
+				} while(true);
+				downloaded += d.bytesDownloaded;
+			}
+		}
+		for(int i = 0; i < supportingFiles.size(); ++i) {
+			GameFile file = supportingFiles.get(i);
+			if(file.needUpdate) {
+				File localFile = new File(supportingDir, file.remoteFileUrl);
 				int trys = 0;
 				do {
 					DownloadThread dt = new DownloadThread(localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl), d);
