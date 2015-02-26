@@ -470,8 +470,7 @@ public class ClientMain extends Client {
 						downloader.start();
 					} else {
 						//@formatter:off
-						status(Status.UPDATING, I18n.get("client.update.downloading", downloader.downloading, Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded),
-								Util.getBytesAsString(LauncherOptions.getClientDownloader(ClientMain.this).bytesDownloaded), filesDownloaded,
+						status(Status.UPDATING, I18n.get("client.update.downloading", filesDownloaded,
 								filesToDownload, (isEstimate ? "~" : "") + Util.getBytesAsString(bytesDownloaded), Util.getBytesAsString(bytesToDownload))
 								+ (downloader.error.isEmpty() ? "" : "\n" + downloader.error), ((float) filesDownloaded / filesToDownload + (float) bytesDownloaded / bytesToDownload) / 2);
 						//@formatter:on
@@ -498,7 +497,7 @@ public class ClientMain extends Client {
 		
 		private boolean abort = false;
 		public boolean finished = false;
-		public GameFile downloading;
+		//public GameFile downloading;
 		public String error = "";
 		public int repeats = 0;
 		
@@ -522,7 +521,7 @@ public class ClientMain extends Client {
 					}
 					if(gf.needUpdate) {
 						if(gf.remotemd5 != null) {
-							downloading = gf;
+							//downloading = gf;
 							repeats = 0;
 							while(true) {
 								try {

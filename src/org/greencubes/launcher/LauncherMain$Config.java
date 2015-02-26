@@ -103,17 +103,17 @@ public class LauncherMain$Config {
 				add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 					setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 					setMaximumSize(new Dimension(200, Short.MAX_VALUE));
-					add(launcherConfig = new JLabel("Настройки лаунчера") {{
+					add(launcherConfig = new JLabel(I18n.get("settings.launcher")) {{
 						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 						setForeground(UIScheme.TITLE_COLOR);
 					}});
-					add(clientConfig = new JLabel("Настройки игры") {{
+					add(clientConfig = new JLabel(I18n.get("settings.client")) {{
 						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 						setForeground(UIScheme.TITLE_COLOR);
 					}});
-					add(about = new JLabel("О программе") {{
+					add(about = new JLabel(I18n.get("settings.about")) {{
 						setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 						setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 						setForeground(UIScheme.TITLE_COLOR);

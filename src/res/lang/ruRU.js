@@ -26,7 +26,7 @@
 "client.update.ready": "Готово к установке",
 "client.update.counting": "Подсчёт размера обновления",
 "client.update.required": "Требуется обновление (%d файлов, %s)",
-"client.update.downloading": "Загрузка %s (%s/%s),\nпрогрес: %s/%s, %s/%s",
+"client.update.downloading": "Загрузка файлов\nПрогрес: %s/%s, %s/%s",
 
 "client.update.error.folder": "Невозможно создать папку клиента",
 "client.update.error.generic": "Ошибка обновления #%d",
@@ -94,6 +94,9 @@
 "update.error.start": "Произошла ошибка при обновлении лаунчера: после обновления лаунчер не получается запустить. Попробуйте сделать это самостоятельно. В случае, если игра не запускается - попробуйте скачать программу установки заново с сайта https://greencubes.org. Приносим свои извинения за возможные неудобства. Вы можете обратиться в нашу службу поддержки по адресу https://help.greencubes.org.",
 
 "settings.title": "Настройки",
+"settings.launcher": "Настройки лаунчера",
+"settings.client": "Настройки игры",
+"settings.about": "О программе",
 
 "settings.onstart.close": "Закрыть лаунчер",
 "settings.onstart.minimize": "Свернуть лаунчер",
@@ -129,7 +132,9 @@
 "lang.itIT": "Italiano (Итальянский)",
 "lang.beBY": "Беларуская (Белорусский)",
 "lang.deDE": "Deutsch (Немецкий)",
-"lang.unselected": "Не выбрано",
+"lang.frFR": "Français (Французский)",
+"lang.csCZ": "Čeština (Чешский)",
+"lang.unselected": "Автоматически",
 
 "32alert": "Ваша операционная система или версия Java не поддерживает 64-битную архитектуру. Вам могут быть не доступны высокие настройки графики."
 }
