@@ -9,8 +9,9 @@ public class UIScheme {
 	public static final Color EMPTY = getColor(0, 0);
 	public static final Color TEXT_COLOR = getColor(0xecffff);
 	
-	public static final String TEXT_FONT = "Clear Sans Light";
+	public static final String TEXT_FONT = "Lato";
 	public static final String TITLE_FONT = "Lato";
+	public static final String LONG_TEXT_FONG = "Clear Sans Light";
 	
 	public static final Color MAIN_MENU_BG = getColor(0x739292);
 	public static final Color TITLE_COLOR = getColor(0xc0e5ed);

@@ -36,6 +36,7 @@ import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.util.I18n;
+import org.greencubes.util.MacOSX;
 import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 import org.json.JSONArray;
@@ -314,6 +315,8 @@ public class LauncherUpdate {
 	
 	private void createWindow() {
 		frame = new JFrame(I18n.get("title"));
+		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
+			MacOSX.setTitle(I18n.get("title"));
 		Main.currentFrame = frame;
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(true);

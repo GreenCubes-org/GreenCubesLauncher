@@ -28,7 +28,6 @@ import java.util.Set;
 
 import sun.misc.Unsafe;
 
-@SuppressWarnings("restriction")
 public final class Util {
 	
 	/**

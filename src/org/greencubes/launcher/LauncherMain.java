@@ -53,6 +53,8 @@ import org.greencubes.swing.DropdownListener;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
+import org.greencubes.util.MacOSX;
+import org.greencubes.util.OperatingSystem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,6 +79,8 @@ public class LauncherMain {
 	 */
 	public LauncherMain(Window previousFrame) {
 		frame = new UndecoratedJFrame(I18n.get("title"));
+		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
+			MacOSX.setTitle(I18n.get("title"));
 		Main.currentFrame = frame;
 		systemTrayInit();
 		frame.setIconImages(LauncherOptions.getIcons());
@@ -113,7 +117,7 @@ public class LauncherMain {
 								mainPopup.show(e.getComponent(), false);
 							}
 						});
-						mainPopup.setMenuFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 18));
+						mainPopup.setMenuFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 18));
 						mainPopup.setMenuColors(UIScheme.MAIN_MENU_BG, UIScheme.TITLE_COLOR, UIScheme.MAIN_MENU_BG_SEL, UIScheme.TITLE_COLOR_SEL);
 						mainPopup.setMenuBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 						

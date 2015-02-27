@@ -199,7 +199,7 @@ public class LauncherMain$Play {
 						setVerticalAlignment(SwingConstants.CENTER);
 						setForeground(new Color(176, 230, 238, 255));
 						setText(currentClient.getStatus().getStatusTitle());
-						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 14));
+						setFont(new Font(UIScheme.LONG_TEXT_FONG, Font.PLAIN, 14));
 						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						setMinimumSize(new Dimension(0, 66));
 					}});

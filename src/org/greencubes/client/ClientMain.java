@@ -275,8 +275,10 @@ public class ClientMain extends Client {
 				return;
 			}
 			GameFile file = GameFile.getFile(fileObject, workingDirectory, localHashes);
-			if(file.needUpdate)
+			if(file.needUpdate) {
+				//System.out.println("File to update: " + file.remoteFileUrl + " (local: " + Util.toString(file.localmd5) + ", remote: " + Util.toString(file.remotemd5) + ")");
 				needUpdate = true;
+			}
 			newGameFiles.add(file);
 			remoteFiles.add(fileObject.optString("name"));
 		}
@@ -284,6 +286,7 @@ public class ClientMain extends Client {
 		while(oldFilesIterator.hasNext()) {
 			Entry<String, byte[]> e = oldFilesIterator.next();
 			if(!remoteFiles.contains(e.getKey())) {
+				//System.out.println("File to remove: " + e.getKey());
 				// File not found remote, create game file so we can delete it later
 				newGameFiles.add(new GameFile(new File(workingDirectory, e.getKey()), null, e.getValue(), null));
 			}
@@ -445,6 +448,8 @@ public class ClientMain extends Client {
 					} else if(processMonitor.isStarted()) {
 						status(Status.RUNNING, "", -1f);
 						Main.performWindowAction(LauncherOptions.onClientStart);
+					} else if(!processMonitor.isProcessRunning()) { // If process crashed before fully started
+						status(Status.RUNNING, "", -1f);
 					}
 					break;
 				case NEED_UPDATE:
@@ -457,7 +462,7 @@ public class ClientMain extends Client {
 						prepareClientUpdate();
 					break;
 				case RUNNING:
-					if(processMonitor == null || processMonitor.getExitValue() >= 0) {
+					if(processMonitor == null || !processMonitor.isProcessRunning()) {
 						processMonitor = null;
 						Main.undoWindowAction(LauncherOptions.onClientStart);
 						status(Status.CHECK, "", -1f);
@@ -507,6 +512,7 @@ public class ClientMain extends Client {
 		
 		@Override
 		public void run() {
+			boolean setFinished = false;
 			try {
 				Downloader d = LauncherOptions.getClientDownloader(ClientMain.this);
 				filesDownloaded = 0;
@@ -516,16 +522,19 @@ public class ClientMain extends Client {
 				while(!abort) {
 					GameFile gf = queue.poll();
 					if(gf == null) {
-						finished = true;
+						setFinished = true;
 						return;
 					}
 					if(gf.needUpdate) {
+						//System.out.println("Need update: " + gf.remoteFileUrl);
 						if(gf.remotemd5 != null) {
+							//System.out.println("Downloading: " + gf.remoteFileUrl);
 							//downloading = gf;
 							repeats = 0;
 							while(true) {
 								try {
 									gf.downloadFile(d, "files/main/");
+									//System.out.println("Downloaded: " + gf.remoteFileUrl + " (new local: " + Util.toString(gf.localmd5) + ")");
 									//d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
 									//gf.needUpdate = false;
 									//gf.localmd5 = Util.createChecksum(gf.localFile);
@@ -550,6 +559,7 @@ public class ClientMain extends Client {
 				}
 			} finally {
 				updateVersionFile();
+				finished = setFinished;
 			}
 		}
 	}

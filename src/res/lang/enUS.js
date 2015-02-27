@@ -12,7 +12,7 @@
 "launcher.update.loading": "Preparing update...",
 
 "launcher.update.error.title": "Failed to update",
-"launcher.update.error.server": "An error occurred while trying to connect to the server.\n\It could happen because of a problem with your internet connection or might be a server-side error.\n\nYou can continue without update, but some functions may not be available.",
+"launcher.update.error.server": "An error occurred while trying to connect to the server.\n\nIt could happen because of a problem with your internet connection or might be a server-side error.\n\nYou can continue without update, but some functions may not be available.",
 
 "launcher.update.error.update": "Failed to update (%d).\n\nYou can continue without update, but some functions may not be available.\n\nIf the error continues, please contact our support team at \n\nhttps://help.greencubes.org",
 

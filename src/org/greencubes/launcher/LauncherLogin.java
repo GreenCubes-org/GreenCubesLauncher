@@ -47,6 +47,8 @@ import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
+import org.greencubes.util.MacOSX;
+import org.greencubes.util.OperatingSystem;
 
 public class LauncherLogin {
 	
@@ -64,6 +66,8 @@ public class LauncherLogin {
 	 */
 	public LauncherLogin(JFrame previousFrame) {
 		frame = new UndecoratedJFrame(I18n.get("title"));
+		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
+			MacOSX.setTitle(I18n.get("title"));
 		Main.currentFrame = frame;
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setUndecorated(true);
@@ -338,7 +342,7 @@ public class LauncherLogin {
 					//setToolTipText(I18n.get("login.autologin.tip"));
 				}});
 				add(Box.createHorizontalStrut(4));
-				add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.png"))) {
+				add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.embeded.png"))) {
 					JDialog toolTip;
 					{
 						final JLabel lbl = this;

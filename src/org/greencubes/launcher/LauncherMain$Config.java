@@ -497,7 +497,7 @@ public class LauncherMain$Config {
 								setMargin(new Insets(2, 0, 2, 0));
 							}});
 							add(Box.createRigidArea(new Dimension(4, 4)));
-							add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.png"))) {
+							add(new JLabel(new ImageIcon(JPanelBG.class.getResource("/res/menu.help.embeded.png"))) {
 								JDialog toolTip;
 								{
 									setSize(new Dimension(getIcon().getIconWidth(), getIcon().getIconHeight()));
@@ -722,7 +722,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
 								add(new JLabel(I18n.get("settings.client.graphics")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
@@ -997,7 +997,7 @@ public class LauncherMain$Config {
 						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
 						setText(aboutPage.toString());
 						setForeground(UIScheme.TEXT_COLOR);
-						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 14));
+						setFont(new Font(UIScheme.LONG_TEXT_FONG, Font.PLAIN, 14));
 						setEditable(false);
 						setOpaque(false);
 						//setHighlighter(null);

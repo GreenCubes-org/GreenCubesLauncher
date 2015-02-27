@@ -48,7 +48,7 @@ public class Main {
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
 	public static final String BUILD_INFO = "0.1.0 (1)";
 	public static final boolean IS_64_BIT_JAVA;
-	public static final boolean TEST = true;
+	public static final boolean TEST = false;
 	
 	private static JSONObject config;
 	

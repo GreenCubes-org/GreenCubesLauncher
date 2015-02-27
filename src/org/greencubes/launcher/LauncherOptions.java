@@ -22,8 +22,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.greencubes.client.Client;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
-import org.greencubes.swing.MacOSX;
 import org.greencubes.util.Encryption;
+import org.greencubes.util.MacOSX;
 import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 import org.json.JSONException;
@@ -79,18 +79,15 @@ public class LauncherOptions {
 	
 	private static Downloader newDownloader() {
 		Downloader downloader;
-		if(Main.TEST) {
-			downloader = new Downloader("https://greencubes.org/login/"); // For test purposes
-		} else {
-			downloader = new Downloader("https://auth.greencubes.org/");
-			downloader.addServer("https://auth1.greencubes.org/");
-		}
+		downloader = new Downloader("https://login.greencubes.org/");
+		downloader.addServer("https://login1.greencubes.org/");
 		return downloader;
 	}
 	
 	private static Downloader newClientDownloader() {
 		Downloader downloader;
-		downloader = new Downloader("https://greencubes.org/login/");
+		downloader = new Downloader("https://login.greencubes.org/");
+		downloader.addServer("https://login1.greencubes.org/");
 		return downloader;
 	}
 	
