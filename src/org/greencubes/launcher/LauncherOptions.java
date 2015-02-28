@@ -42,7 +42,10 @@ public class LauncherOptions {
 	private static ThreadLocal<Downloader> threadLocalDownloader = new ThreadLocal<Downloader>() {
 		@Override
 		protected Downloader initialValue() {
-			return newDownloader();
+			Downloader downloader;
+			downloader = new Downloader("https://login.greencubes.org/");
+			downloader.addServer("https://login1.greencubes.org/");
+			return downloader;
 		}
 	};
 	private static Map<Client, Downloader> clientDownloaders = new HashMap<Client, Downloader>();
@@ -75,13 +78,6 @@ public class LauncherOptions {
 	
 	public static Downloader getDownloader() {
 		return threadLocalDownloader.get();
-	}
-	
-	private static Downloader newDownloader() {
-		Downloader downloader;
-		downloader = new Downloader("https://login.greencubes.org/");
-		downloader.addServer("https://login1.greencubes.org/");
-		return downloader;
 	}
 	
 	private static Downloader newClientDownloader() {
