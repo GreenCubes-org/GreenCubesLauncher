@@ -76,7 +76,7 @@ Var StartMenuFolder
 ; MUI end ------
 
 Name "${PRODUCT_NAME}"
-OutFile "C:\_Greencubes\Git\GreenCubesLauncher\install\greencubes-setup.exe"
+OutFile "C:\_Greencubes\Git\GreenCubesLauncher\install\GreenCubes-setup.exe"
 InstallDir "$PROGRAMFILES\GreenCubes"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -92,47 +92,56 @@ FunctionEnd
 Section "MainSection" SEC01
   AddSize 1048576 ; Add 1Gb as we don't have files in section
   SetOutPath "$INSTDIR"
-  
+  DetailPrint "Загрузка файла package.zip..."
   ; Download main package
   inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/client/windows-installer.zip" "package.zip"
     Pop $0
     StrCmp $0 "OK" dlok1
-    Abort
+    goto error
   dlok1:
+  DetailPrint "Распаковка файла package.zip..."
   nsUnzip::Extract / "package.zip" /END
     Pop $0
     IntCmp 0 $0 unzipok1
-    Abort
+    goto error
   unzipok1:
   ; TODO : Check unpacking success
   
   ; Update launcher
+  DetailPrint "Загрузка файла launcher.json..."
   inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/login/files/launcher/version.json" "launcher.json"
     Pop $0
     StrCmp $0 "OK" dlok2
-    Abort
+    goto error
   dlok2:
+  DetailPrint "Обновление лаунчера..."
   nsJSON::Set /file $INSTDIR\launcher.json
-    IfErrors error
+    IfErrors skipupdate
   nsJSON::Get /count "files" /end
-    IfErrors error
+    IfErrors skipupdate
     Pop $R0
   ${For} $R1 0 $R0
     nsJSON::Get `files` /index $R1 `name` /end
       Pop $R2
     StrCpy $R3 $R2
     !insertmacro ReplaceSubStr $R3 "/" "\"
+    DetailPrint "Загрузка файла $R3..."
     inetc::get /RESUME "" /QUESTION $(MUI_TEXT_ABORTWARNING) "https://greencubes.org/login/files/launcher/$R2" "$R3"
       Pop $0
       StrCmp $0 "OK" dlok3
-      Abort
+      DetailPrint "Не удалось загрузить $R3"
     dlok3:
   ${Next}
+  goto noerror
+  
+  skipupdate:
+  DetailPrint "Обновление отменено из-за ошибки"
   goto noerror
   
   ; Process errors
   error:
     ; TODO : Add error page?
+    DetailPrint "Ошибка при установке :( попробуйте повторить"
     Abort
   noerror:
   
