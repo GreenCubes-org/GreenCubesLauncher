@@ -193,13 +193,15 @@ public class GAWTUtil {
 		};
 	}
 	
-	public static void safeTransparentBackground(Component c, Color newBg) {
+	public static boolean safeTransparentBackground(Component c, Color newBg) {
 		try {
 			c.setBackground(newBg);
+			return true;
 		} catch(Exception e) {
 			newBg = new Color(newBg.getRed(), newBg.getGreen(), newBg.getBlue(), 255);
 			c.setBackground(newBg);
 		}
+		return false;
 	}
 	
 	public static Border safePopupBorder() {

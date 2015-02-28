@@ -50,6 +50,7 @@ import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.GPopupMenu;
 import org.greencubes.swing.JPanelBG;
 import org.greencubes.swing.DropdownListener;
+import org.greencubes.swing.TransparencyFixer;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.swing.UndecoratedJFrame;
 import org.greencubes.util.I18n;
@@ -180,6 +181,7 @@ public class LauncherMain {
 							public void popupMenuCanceled(PopupMenuEvent e) {
 							}
 						});
+						TransparencyFixer.add(mainPopup);
 						ddl.addActionListener(new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent e) {
