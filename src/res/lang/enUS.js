@@ -119,6 +119,8 @@
 "settings.client.quality": "Quality:",
 "settings.client.shadows": "Dynamic shadows",
 "settings.client.textures": "Texture quality:",
+"settings.client.water": "High quality water",
+"settings.client.vsync": "VSync",
 
 "quality.high": "High",
 "quality.medium": "Medium",

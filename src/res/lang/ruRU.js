@@ -119,6 +119,8 @@
 "settings.client.quality": "Качество графики:",
 "settings.client.shadows": "Динамические тени",
 "settings.client.textures": "Качество текстур:",
+"settings.client.water": "Высокое качество воды",
+"settings.client.vsync": "Вертикальная синхронизация",
 
 "quality.high": "Высоко",
 "quality.medium": "Нормально",
