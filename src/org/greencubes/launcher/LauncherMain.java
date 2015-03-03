@@ -229,18 +229,19 @@ public class LauncherMain {
 							});
 							addMouseListener(panel.getActiveMouseListener());
 						}});
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
-							s(this, 30, 30);
-							add(Box.createVerticalGlue());
-							JPanelBG panel;
-							add(panel = new JPanelBG("/res/expand.png", "/res/expand.active.png") {{
-								s(this, 14, 14);
-								setOpaque(false);
+						if(OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX) // OS X shittly supports window expanding
+							add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
+								s(this, 30, 30);
+								add(Box.createVerticalGlue());
+								JPanelBG panel;
+								add(panel = new JPanelBG("/res/expand.png", "/res/expand.active.png") {{
+									s(this, 14, 14);
+									setOpaque(false);
+								}});
+								add(Box.createVerticalGlue());
+								addMouseListener(GAWTUtil.createMaximizeListener(frame));
+								addMouseListener(panel.getActiveMouseListener());
 							}});
-							add(Box.createVerticalGlue());
-							addMouseListener(GAWTUtil.createMaximizeListener(frame));
-							addMouseListener(panel.getActiveMouseListener());
-						}});
 						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Close button
 							s(this, 30, 30);
 							add(Box.createVerticalGlue());
