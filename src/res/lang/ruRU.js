@@ -16,9 +16,13 @@
 
 "launcher.update.error.update": "Ошибка при обновлении (%d).\n\nВы можете продолжить без обновления, но в таком случае, некоторые функции могут быть не доступны.\n\nЕсли ошибка повторяется, пожалуйста, обратитесь в нашу службу поддержки по адресу\n\nhttps://help.greencubes.org",
 
+"launcher.update.error.update.more": "Ошибка при обновлении (%d, %s).\n\nВы можете продолжить без обновления, но в таком случае, некоторые функции могут быть не доступны.\n\nЕсли ошибка повторяется, пожалуйста, обратитесь в нашу службу поддержки по адресу\n\nhttps://help.greencubes.org",
+
 "launcher.update.error.repeat": "Повторить",
 "launcher.update.error.continue": "Продолжить",
 "launcher.update.error.exit": "Выйти",
+
+"launcher.update.error.patchdir": "Невозможно создать папку обновления, проверьте права на запись",
 
 "client.update.title": "Обновление",
 "client.update.check": "Проверка",

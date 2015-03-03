@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import org.greencubes.client.GameFile;
 import org.greencubes.download.DownloadThread;
 import org.greencubes.download.Downloader;
+import org.greencubes.main.CrashReport;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
@@ -242,7 +243,7 @@ public class LauncherUpdate {
 			updateError(201, null);
 			return false;
 		} else if(!patchDir.exists() && !patchDir.mkdirs()) {
-			updateError(202, null);
+			updateError(202, I18n.get("launcher.update.error.patchdir"));
 			return false;
 		}
 		setDownloadStatus(0, updateSize);
@@ -264,7 +265,7 @@ public class LauncherUpdate {
 					if(dt.lastError == null)
 						break;
 					if(++trys > 3) {
-						updateError(104, null);
+						updateError(104, dt.lastError.getLocalizedMessage());
 						return false;
 					}
 					setStatus(I18n.get("launcher.update.repeat", trys, 3));
@@ -289,7 +290,7 @@ public class LauncherUpdate {
 					if(dt.lastError == null)
 						break;
 					if(++trys > 3) {
-						updateError(104, null);
+						updateError(104, dt.lastError.getLocalizedMessage());
 						return false;
 					}
 					setStatus(I18n.get("launcher.update.repeat", trys, 3));
@@ -384,15 +385,15 @@ public class LauncherUpdate {
 				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
 		} else if(code >= 200 && code < 300) {
 			// TODO : Уточнить сообщения об ошибке
-			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), message != null ? I18n.get("launcher.update.error.update.more", code, message) : I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
 				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
 		} else if(code >= 300 && code < 400) {
 			// TODO : Уточнить сообщения об ошибке
-			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), message != null ? I18n.get("launcher.update.error.update.more", code, message) : I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
 				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
 		} else {
 			// TODO : Уточнить сообщения об ошибке
-			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
+			answer = GAWTUtil.showDialog(I18n.get("launcher.update.error.title"), message != null ? I18n.get("launcher.update.error.update.more", code, message) : I18n.get("launcher.update.error.update", code), new String[] {I18n.get("launcher.update.error.continue"),
 				I18n.get("launcher.update.error.repeat"), I18n.get("launcher.update.error.exit")}, JOptionPane.ERROR_MESSAGE, 300);
 		}
 		if(answer == 0) {
@@ -451,6 +452,10 @@ public class LauncherUpdate {
 	 * Should not be invoked in AWT thread
 	 */
 	public void launcherLoad() {
-		new LauncherLogin(frame); // Send current frame so next window can destroy it when ready
+		try {
+			new LauncherLogin(frame); // Send current frame so next window can destroy it when ready
+		} catch(Throwable t) {
+			CrashReport.processCrashReport(t.getLocalizedMessage(), t);
+		}
 	}
 }

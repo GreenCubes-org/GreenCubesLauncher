@@ -22,6 +22,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javafx.application.Platform;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -79,6 +81,7 @@ public class LauncherMain {
 	 * Should not be invoked in AWT thread
 	 */
 	public LauncherMain(Window previousFrame) {
+		Platform.setImplicitExit(false);
 		frame = new UndecoratedJFrame(I18n.get("title"));
 		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
 			MacOSX.setTitle(I18n.get("title"));

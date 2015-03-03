@@ -31,8 +31,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherInstanceError;
 import org.greencubes.launcher.LauncherOptions;
-import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.launcher.LauncherUpdate;
+import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.util.Encryption;
 import org.greencubes.util.Util;
 import org.greencubes.util.logging.LogManager;
@@ -67,8 +67,6 @@ public class Main {
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Downloader.setupBetterKeystore();
-		UIManager.put("PopupMenu.consumeEventOnClose", true);
-		UIManager.put("ScrollBar.width", 12);
 		// Check arguments
 		for(String arg : args) {
 			if(arg.equals("-debug"))
@@ -181,9 +179,14 @@ public class Main {
 			if(LauncherOptions.debug)
 				System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 		}
-		Platform.setImplicitExit(false);
-		// Start launcher from updating
-		new LauncherUpdate();
+		try {
+			// Start launcher from updating
+			UIManager.put("PopupMenu.consumeEventOnClose", true);
+			UIManager.put("ScrollBar.width", 12);
+			new LauncherUpdate();
+		} catch(Throwable e) {
+			CrashReport.processCrashReport(e.getLocalizedMessage(), e);
+		}
 	}
 	
 	public static void newInstanceCreated(String[] args) {

@@ -35,6 +35,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import org.greencubes.main.CrashReport;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
@@ -172,7 +173,11 @@ public class LauncherLogin {
 	 * Should not be invoked in AWT thread
 	 */
 	private void launcherMain() {
-		new LauncherMain(frame); // Send current frame so next window can destroy it when ready
+		try {
+			new LauncherMain(frame); // Send current frame so next window can destroy it when ready
+		} catch(Throwable t) {
+			CrashReport.processCrashReport(t.getLocalizedMessage(), t);
+		}
 	}
 	
 	private void joinOffline() {

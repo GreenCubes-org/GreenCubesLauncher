@@ -4,15 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.TextArea;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.greencubes.launcher.LauncherOptions;
 import org.greencubes.util.I18n;
@@ -21,6 +21,22 @@ import org.greencubes.util.Util;
 public class CrashReport extends Panel {
 
 	private static final long serialVersionUID = 3420347234451905795L;
+	
+	public static void processCrashReport(String error, Throwable t) {
+		Frame crashFrame = new Frame();
+		crashFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				System.exit(0);
+			}
+		});
+		crashFrame.setLayout(new BorderLayout());
+		crashFrame.add(new CrashReport(error, t), "Center");
+		crashFrame.pack();
+		crashFrame.setLocationRelativeTo(null);
+		crashFrame.validate();
+		crashFrame.setVisible(true);
+	}
 
 	public CrashReport(String error, Throwable t) {
 		setBackground(new Color(0x2e3444));
@@ -30,7 +46,7 @@ public class CrashReport extends Panel {
 		if(t != null)
 			t.printStackTrace(new PrintWriter(stringwriter));
 		StringBuilder sb = new StringBuilder();
-		sb.append(I18n.get("----- При работе клиента GreenCubes произошла ошибка -----") + "\n");
+		sb.append(I18n.get("----- При работе лаунчера GreenCubes произошла ошибка -----") + "\n");
 		sb.append(I18n.get("Чтобы помочь улучшить GreenCubes и исправить ошибки, пожалуйста, пошлите нижеследующее сообщение в систему поддержки help.greencubes.org в раздел Баг-репортов. Спасибо.") + "\n");
 		sb.append("\n--- CRASH REPORT ---\n");
 		sb.append("Date: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
@@ -46,15 +62,6 @@ public class CrashReport extends Panel {
 			sb.append("\nTotal memory: ").append(Util.getBytesAsString(runtime.totalMemory())).append(", free memory: ").append(Util.getBytesAsString(runtime.freeMemory())).append(", max memory: ").append(Util.getBytesAsString(runtime.maxMemory())).append(", physical: ").append(Util.getBytesAsString(bean.getTotalPhysicalMemorySize())).append(", processors: ").append(runtime.availableProcessors());
 		} catch(Throwable t1) { // If by reason unkown we can not fetch from internal restricted API
 			sb.append("\nTotal memory: ").append(Util.getBytesAsString(runtime.totalMemory())).append(", free memory: ").append(Util.getBytesAsString(runtime.freeMemory())).append(", max memory: ").append(Util.getBytesAsString(runtime.maxMemory())).append(", processors: ").append(runtime.availableProcessors());
-		}
-		sb.append("\n\nThreads traces:");
-		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
-		Iterator<Entry<Thread, StackTraceElement[]>> iterator = traces.entrySet().iterator();
-		while(iterator.hasNext()) {
-			Entry<Thread, StackTraceElement[]> e = iterator.next();
-			sb.append("\n" + e.getKey().toString() + ":");
-			for(StackTraceElement traceElement : e.getValue())
-				sb.append("\n    at " + traceElement);
 		}
 		sb.append("\n--- CRASH REPORT END ---\n");
 		sb.append("Спасибо, что помогаете GreenCubes стать лучше!");
