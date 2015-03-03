@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="../.." default="build" name="GreenCubesClient">
+	<tstamp />
+	<property file="build/ant/build.properties" />
+	<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+	<property name="dir.add" value="build/addfiles" />
+	<property name="dir.target" location="${dir.target.abs}" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<property name="dir.target.libs" value="${dir.target}/libraries" />
+	<property name="dir.target.resources" value="${dir.target}/resources" />
+	<property name="dir.saveObfMapping" location="${dir.saveObfMapping.abs}" />
+	<path id="classpath">
+		<pathelement location="libs/commons-codec-1.10.jar" />
+		<pathelement location="libs/commons-logging-1.1.3.jar" />
+		<pathelement location="libs/httpclient-4.3.6.jar" />
+		<pathelement location="libs/httpcore-4.3.3.jar" />
+		<pathelement location="libs/snakeyaml.jar" />
+		<pathelement location="libs/jfxrt.jar" />
+		<pathelement location="libs/bcprov-ext-jdk15on-151.jar" />
+	</path>
+	<resources id="libraries">
+		<fileset dir="libs" />
+	</resources>
+	<!-- Sources -->
+	<path id="src">
+		<!-- All sources to be compilled -->
+		<pathelement location="src" />
+	</path>
+	<!-- Thechnical tasks -->
+	<target name="copy">
+		<copy file="jfxrt.jar" tofile="${dir.target}/javafx.jr" />
+	</target>
+	<target name="cleanup">
+		<delete dir="${dir.target}" />
+	</target>
+	<target name="proguard">
+		<java fork="true" jar="${file.proguard}" failonerror="true">
+			<arg value="@${dir.tools}\proguard.conf" />
+			<arg value="-injars" />
+			<arg value="${dir.target}\greencubes.jar" />
+			<arg value="-outjars" />
+			<arg value="${dir.target}\greencubes_pg.jar" />
+			<arg value="-printmapping" />
+			<arg value="${dir.target}\temp\obfmapping.txt" />
+			<arg value="-libraryjars" />
+			<arg value="${dir.target.libs}" />
+		</java>
+	</target>
+	<target name="stringer">
+		<java fork="true" jar="${file.stringer}" failonerror="true">
+			<arg value="-configFile" />
+			<arg value="${dir.tools}\stringer.conf" />
+			<arg value="-proguardMapFile" />
+			<arg value="${dir.target}\temp\obfmapping.txt" />
+			<arg value="${dir.target}\greencubes.jar" />
+			<arg value="${dir.target}\greencubes.jar" />
+		</java>
+	</target>
+	<target name="repack_client">
+		<move file="${dir.target}\greencubes_pg.jar" tofile="${dir.target}\greencubes.jar" />
+		<unjar src="${dir.target}\temp\client_add.jar" dest="${dir.target}\temp\add" />
+		<delete file="${dir.target}\temp\client_add.jar" />
+		<delete dir="${dir.target}\temp\add\META-INF" />
+		<jar file="${dir.target}\client.jar" basedir="${dir.target}\temp\add" update="true" />
+		<delete dir="${dir.target}\temp\add" />
+	</target>
+	<target name="version">
+		<java fork="true" jar="${file.versionControl}\" failonerror="true">
+			<arg value="${dir.target}" />
+			<arg value="version" />
+			<arg value="${build.version}" />
+			<arg value="link" />
+			<arg value="${build.link}" />
+		</java>
+		<delete file="version.md5" />
+	    <move file="version.json" todir="${dir.target}" />
+	</target>
+	<target name="delete_temp">
+		<move file="${dir.target}\temp\obfmapping.txt" tofile="${dir.saveObfMapping}\obfmapping_${DSTAMP}.txt" />
+		<delete dir="${dir.target}\temp" />
+		<delete dir="${dir.target.libs}\org.eclipse.jdt.annotation_1.1.0.v20140129-1625.jar" />
+	</target>
+	<!-- Compile -->
+	<target name="compile">
+		<mkdir dir="${dir.target}\temp" />
+		<javac destdir="${dir.target}\temp" source="${source}" target="${target}" nowarn="true" bootclasspath="C:\Program Files\Java\jre7\lib\rt.jar" debug="true" includeantruntime="false">
+			<src refid="src" />
+			<classpath refid="classpath" />
+			<compilerarg value="-1.7" />
+			<compilerarg value="-encoding" />
+			<compilerarg value="UTF-8" />
+		</javac>
+	</target>
+	<!-- Packing majic -->
+	<target name="pack">
+		<!-- Pack client -->
+		<jar file="${dir.target}\client.jar" update="true">
+			<fileset dir="${dir.target}\temp">
+				<exclude name="de/**" />
+				<exclude name="com/**" />
+				<exclude name="org/greencubes/unit/**" />
+				<exclude name="org/greencubes/tools/**" />
+				<exclude name="org/greencubes/test/**" />
+				<exclude name="org/greencubes/occ/**" />
+				<exclude name="org/greencubes/nifty/**" />
+				<exclude name="org/greencubes/processors/**" />
+				<exclude name="org/greencubes/modelpreview/**" />
+				<type type="file" />
+			</fileset>
+			<fileset dir="src">
+				<!-- Copy resources from classpath -->
+				<exclude name="**/*.java" />
+				<type type="file" />
+			</fileset>
+		</jar>
+		<!-- Pack client addition -->
+		<jar file="${dir.target}\temp\client_add.jar" update="true">
+			<fileset dir="${dir.target}\temp">
+				<include name="org/greencubes/occ/**" />
+				<include name="org/greencubes/nifty/**" />
+				<type type="file" />
+			</fileset>
+		</jar>
+		<!-- Pack libraries -->
+		<jar file="${dir.target.libs}\jME3-core.jar" update="true">
+			<fileset dir="${dir.target}\temp">
+				<include name="com/jme3/**" />
+				<exclude name="com/jme3/renderer/lwjgl/**" />
+				<type type="file" />
+			</fileset>
+			<fileset dir="jme3">
+				<!-- Copy resources from classpath -->
+				<exclude name="**/*.java" />
+				<type type="file" />
+			</fileset>
+		</jar>
+		<jar file="${dir.target.libs}\jME3-lwjgl.jar" update="true">
+			<fileset dir="${dir.target}\temp">
+				<include name="com/jme3/renderer/lwjgl/**" />
+				<type type="file" />
+			</fileset>
+		</jar>
+		<jar file="${dir.target.libs}\nifty.jar" update="true">
+			<fileset dir="${dir.target}\temp">
+				<include name="de/lessvoid/**" />
+				<type type="file" />
+			</fileset>
+		</jar>
+	</target>
+	<target name="postprocess1">
+			<java fork="true" classname="org.greencubes.processors.RemoveProfiler" failonerror="true">
+				<arg value="${dir.target}\client.jar" />
+				<arg value="${dir.target}\client_pp.jar" />
+				<arg value="${toString:classpath}" />
+				<classpath>
+					<path refid="classpath"/>
+					<pathelement location="${dir.target}\temp\client_add.jar"/>
+					<pathelement location="${file.postprocess}"/>
+				</classpath>
+			</java>
+			<move file="${dir.target}\client_pp.jar" tofile="${dir.target}\client.jar" />
+		</target>
+	<target name="postprocess2">
+		<java fork="true" classname="org.greencubes.processors.RemoveProfiler" failonerror="true">
+			<arg value="${dir.target}\client.jar" />
+			<arg value="${dir.target}\client_pp.jar" />
+			<arg value="${toString:classpath}" />
+			<classpath>
+				<path refid="classpath"/>
+				<pathelement location="${file.postprocess}"/>
+			</classpath>
+		</java>
+		<move file="${dir.target}\client_pp.jar" tofile="${dir.target}\client.jar" />
+	</target>
+	<target name="rearchive">
+	    <delete file="${dir.target}\client.zip" />
+	    <delete file="${dir.target}\version.md5" />
+	    <delete file="${dir.target}\version.json" />
+		<antcall target="version" />
+	    <antcall target="archive" />
+	</target>
+	<!-- Building -->
+	<target name="build">
+		<antcall target="cleanup" />
+		<antcall target="copy" />
+		<antcall target="compile" />
+		<antcall target="pack" />
+		<antcall target="postprocess1" />
+		<antcall target="proguard" />
+		<antcall target="repack_client" />
+		<antcall target="postprocess2" />
+		<antcall target="stringer" />
+		<antcall target="delete_temp" />
+		<antcall target="addfiles" />
+		<antcall target="version" />
+		<antcall target="archive" />
+	</target>
+	<target name="build_fast">
+		<antcall target="cleanup" />
+		<antcall target="copy_libs" />
+		<antcall target="compile" />
+		<antcall target="pack" />
+		<antcall target="repack_client_no_pg" />
+		<delete dir="${dir.target}\temp" />
+		<antcall target="addfiles" />
+	</target>
+	<target name="build_cleaner">
+		<delete dir="build\tools\postprocess" />
+		<mkdir dir="build\tools\postprocess"/>
+		<javac destdir="build\tools\postprocess" source="${source}" target="${target}" nowarn="true" bootclasspath="C:\Program Files\Java\jre7\lib\rt.jar" debug="true" includeantruntime="false">
+			<src refid="postprocess" />
+			<classpath refid="classpath" />
+			<compilerarg value="-1.7" />
+			<compilerarg value="-encoding" />
+			<compilerarg value="UTF-8" />
+		</javac>
+		<jar file="build\tools\postprocess\postprocess.jar" update="false">
+			<fileset dir="build\tools\postprocess">
+				<type type="file" />
+			</fileset>
+		</jar>
+		<delete dir="build\tools\postprocess" excludes="**.jar" includeemptydirs="true"/>
+	</target>
+</project>
