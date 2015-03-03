@@ -29101,27 +29101,57 @@ org.greencubes.launcher.LauncherMain$Config$5$1$10$1$2 -> org.greencubes.*.av:
     org.greencubes.launcher.LauncherMain$Config$5$1$10$1 this$4 -> DIh
     void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
     void mouseExited(java.awt.event.MouseEvent) -> mouseExited
-org.greencubes.launcher.LauncherMain$Config$5$1$2 -> org.greencubes.*.aw:
+org.greencubes.launcher.LauncherMain$Config$5$1$11 -> org.greencubes.*.aw:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$2$1 -> org.greencubes.*.ax:
+    org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$11) -> DIh
+org.greencubes.launcher.LauncherMain$Config$5$1$11$1 -> org.greencubes.*.ax:
+    org.greencubes.launcher.LauncherMain$Config$5$1$11 this$3 -> DIh
+    org.greencubes.launcher.LauncherMain$Config$5$1$11 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$11$1) -> DIh
+org.greencubes.launcher.LauncherMain$Config$5$1$11$1$1 -> org.greencubes.*.ay:
+    org.greencubes.launcher.LauncherMain$Config$5$1$11$1 this$4 -> DIh
+    javax.swing.ImageIcon val$iconChecked -> jqA
+    javax.swing.ImageIcon val$iconUnchecked -> AmB
+    void itemStateChanged(java.awt.event.ItemEvent) -> itemStateChanged
+org.greencubes.launcher.LauncherMain$Config$5$1$11$1$2 -> org.greencubes.*.az:
+    org.greencubes.launcher.LauncherMain$Config$5$1$11$1 this$4 -> DIh
+    void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
+    void mouseExited(java.awt.event.MouseEvent) -> mouseExited
+org.greencubes.launcher.LauncherMain$Config$5$1$12 -> org.greencubes.*.aA:
+    org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
+    org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$12) -> DIh
+org.greencubes.launcher.LauncherMain$Config$5$1$12$1 -> org.greencubes.*.aB:
+    org.greencubes.launcher.LauncherMain$Config$5$1$12 this$3 -> DIh
+    org.greencubes.launcher.LauncherMain$Config$5$1$12 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$12$1) -> DIh
+org.greencubes.launcher.LauncherMain$Config$5$1$12$1$1 -> org.greencubes.*.aC:
+    org.greencubes.launcher.LauncherMain$Config$5$1$12$1 this$4 -> DIh
+    javax.swing.ImageIcon val$iconChecked -> jqA
+    javax.swing.ImageIcon val$iconUnchecked -> AmB
+    void itemStateChanged(java.awt.event.ItemEvent) -> itemStateChanged
+org.greencubes.launcher.LauncherMain$Config$5$1$12$1$2 -> org.greencubes.*.aD:
+    org.greencubes.launcher.LauncherMain$Config$5$1$12$1 this$4 -> DIh
+    void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
+    void mouseExited(java.awt.event.MouseEvent) -> mouseExited
+org.greencubes.launcher.LauncherMain$Config$5$1$2 -> org.greencubes.*.aE:
+    org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
+org.greencubes.launcher.LauncherMain$Config$5$1$2$1 -> org.greencubes.*.aF:
     org.greencubes.launcher.LauncherMain$Config$5$1$2 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3 -> org.greencubes.*.ay:
+org.greencubes.launcher.LauncherMain$Config$5$1$3 -> org.greencubes.*.aG:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$3) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1 -> org.greencubes.*.az:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1 -> org.greencubes.*.aH:
     org.greencubes.launcher.LauncherMain$Config$5$1$3 this$3 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1$3 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$3$1) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1$1 -> org.greencubes.*.aA:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1$1 -> org.greencubes.*.aI:
     org.greencubes.launcher.LauncherMain$Config$5$1$3$1 this$4 -> DIh
     org.greencubes.swing.GPopupMenu val$langSelect -> jqA
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1$2 -> org.greencubes.*.aB:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1$2 -> org.greencubes.*.aJ:
     org.greencubes.launcher.LauncherMain$Config$5$1$3$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1$3 -> org.greencubes.*.aC:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1$3 -> org.greencubes.*.aK:
     org.greencubes.launcher.LauncherMain$Config$5$1$3$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1$4 -> org.greencubes.*.aD:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1$4 -> org.greencubes.*.aL:
     org.greencubes.launcher.LauncherMain$Config$5$1$3$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$3$1$5 -> org.greencubes.*.aE:
+org.greencubes.launcher.LauncherMain$Config$5$1$3$1$5 -> org.greencubes.*.aM:
     org.greencubes.launcher.LauncherMain$Config$5$1$3$1 this$4 -> DIh
     javax.swing.JLabel val$selectedLang -> jqA
     java.lang.String val$lang -> AmB
@@ -29130,31 +29160,31 @@ org.greencubes.launcher.LauncherMain$Config$5$1$3$1$5 -> org.greencubes.*.aE:
     javax.swing.ImageIcon val$empty -> jLa
     javax.swing.ImageIcon val$checked -> diH
     void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
-org.greencubes.launcher.LauncherMain$Config$5$1$4 -> org.greencubes.*.aF:
+org.greencubes.launcher.LauncherMain$Config$5$1$4 -> org.greencubes.*.aN:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$4$1 -> org.greencubes.*.aG:
+org.greencubes.launcher.LauncherMain$Config$5$1$4$1 -> org.greencubes.*.aO:
     org.greencubes.launcher.LauncherMain$Config$5$1$4 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$5 -> org.greencubes.*.aH:
+org.greencubes.launcher.LauncherMain$Config$5$1$5 -> org.greencubes.*.aP:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$5$1 -> org.greencubes.*.aI:
+org.greencubes.launcher.LauncherMain$Config$5$1$5$1 -> org.greencubes.*.aQ:
     org.greencubes.launcher.LauncherMain$Config$5$1$5 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6 -> org.greencubes.*.aJ:
+org.greencubes.launcher.LauncherMain$Config$5$1$6 -> org.greencubes.*.aR:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$6) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1 -> org.greencubes.*.aK:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1 -> org.greencubes.*.aS:
     org.greencubes.launcher.LauncherMain$Config$5$1$6 this$3 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1$6 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$6$1) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$1 -> org.greencubes.*.aL:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$1 -> org.greencubes.*.aT:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 this$4 -> DIh
     org.greencubes.swing.GPopupMenu val$screenSizeSelect -> jqA
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$2 -> org.greencubes.*.aM:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$2 -> org.greencubes.*.aU:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$3 -> org.greencubes.*.aN:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$3 -> org.greencubes.*.aV:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$4 -> org.greencubes.*.aO:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$4 -> org.greencubes.*.aW:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5 -> org.greencubes.*.aP:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5 -> org.greencubes.*.aX:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 this$4 -> DIh
     javax.swing.JLabel val$selectedScreenSize -> jqA
     org.greencubes.launcher.LauncherMain$Config$ScreenSize val$ss -> AmB
@@ -29164,44 +29194,44 @@ org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5 -> org.greencubes.*.aP:
     javax.swing.ImageIcon val$checked -> diH
     void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5$1 -> org.greencubes.*.aQ:
+org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5$1 -> org.greencubes.*.aY:
     org.greencubes.launcher.LauncherMain$Config$5$1$6$1$5 this$5 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$7 -> org.greencubes.*.aR:
+org.greencubes.launcher.LauncherMain$Config$5$1$7 -> org.greencubes.*.aZ:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$7) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$7$1 -> org.greencubes.*.aS:
+org.greencubes.launcher.LauncherMain$Config$5$1$7$1 -> org.greencubes.*.ba:
     org.greencubes.launcher.LauncherMain$Config$5$1$7 this$3 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1$7 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$7$1) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$7$1$1 -> org.greencubes.*.aT:
+org.greencubes.launcher.LauncherMain$Config$5$1$7$1$1 -> org.greencubes.*.bb:
     org.greencubes.launcher.LauncherMain$Config$5$1$7$1 this$4 -> DIh
     javax.swing.ImageIcon val$iconChecked -> jqA
     javax.swing.ImageIcon val$iconUnchecked -> AmB
     void itemStateChanged(java.awt.event.ItemEvent) -> itemStateChanged
-org.greencubes.launcher.LauncherMain$Config$5$1$7$1$2 -> org.greencubes.*.aU:
+org.greencubes.launcher.LauncherMain$Config$5$1$7$1$2 -> org.greencubes.*.bc:
     org.greencubes.launcher.LauncherMain$Config$5$1$7$1 this$4 -> DIh
     void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
     void mouseExited(java.awt.event.MouseEvent) -> mouseExited
-org.greencubes.launcher.LauncherMain$Config$5$1$8 -> org.greencubes.*.aV:
+org.greencubes.launcher.LauncherMain$Config$5$1$8 -> org.greencubes.*.bd:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$8$1 -> org.greencubes.*.aW:
+org.greencubes.launcher.LauncherMain$Config$5$1$8$1 -> org.greencubes.*.be:
     org.greencubes.launcher.LauncherMain$Config$5$1$8 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9 -> org.greencubes.*.aX:
+org.greencubes.launcher.LauncherMain$Config$5$1$9 -> org.greencubes.*.bf:
     org.greencubes.launcher.LauncherMain$Config$5$1 this$2 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$9) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1 -> org.greencubes.*.aY:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1 -> org.greencubes.*.bg:
     org.greencubes.launcher.LauncherMain$Config$5$1$9 this$3 -> DIh
     org.greencubes.launcher.LauncherMain$Config$5$1$9 access$0(org.greencubes.launcher.LauncherMain$Config$5$1$9$1) -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1$1 -> org.greencubes.*.aZ:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1$1 -> org.greencubes.*.bh:
     org.greencubes.launcher.LauncherMain$Config$5$1$9$1 this$4 -> DIh
     org.greencubes.swing.GPopupMenu val$qualitySelect -> jqA
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1$2 -> org.greencubes.*.ba:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1$2 -> org.greencubes.*.bi:
     org.greencubes.launcher.LauncherMain$Config$5$1$9$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1$3 -> org.greencubes.*.bb:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1$3 -> org.greencubes.*.bj:
     org.greencubes.launcher.LauncherMain$Config$5$1$9$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1$4 -> org.greencubes.*.bc:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1$4 -> org.greencubes.*.bk:
     org.greencubes.launcher.LauncherMain$Config$5$1$9$1 this$4 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$1$9$1$5 -> org.greencubes.*.bd:
+org.greencubes.launcher.LauncherMain$Config$5$1$9$1$5 -> org.greencubes.*.bl:
     org.greencubes.launcher.LauncherMain$Config$5$1$9$1 this$4 -> DIh
     javax.swing.JLabel val$selectedQuality -> jqA
     java.lang.String val$q -> AmB
@@ -29210,31 +29240,31 @@ org.greencubes.launcher.LauncherMain$Config$5$1$9$1$5 -> org.greencubes.*.bd:
     javax.swing.ImageIcon val$empty -> jLa
     javax.swing.ImageIcon val$checked -> diH
     void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
-org.greencubes.launcher.LauncherMain$Config$5$2 -> org.greencubes.*.be:
+org.greencubes.launcher.LauncherMain$Config$5$2 -> org.greencubes.*.bm:
     org.greencubes.launcher.LauncherMain$Config$5 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$3 -> org.greencubes.*.bf:
+org.greencubes.launcher.LauncherMain$Config$5$3 -> org.greencubes.*.bn:
     org.greencubes.launcher.LauncherMain$Config$5 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Config$5$4 -> org.greencubes.*.bg:
+org.greencubes.launcher.LauncherMain$Config$5$4 -> org.greencubes.*.bo:
     org.greencubes.launcher.LauncherMain$Config$5 this$1 -> DIh
     javax.swing.JScrollPane val$scrollPane -> jqA
     void run() -> run
-org.greencubes.launcher.LauncherMain$Config$6 -> org.greencubes.*.bh:
+org.greencubes.launcher.LauncherMain$Config$6 -> org.greencubes.*.bp:
     org.greencubes.launcher.LauncherMain$Config this$0 -> DIh
-org.greencubes.launcher.LauncherMain$Config$6$1 -> org.greencubes.*.bi:
+org.greencubes.launcher.LauncherMain$Config$6$1 -> org.greencubes.*.bq:
     org.greencubes.launcher.LauncherMain$Config$6 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Config$7 -> org.greencubes.*.bj:
+org.greencubes.launcher.LauncherMain$Config$7 -> org.greencubes.*.br:
     org.greencubes.launcher.LauncherMain$Config this$0 -> DIh
-org.greencubes.launcher.LauncherMain$Config$8 -> org.greencubes.*.bk:
+org.greencubes.launcher.LauncherMain$Config$8 -> org.greencubes.*.bs:
     org.greencubes.launcher.LauncherMain$Config this$0 -> DIh
     javax.swing.JScrollPane val$scrollPane -> jqA
     void run() -> run
-org.greencubes.launcher.LauncherMain$Config$ScreenSize -> org.greencubes.*.bl:
+org.greencubes.launcher.LauncherMain$Config$ScreenSize -> org.greencubes.*.bt:
     int width -> DIh
     int height -> jqA
     java.lang.String name -> AmB
     int hashCode() -> hashCode
     boolean equals(java.lang.Object) -> equals
-org.greencubes.launcher.LauncherMain$Play -> org.greencubes.*.bm:
+org.greencubes.launcher.LauncherMain$Play -> org.greencubes.*.bu:
     org.greencubes.launcher.LauncherMain superClass -> DIh
     javafx.scene.web.WebView browser -> jqA
     javax.swing.JLabel clientButtonText -> AmB
@@ -29274,79 +29304,79 @@ org.greencubes.launcher.LauncherMain$Play -> org.greencubes.*.bm:
     javax.swing.JComponent access$15(org.greencubes.launcher.LauncherMain$Play) -> diH
     void access$16(org.greencubes.launcher.LauncherMain$Play,javax.swing.JLabel) -> AmB
     void access$17(org.greencubes.launcher.LauncherMain$Play) -> dAZ
-org.greencubes.launcher.LauncherMain$Play$1 -> org.greencubes.*.bn:
+org.greencubes.launcher.LauncherMain$Play$1 -> org.greencubes.*.bv:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     void run() -> run
-org.greencubes.launcher.LauncherMain$Play$10 -> org.greencubes.*.bo:
+org.greencubes.launcher.LauncherMain$Play$10 -> org.greencubes.*.bw:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     java.util.List val$servers -> jqA
     int val$i1 -> AmB
     void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
-org.greencubes.launcher.LauncherMain$Play$2 -> org.greencubes.*.bp:
+org.greencubes.launcher.LauncherMain$Play$2 -> org.greencubes.*.bx:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
-org.greencubes.launcher.LauncherMain$Play$3 -> org.greencubes.*.bq:
+org.greencubes.launcher.LauncherMain$Play$3 -> org.greencubes.*.by:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     void run() -> run
-org.greencubes.launcher.LauncherMain$Play$4 -> org.greencubes.*.br:
+org.greencubes.launcher.LauncherMain$Play$4 -> org.greencubes.*.bz:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
-org.greencubes.launcher.LauncherMain$Play$4$1 -> org.greencubes.*.bs:
+org.greencubes.launcher.LauncherMain$Play$4$1 -> org.greencubes.*.bA:
     org.greencubes.launcher.LauncherMain$Play$4 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$4$2 -> org.greencubes.*.bt:
+org.greencubes.launcher.LauncherMain$Play$4$2 -> org.greencubes.*.bB:
     org.greencubes.launcher.LauncherMain$Play$4 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$4$3 -> org.greencubes.*.bu:
+org.greencubes.launcher.LauncherMain$Play$4$3 -> org.greencubes.*.bC:
     org.greencubes.launcher.LauncherMain$Play$4 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5 -> org.greencubes.*.bv:
+org.greencubes.launcher.LauncherMain$Play$5 -> org.greencubes.*.bD:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     org.greencubes.launcher.LauncherMain$Play access$0(org.greencubes.launcher.LauncherMain$Play$5) -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$1 -> org.greencubes.*.bw:
+org.greencubes.launcher.LauncherMain$Play$5$1 -> org.greencubes.*.bE:
     org.greencubes.launcher.LauncherMain$Play$5 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$1$1 -> org.greencubes.*.bx:
+org.greencubes.launcher.LauncherMain$Play$5$1$1 -> org.greencubes.*.bF:
     org.greencubes.launcher.LauncherMain$Play$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$1$2 -> org.greencubes.*.by:
+org.greencubes.launcher.LauncherMain$Play$5$1$2 -> org.greencubes.*.bG:
     org.greencubes.launcher.LauncherMain$Play$5$1 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2 -> org.greencubes.*.bz:
+org.greencubes.launcher.LauncherMain$Play$5$2 -> org.greencubes.*.bH:
     org.greencubes.launcher.LauncherMain$Play$5 this$1 -> DIh
     org.greencubes.launcher.LauncherMain$Play$5 access$0(org.greencubes.launcher.LauncherMain$Play$5$2) -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2$1 -> org.greencubes.*.bA:
+org.greencubes.launcher.LauncherMain$Play$5$2$1 -> org.greencubes.*.bI:
     org.greencubes.launcher.LauncherMain$Play$5$2 this$2 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2$2 -> org.greencubes.*.bB:
+org.greencubes.launcher.LauncherMain$Play$5$2$2 -> org.greencubes.*.bJ:
     org.greencubes.launcher.LauncherMain$Play$5$2 this$2 -> DIh
     org.greencubes.launcher.LauncherMain$Play$5$2 access$0(org.greencubes.launcher.LauncherMain$Play$5$2$2) -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2$2$1 -> org.greencubes.*.bC:
+org.greencubes.launcher.LauncherMain$Play$5$2$2$1 -> org.greencubes.*.bK:
     org.greencubes.launcher.LauncherMain$Play$5$2$2 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2$2$2 -> org.greencubes.*.bD:
+org.greencubes.launcher.LauncherMain$Play$5$2$2$2 -> org.greencubes.*.bL:
     org.greencubes.launcher.LauncherMain$Play$5$2$2 this$3 -> DIh
-org.greencubes.launcher.LauncherMain$Play$5$2$2$3 -> org.greencubes.*.bE:
+org.greencubes.launcher.LauncherMain$Play$5$2$2$3 -> org.greencubes.*.bM:
     org.greencubes.launcher.LauncherMain$Play$5$2$2 this$3 -> DIh
     void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
-org.greencubes.launcher.LauncherMain$Play$6 -> org.greencubes.*.bF:
+org.greencubes.launcher.LauncherMain$Play$6 -> org.greencubes.*.bN:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     void run() -> run
-org.greencubes.launcher.LauncherMain$Play$7 -> org.greencubes.*.bG:
+org.greencubes.launcher.LauncherMain$Play$7 -> org.greencubes.*.bO:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     javafx.embed.swing.JFXPanel val$panel -> jqA
     org.greencubes.client.Client val$client -> AmB
     void run() -> run
-org.greencubes.launcher.LauncherMain$Play$8 -> org.greencubes.*.bH:
+org.greencubes.launcher.LauncherMain$Play$8 -> org.greencubes.*.bP:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
-org.greencubes.launcher.LauncherMain$Play$8$1 -> org.greencubes.*.bI:
+org.greencubes.launcher.LauncherMain$Play$8$1 -> org.greencubes.*.bQ:
     org.greencubes.launcher.LauncherMain$Play$8 this$1 -> DIh
     java.awt.Insets getBorderInsets(java.awt.Component) -> getBorderInsets
-org.greencubes.launcher.LauncherMain$Play$8$2 -> org.greencubes.*.bJ:
+org.greencubes.launcher.LauncherMain$Play$8$2 -> org.greencubes.*.bR:
     org.greencubes.launcher.LauncherMain$Play$8 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$9 -> org.greencubes.*.bK:
+org.greencubes.launcher.LauncherMain$Play$9 -> org.greencubes.*.bS:
     org.greencubes.launcher.LauncherMain$Play this$0 -> DIh
     org.greencubes.launcher.LauncherMain$Play access$0(org.greencubes.launcher.LauncherMain$Play$9) -> DIh
-org.greencubes.launcher.LauncherMain$Play$9$1 -> org.greencubes.*.bL:
+org.greencubes.launcher.LauncherMain$Play$9$1 -> org.greencubes.*.bT:
     org.greencubes.launcher.LauncherMain$Play$9 this$1 -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.launcher.LauncherMain$Play$9$2 -> org.greencubes.*.bM:
+org.greencubes.launcher.LauncherMain$Play$9$2 -> org.greencubes.*.bU:
     org.greencubes.launcher.LauncherMain$Play$9 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$9$3 -> org.greencubes.*.bN:
+org.greencubes.launcher.LauncherMain$Play$9$3 -> org.greencubes.*.bV:
     org.greencubes.launcher.LauncherMain$Play$9 this$1 -> DIh
-org.greencubes.launcher.LauncherMain$Play$9$4 -> org.greencubes.*.bO:
+org.greencubes.launcher.LauncherMain$Play$9$4 -> org.greencubes.*.bW:
     org.greencubes.launcher.LauncherMain$Play$9 this$1 -> DIh
-org.greencubes.launcher.LauncherOptions -> org.greencubes.*.bP:
+org.greencubes.launcher.LauncherOptions -> org.greencubes.*.bX:
     java.util.List icons -> lGC
     java.lang.ThreadLocal threadLocalDownloader -> dih
     java.util.Map clientDownloaders -> jQA
@@ -29374,13 +29404,13 @@ org.greencubes.launcher.LauncherOptions -> org.greencubes.*.bP:
     void saveSession() -> dAZ
     void loadSession() -> AMb
     void init() -> jLa
-org.greencubes.launcher.LauncherOptions$1 -> org.greencubes.*.bQ:
+org.greencubes.launcher.LauncherOptions$1 -> org.greencubes.*.bY:
     org.greencubes.download.Downloader initialValue() -> DIh
     java.lang.Object initialValue() -> initialValue
-org.greencubes.launcher.LauncherOptions$2 -> org.greencubes.*.bR:
+org.greencubes.launcher.LauncherOptions$2 -> org.greencubes.*.bZ:
     void checkPermission(java.security.Permission) -> checkPermission
     void checkMemberAccess(java.lang.Class,int) -> checkMemberAccess
-org.greencubes.launcher.LauncherOptions$OnStartAction -> org.greencubes.*.bS:
+org.greencubes.launcher.LauncherOptions$OnStartAction -> org.greencubes.*.ca:
     org.greencubes.launcher.LauncherOptions$OnStartAction CLOSE -> DIh
     org.greencubes.launcher.LauncherOptions$OnStartAction MINIMIZE -> jqA
     org.greencubes.launcher.LauncherOptions$OnStartAction HIDE -> AmB
@@ -29389,7 +29419,7 @@ org.greencubes.launcher.LauncherOptions$OnStartAction -> org.greencubes.*.bS:
     org.greencubes.launcher.LauncherOptions$OnStartAction[] ENUM$VALUES -> jLa
     org.greencubes.launcher.LauncherOptions$OnStartAction[] values() -> values
     org.greencubes.launcher.LauncherOptions$OnStartAction valueOf(java.lang.String) -> valueOf
-org.greencubes.launcher.LauncherUpdate -> org.greencubes.*.bT:
+org.greencubes.launcher.LauncherUpdate -> org.greencubes.*.cb:
     long RENAME_DELAY -> AmB
     javax.swing.JFrame frame -> DIh
     javax.swing.JLabel statusPane -> jqA
@@ -29409,34 +29439,34 @@ org.greencubes.launcher.LauncherUpdate -> org.greencubes.*.bT:
     javax.swing.JLabel access$0(org.greencubes.launcher.LauncherUpdate) -> DIh
     void access$1(org.greencubes.launcher.LauncherUpdate,javax.swing.JLabel) -> DIh
     javax.swing.JFrame access$2(org.greencubes.launcher.LauncherUpdate) -> jqA
-org.greencubes.launcher.LauncherUpdate$1 -> org.greencubes.*.bU:
+org.greencubes.launcher.LauncherUpdate$1 -> org.greencubes.*.cc:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
     java.lang.String val$s -> jqA
     void run() -> run
-org.greencubes.launcher.LauncherUpdate$2 -> org.greencubes.*.bV:
+org.greencubes.launcher.LauncherUpdate$2 -> org.greencubes.*.cd:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
     org.greencubes.launcher.LauncherUpdate access$0(org.greencubes.launcher.LauncherUpdate$2) -> DIh
-org.greencubes.launcher.LauncherUpdate$2$1 -> org.greencubes.*.bW:
+org.greencubes.launcher.LauncherUpdate$2$1 -> org.greencubes.*.ce:
     org.greencubes.launcher.LauncherUpdate$2 this$1 -> DIh
-org.greencubes.launcher.LauncherUpdate$2$1$1 -> org.greencubes.*.bX:
+org.greencubes.launcher.LauncherUpdate$2$1$1 -> org.greencubes.*.cf:
     org.greencubes.launcher.LauncherUpdate$2$1 this$2 -> DIh
-org.greencubes.launcher.LauncherUpdate$2$1$2 -> org.greencubes.*.bY:
+org.greencubes.launcher.LauncherUpdate$2$1$2 -> org.greencubes.*.cg:
     org.greencubes.launcher.LauncherUpdate$2$1 this$2 -> DIh
-org.greencubes.launcher.LauncherUpdate$3 -> org.greencubes.*.bZ:
+org.greencubes.launcher.LauncherUpdate$3 -> org.greencubes.*.ch:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
     void run() -> run
-org.greencubes.launcher.LauncherUpdate$4 -> org.greencubes.*.ca:
+org.greencubes.launcher.LauncherUpdate$4 -> org.greencubes.*.ci:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
     void windowClosing(java.awt.event.WindowEvent) -> windowClosing
-org.greencubes.launcher.LauncherUpdate$5 -> org.greencubes.*.cb:
+org.greencubes.launcher.LauncherUpdate$5 -> org.greencubes.*.cj:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
     void run() -> run
-org.greencubes.launcher.LauncherUtil -> org.greencubes.*.cc:
+org.greencubes.launcher.LauncherUtil -> org.greencubes.*.ck:
     boolean canOpenBrowser() -> DIh
     void onenURLInBrowser(java.lang.String) -> DIh
     org.json.JSONObject sessionRequest(java.lang.String) -> jqA
     boolean checkAnswer(org.json.JSONObject) -> DIh
-org.greencubes.main.CrashReport -> org.greencubes.*.cd:
+org.greencubes.main.CrashReport -> org.greencubes.*.cl:
     long serialVersionUID -> DIh
 org.greencubes.main.Main -> org.greencubes.main.Main:
     java.lang.String PASSWORD_RECOVER_URL -> jLa
@@ -29463,9 +29493,9 @@ org.greencubes.main.Main -> org.greencubes.main.Main:
     void close() -> jqA
     javax.crypto.Cipher getCipher(int,java.lang.String) -> DIh
     int[] $SWITCH_TABLE$org$greencubes$launcher$LauncherOptions$OnStartAction() -> AmB
-org.greencubes.main.Main$1 -> org.greencubes.*.ce:
+org.greencubes.main.Main$1 -> org.greencubes.*.cm:
     void run() -> run
-org.greencubes.main.SingleInstanceWorker -> org.greencubes.*.cf:
+org.greencubes.main.SingleInstanceWorker -> org.greencubes.*.cn:
     int PORT -> jqA
     int HEAD -> AmB
     java.net.ServerSocket serverSocket -> JZD
@@ -29474,18 +29504,18 @@ org.greencubes.main.SingleInstanceWorker -> org.greencubes.*.cf:
     void close() -> close
     boolean isAlreadyRunning() -> DIh
     void process(java.net.Socket) -> DIh
-org.greencubes.swing.AbstractComponentListener -> org.greencubes.*.cg:
+org.greencubes.swing.AbstractComponentListener -> org.greencubes.*.co:
     void componentResized(java.awt.event.ComponentEvent) -> componentResized
     void componentMoved(java.awt.event.ComponentEvent) -> componentMoved
     void componentShown(java.awt.event.ComponentEvent) -> componentShown
     void componentHidden(java.awt.event.ComponentEvent) -> componentHidden
-org.greencubes.swing.AbstractMouseListener -> org.greencubes.*.ch:
+org.greencubes.swing.AbstractMouseListener -> org.greencubes.*.cp:
     void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
     void mouseReleased(java.awt.event.MouseEvent) -> mouseReleased
     void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
     void mouseExited(java.awt.event.MouseEvent) -> mouseExited
-org.greencubes.swing.AbstractWindowListener -> org.greencubes.*.ci:
+org.greencubes.swing.AbstractWindowListener -> org.greencubes.*.cq:
     void windowOpened(java.awt.event.WindowEvent) -> windowOpened
     void windowClosing(java.awt.event.WindowEvent) -> windowClosing
     void windowClosed(java.awt.event.WindowEvent) -> windowClosed
@@ -29493,7 +29523,7 @@ org.greencubes.swing.AbstractWindowListener -> org.greencubes.*.ci:
     void windowDeiconified(java.awt.event.WindowEvent) -> windowDeiconified
     void windowActivated(java.awt.event.WindowEvent) -> windowActivated
     void windowDeactivated(java.awt.event.WindowEvent) -> windowDeactivated
-org.greencubes.swing.ComponentResizer -> org.greencubes.*.cj:
+org.greencubes.swing.ComponentResizer -> org.greencubes.*.cr:
     java.awt.Dimension MINIMUM_SIZE -> AmB
     java.awt.Dimension MAXIMUM_SIZE -> JZD
     java.util.Map cursors -> AMb
@@ -29535,7 +29565,7 @@ org.greencubes.swing.ComponentResizer -> org.greencubes.*.cj:
     java.awt.Dimension getBoundingSize(java.awt.Component) -> DIh
     boolean isEnabled() -> DIh
     void setEnabled(boolean) -> DIh
-org.greencubes.swing.DropdownListener -> org.greencubes.*.ck:
+org.greencubes.swing.DropdownListener -> org.greencubes.*.cs:
     javax.swing.JPopupMenu popup -> jqA
     int offsetX -> AmB
     int offsetY -> JZD
@@ -29549,7 +29579,7 @@ org.greencubes.swing.DropdownListener -> org.greencubes.*.ck:
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
     javax.swing.JPopupMenu access$0(org.greencubes.swing.DropdownListener) -> DIh
     java.util.List access$1(org.greencubes.swing.DropdownListener) -> jqA
-org.greencubes.swing.DropdownListener$1 -> org.greencubes.*.cl:
+org.greencubes.swing.DropdownListener$1 -> org.greencubes.*.ct:
     int i -> DIh
     float mvX -> jqA
     float mvY -> AmB
@@ -29560,10 +29590,10 @@ org.greencubes.swing.DropdownListener$1 -> org.greencubes.*.cl:
     javax.swing.Timer val$t -> dAZ
     void actionPerformed(java.awt.event.ActionEvent) -> actionPerformed
     org.greencubes.swing.DropdownListener access$0(org.greencubes.swing.DropdownListener$1) -> DIh
-org.greencubes.swing.DropdownListener$1$1 -> org.greencubes.*.cm:
+org.greencubes.swing.DropdownListener$1$1 -> org.greencubes.*.cu:
     org.greencubes.swing.DropdownListener$1 this$1 -> DIh
     void run() -> run
-org.greencubes.swing.GAWTUtil -> org.greencubes.*.cn:
+org.greencubes.swing.GAWTUtil -> org.greencubes.*.cv:
     java.awt.GraphicsConfiguration bestConfig -> DIh
     javax.swing.JTextPane getNiceTextPane(java.lang.String,int) -> DIh
     void fixtTextPaneWidth(javax.swing.JTextPane,int) -> DIh
@@ -29587,21 +29617,21 @@ org.greencubes.swing.GAWTUtil$1 -> org.greencubes.swing.GAWTUtil$1:
     void installComponents() -> installComponents
     void paintThumb(java.awt.Graphics,javax.swing.JComponent,java.awt.Rectangle) -> paintThumb
     void paintTrack(java.awt.Graphics,javax.swing.JComponent,java.awt.Rectangle) -> paintTrack
-org.greencubes.swing.GAWTUtil$2 -> org.greencubes.*.co:
+org.greencubes.swing.GAWTUtil$2 -> org.greencubes.*.cw:
     java.awt.Frame val$frame -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.swing.GAWTUtil$3 -> org.greencubes.*.cp:
+org.greencubes.swing.GAWTUtil$3 -> org.greencubes.*.cx:
     java.awt.Frame val$lastFrame -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.swing.GAWTUtil$4 -> org.greencubes.*.cq:
+org.greencubes.swing.GAWTUtil$4 -> org.greencubes.*.cy:
     org.greencubes.swing.UndecoratedJFrame val$frame -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.swing.GAWTUtil$5 -> org.greencubes.*.cr:
+org.greencubes.swing.GAWTUtil$5 -> org.greencubes.*.cz:
     java.awt.Image icon -> DIh
     void paintBorder(java.awt.Component,java.awt.Graphics,int,int,int,int) -> paintBorder
     boolean isBorderOpaque() -> isBorderOpaque
-org.greencubes.swing.GJBoxPanel -> org.greencubes.*.cs:
-org.greencubes.swing.GPopupMenu -> org.greencubes.*.ct:
+org.greencubes.swing.GJBoxPanel -> org.greencubes.*.cA:
+org.greencubes.swing.GPopupMenu -> org.greencubes.*.cB:
     boolean up -> jLa
     java.awt.Color background -> diH
     java.awt.Color foreground -> dAZ
@@ -29630,12 +29660,12 @@ org.greencubes.swing.GPopupMenu -> org.greencubes.*.ct:
     java.awt.Color access$5(org.greencubes.swing.GPopupMenu) -> jLa
     java.awt.Dimension access$6(org.greencubes.swing.GPopupMenu) -> diH
     javax.swing.border.Border access$7(org.greencubes.swing.GPopupMenu) -> dAZ
-org.greencubes.swing.GPopupMenu$1 -> org.greencubes.*.cu:
+org.greencubes.swing.GPopupMenu$1 -> org.greencubes.*.cC:
     org.greencubes.swing.GPopupMenu this$0 -> DIh
     org.greencubes.swing.GPopupMenu access$0(org.greencubes.swing.GPopupMenu$1) -> DIh
 org.greencubes.swing.GPopupMenu$1$1 -> org.greencubes.swing.GPopupMenu$1$1:
     org.greencubes.swing.GPopupMenu$1 this$1 -> DIh
-org.greencubes.swing.JPanelBG -> org.greencubes.*.cv:
+org.greencubes.swing.JPanelBG -> org.greencubes.*.cD:
     long serialVersionUID -> DIh
     int paddingTop -> jqA
     int paddingLeft -> AmB
@@ -29645,44 +29675,44 @@ org.greencubes.swing.JPanelBG -> org.greencubes.*.cv:
     java.awt.Image inactiveBg -> dAZ
     java.awt.event.MouseListener getActiveMouseListener() -> DIh
     void paintComponent(java.awt.Graphics) -> paintComponent
-org.greencubes.swing.JPanelBG$1 -> org.greencubes.*.cw:
+org.greencubes.swing.JPanelBG$1 -> org.greencubes.*.cE:
     org.greencubes.swing.JPanelBG this$0 -> DIh
     void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
     void mouseExited(java.awt.event.MouseEvent) -> mouseExited
-org.greencubes.swing.MotionPanel -> org.greencubes.*.cx:
+org.greencubes.swing.MotionPanel -> org.greencubes.*.cF:
     java.awt.Point initialClick -> DIh
     void access$0(org.greencubes.swing.MotionPanel,java.awt.Point) -> DIh
     java.awt.Point access$1(org.greencubes.swing.MotionPanel) -> DIh
-org.greencubes.swing.MotionPanel$1 -> org.greencubes.*.cy:
+org.greencubes.swing.MotionPanel$1 -> org.greencubes.*.cG:
     org.greencubes.swing.MotionPanel this$0 -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.swing.MotionPanel$2 -> org.greencubes.*.cz:
+org.greencubes.swing.MotionPanel$2 -> org.greencubes.*.cH:
     org.greencubes.swing.MotionPanel this$0 -> DIh
     javax.swing.JFrame val$parent -> jqA
     void mouseDragged(java.awt.event.MouseEvent) -> mouseDragged
-org.greencubes.swing.PlaceholderPasswordField -> org.greencubes.*.cA:
+org.greencubes.swing.PlaceholderPasswordField -> org.greencubes.*.cI:
     java.lang.String placeholder -> DIh
     java.lang.String getPlaceholder() -> DIh
     void paintComponent(java.awt.Graphics) -> paintComponent
     void setPlaceholder(java.lang.String) -> DIh
-org.greencubes.swing.PlaceholderTextField -> org.greencubes.*.cB:
+org.greencubes.swing.PlaceholderTextField -> org.greencubes.*.cJ:
     java.lang.String placeholder -> DIh
     java.lang.String getPlaceholder() -> DIh
     void paintComponent(java.awt.Graphics) -> paintComponent
     void setPlaceholder(java.lang.String) -> DIh
-org.greencubes.swing.RoundedCornerBorder -> org.greencubes.*.cC:
+org.greencubes.swing.RoundedCornerBorder -> org.greencubes.*.cK:
     java.awt.Color bgColor -> DIh
     java.awt.Color borderColor -> jqA
     int inset -> AmB
     void paintBorder(java.awt.Component,java.awt.Graphics,int,int,int,int) -> paintBorder
     java.awt.Insets getBorderInsets(java.awt.Component) -> getBorderInsets
     java.awt.Insets getBorderInsets(java.awt.Component,java.awt.Insets) -> getBorderInsets
-org.greencubes.swing.TransparencyFixer -> org.greencubes.*.cD:
+org.greencubes.swing.TransparencyFixer -> org.greencubes.*.cL:
     java.awt.Component component -> DIh
     void propertyChange(java.beans.PropertyChangeEvent) -> propertyChange
     java.awt.Window getWindowAncestor(java.awt.Component) -> jqA
     void add(java.awt.Component) -> DIh
-org.greencubes.swing.UIScheme -> org.greencubes.*.cE:
+org.greencubes.swing.UIScheme -> org.greencubes.*.cM:
     java.awt.Color BACKGROUND -> DIh
     java.awt.Color BIG_BUTTON -> jqA
     java.awt.Color EMPTY -> AmB
@@ -29707,19 +29737,19 @@ org.greencubes.swing.UIScheme -> org.greencubes.*.cE:
     java.awt.Color INPUT_BORDER -> RuE
     java.awt.Color getColor(int,int) -> DIh
     java.awt.Color getColor(int) -> DIh
-org.greencubes.swing.UndecoratedJFrame -> org.greencubes.*.cF:
+org.greencubes.swing.UndecoratedJFrame -> org.greencubes.*.cN:
     java.awt.Point initialClick -> DIh
     org.greencubes.swing.ComponentResizer resizer -> jqA
     void maximize() -> DIh
     void setResizable(boolean) -> setResizable
     boolean isResizable() -> isResizable
-org.greencubes.swing.UndecoratedJFrame$1 -> org.greencubes.*.cG:
+org.greencubes.swing.UndecoratedJFrame$1 -> org.greencubes.*.cO:
     org.greencubes.swing.UndecoratedJFrame this$0 -> DIh
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-org.greencubes.swing.UndecoratedJFrame$2 -> org.greencubes.*.cH:
+org.greencubes.swing.UndecoratedJFrame$2 -> org.greencubes.*.cP:
     org.greencubes.swing.UndecoratedJFrame this$0 -> DIh
     void mouseDragged(java.awt.event.MouseEvent) -> mouseDragged
-org.greencubes.util.Encryption -> org.greencubes.*.cI:
+org.greencubes.util.Encryption -> org.greencubes.*.cQ:
     java.lang.Object sm -> DIh
     void setSecurityManager(java.lang.SecurityManager) -> DIh
     java.lang.SecurityManager getSecurityManager() -> DIh
@@ -29729,7 +29759,7 @@ org.greencubes.util.Encryption -> org.greencubes.*.cI:
     byte[] secureMultiSha384(byte[],int) -> DIh
     byte[] secureSha384(byte[]) -> DIh
     void init() -> AmB
-org.greencubes.util.I18n -> org.greencubes.*.cJ:
+org.greencubes.util.I18n -> org.greencubes.*.cR:
     java.lang.String DEFAULT_LANG -> AmB
     java.lang.String[] supportedLanguages -> DIh
     java.util.Map langMap -> JZD
@@ -29745,11 +29775,11 @@ org.greencubes.util.I18n -> org.greencubes.*.cJ:
     java.lang.String get(java.lang.String,java.lang.Object[]) -> DIh
     boolean isSupportedLang(java.lang.String) -> AmB
     void loadLanguage(java.lang.String) -> JZD
-org.greencubes.util.MacOSX -> org.greencubes.*.cK:
+org.greencubes.util.MacOSX -> org.greencubes.*.cS:
     void setIcons(java.util.List) -> DIh
     void setTitle(java.lang.String) -> DIh
     boolean hasRetinaDisplay() -> DIh
-org.greencubes.util.OperatingSystem -> org.greencubes.*.cL:
+org.greencubes.util.OperatingSystem -> org.greencubes.*.cT:
     org.greencubes.util.OperatingSystem LINUX -> DIh
     org.greencubes.util.OperatingSystem WINDOWS -> jqA
     org.greencubes.util.OperatingSystem OSX -> AmB
@@ -29761,12 +29791,12 @@ org.greencubes.util.OperatingSystem -> org.greencubes.*.cL:
     org.greencubes.util.OperatingSystem getCurrentPlatform() -> DIh
     org.greencubes.util.OperatingSystem[] values() -> values
     org.greencubes.util.OperatingSystem valueOf(java.lang.String) -> valueOf
-org.greencubes.util.SynchronizedDateFormat -> org.greencubes.*.cM:
+org.greencubes.util.SynchronizedDateFormat -> org.greencubes.*.cU:
     long serialVersionUID -> DIh
     java.text.DateFormat parent -> jqA
     java.lang.StringBuffer format(java.util.Date,java.lang.StringBuffer,java.text.FieldPosition) -> format
     java.util.Date parse(java.lang.String,java.text.ParsePosition) -> parse
-org.greencubes.util.Util -> org.greencubes.*.cN:
+org.greencubes.util.Util -> org.greencubes.*.cV:
     sun.misc.Unsafe unsafe -> DIh
     java.util.Random globalRandom -> jqA
     char[] chars -> AmB
@@ -29819,9 +29849,9 @@ org.greencubes.util.Util -> org.greencubes.*.cN:
     java.io.File getAppDir() -> AmB
     java.awt.Color debugColor() -> jqA
     int[] $SWITCH_TABLE$org$greencubes$util$OperatingSystem() -> JZD
-org.greencubes.util.io.GByteArrayOutputStream -> org.greencubes.*.cO:
+org.greencubes.util.io.GByteArrayOutputStream -> org.greencubes.*.cW:
     byte[] getArray() -> DIh
-org.greencubes.util.logging.GLogSimple -> org.greencubes.*.cP:
+org.greencubes.util.logging.GLogSimple -> org.greencubes.*.cX:
     java.util.logging.Logger logger -> jqA
     void info(java.lang.String) -> DIh
     void severe(java.lang.String) -> jqA
@@ -29830,7 +29860,7 @@ org.greencubes.util.logging.GLogSimple -> org.greencubes.*.cP:
     void log(java.util.logging.Level,java.lang.String) -> DIh
     void log(java.util.logging.Level,java.lang.String,java.lang.Throwable) -> DIh
     void add(org.greencubes.util.logging.GLogSimple$LogEntry) -> jqA
-org.greencubes.util.logging.GLogSimple$LogEntry -> org.greencubes.*.cQ:
+org.greencubes.util.logging.GLogSimple$LogEntry -> org.greencubes.*.cY:
     java.util.logging.Level level -> DIh
     java.lang.String message -> jqA
     java.lang.Throwable t -> AmB
@@ -29840,7 +29870,7 @@ org.greencubes.util.logging.GLogSimple$LogEntry -> org.greencubes.*.cQ:
     java.lang.Throwable access$0(org.greencubes.util.logging.GLogSimple$LogEntry) -> DIh
     java.util.logging.Level access$1(org.greencubes.util.logging.GLogSimple$LogEntry) -> jqA
     java.lang.String access$2(org.greencubes.util.logging.GLogSimple$LogEntry) -> AmB
-org.greencubes.util.logging.IGLog -> org.greencubes.*.cR:
+org.greencubes.util.logging.IGLog -> org.greencubes.*.cZ:
     java.util.logging.Logger logger -> DIh
     void info(java.lang.String) -> DIh
     void severe(java.lang.String) -> jqA
@@ -29849,9 +29879,9 @@ org.greencubes.util.logging.IGLog -> org.greencubes.*.cR:
     void log(java.util.logging.Level,java.lang.String) -> DIh
     void log(java.util.logging.Level,java.lang.String,java.lang.Throwable) -> DIh
     void add(org.greencubes.util.logging.GLogSimple$LogEntry) -> DIh
-org.greencubes.util.logging.IGLog$GLevel -> org.greencubes.*.cS:
+org.greencubes.util.logging.IGLog$GLevel -> org.greencubes.*.da:
     long serialVersionUID -> DIh
-org.greencubes.util.logging.LogManager -> org.greencubes.*.cT:
+org.greencubes.util.logging.LogManager -> org.greencubes.*.db:
     java.util.concurrent.atomic.AtomicBoolean initialized -> DIh
     java.util.logging.Logger global -> jqA
     org.greencubes.util.logging.IGLog log -> AmB
@@ -29859,9 +29889,9 @@ org.greencubes.util.logging.LogManager -> org.greencubes.*.cT:
     void initialize(java.io.File) -> DIh
     void addHandler(java.util.logging.Handler) -> DIh
     void removeHandler(java.util.logging.Handler) -> jqA
-org.greencubes.util.logging.LogManager$1 -> org.greencubes.*.cU:
+org.greencubes.util.logging.LogManager$1 -> org.greencubes.*.dc:
     void publish(java.util.logging.LogRecord) -> publish
-org.greencubes.util.logging.LoggerOutputStream -> org.greencubes.*.cV:
+org.greencubes.util.logging.LoggerOutputStream -> org.greencubes.*.dd:
     java.lang.String separator -> DIh
     org.greencubes.util.logging.IGLog logger -> jqA
     java.util.logging.Level level -> AmB
@@ -29869,19 +29899,19 @@ org.greencubes.util.logging.LoggerOutputStream -> org.greencubes.*.cV:
     java.lang.StringBuilder buffer -> AMb
     void flush() -> flush
     void close() -> close
-org.greencubes.util.logging.OnlyTextFormatter -> org.greencubes.*.cW:
+org.greencubes.util.logging.OnlyTextFormatter -> org.greencubes.*.de:
     java.lang.String format(java.util.logging.LogRecord) -> format
-org.greencubes.util.logging.ShortConsoleLogFormatter -> org.greencubes.*.cX:
+org.greencubes.util.logging.ShortConsoleLogFormatter -> org.greencubes.*.df:
     java.text.SimpleDateFormat date -> DIh
     java.lang.String format(java.util.logging.LogRecord) -> format
-org.greencubes.yaml.YamlException -> org.greencubes.*.cY:
+org.greencubes.yaml.YamlException -> org.greencubes.*.dg:
     long serialVersionUID -> DIh
-org.greencubes.yaml.YamlFile -> org.greencubes.*.cZ:
+org.greencubes.yaml.YamlFile -> org.greencubes.*.dh:
     void load(java.io.InputStream) -> DIh
     void save(java.io.OutputStream) -> DIh
     void read(java.lang.Object) -> DIh
     org.greencubes.yaml.YamlNode getEmptyNode() -> DIh
-org.greencubes.yaml.YamlNode -> org.greencubes.*.da:
+org.greencubes.yaml.YamlNode -> org.greencubes.*.di:
     java.util.Map root -> DIh
     java.lang.Object getProperty(java.lang.String) -> AmB
     void setProperty(java.lang.String,java.lang.Object) -> DIh
