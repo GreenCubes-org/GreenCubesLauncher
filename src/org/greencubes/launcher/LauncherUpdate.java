@@ -182,8 +182,8 @@ public class LauncherUpdate {
 			InputStreamReader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader buf = new BufferedReader(reader);
 			String line = null;
-			while(isRunning(p)) {
-				try {
+			try {
+				while(isRunning(p)) {
 					while((line = buf.readLine()) != null) {
 						if(line.startsWith("[SIG] ")) {
 							if(line.equals("[SIG] LOADED")) {
@@ -193,15 +193,15 @@ public class LauncherUpdate {
 						} else
 							System.out.println(line);
 					}
-				} catch(IOException ex) {
-					ex.printStackTrace();
-				} finally {
-					Util.close(buf);
 				}
+			} catch(IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				Util.close(buf);
 			}
 			updateError(304, null);
 			return;
-		} catch(IOException e) {
+		} catch(Throwable e) {
 			updateError(303, e.getLocalizedMessage());
 			return;
 		}
