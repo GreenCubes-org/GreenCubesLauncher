@@ -46,7 +46,7 @@ public class Main {
 	public static final String SUPPORT_SYSTEM_URL = "https://help.greencubes.org/";
 	public static final String USER_CONTROL_PANEL_URL = "https://greencubes.org/?action=ucp#t";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
-	public static final String BUILD_INFO = "0.1.0 (1)";
+	public static final String BUILD_INFO = "0.1.1 (2)";
 	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = false;
 	
@@ -211,6 +211,8 @@ public class Main {
 			currentFrame.setState(Frame.ICONIFIED);
 			break;
 		case HIDE:
+			if(trayIcon == null && !LauncherOptions.keepTrayIcon)
+				LauncherOptions.systemTrayInit();
 			if(trayIcon != null)
 				currentFrame.setVisible(false);
 			else
@@ -235,6 +237,8 @@ public class Main {
 			currentFrame.setState(Frame.NORMAL);
 			currentFrame.setVisible(true);
 			currentFrame.toFront();
+			if(trayIcon != null && !LauncherOptions.keepTrayIcon)
+				LauncherOptions.systemTrayRemove();
 			break;
 		case NO:
 			break;

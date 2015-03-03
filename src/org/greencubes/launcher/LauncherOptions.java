@@ -1,5 +1,13 @@
 package org.greencubes.launcher;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +31,7 @@ import org.greencubes.client.Client;
 import org.greencubes.download.Downloader;
 import org.greencubes.main.Main;
 import org.greencubes.util.Encryption;
+import org.greencubes.util.I18n;
 import org.greencubes.util.MacOSX;
 import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
@@ -58,6 +67,7 @@ public class LauncherOptions {
 	public static boolean autoUpdate = false;
 	public static OnStartAction onLauncherClose = OnStartAction.CLOSE;
 	public static OnStartAction onLauncherMinimize = OnStartAction.MINIMIZE;
+	public static boolean keepTrayIcon = false;
 	
 	private static long sessionKeyAddress = -1;
 	public static String sessionId;
@@ -381,6 +391,43 @@ public class LauncherOptions {
 		Encryption.setSecurityManager(sm);
 	}
 	
+	public static void systemTrayInit() {
+		systemTrayRemove();
+		if(SystemTray.isSupported() && OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX) {
+			try {
+				Image img = ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico256x256.png"));
+				Main.trayIcon = new TrayIcon(img, I18n.get("title"));
+				Main.trayIcon.setImageAutoSize(true);
+				final PopupMenu trayMenu = new PopupMenu();
+				MenuItem item = new MenuItem(I18n.get("menu.exit"));
+				item.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Main.performWindowAction(OnStartAction.CLOSE);
+					}
+				});
+				trayMenu.add(item);
+				Main.trayIcon.setPopupMenu(trayMenu);
+				SystemTray.getSystemTray().add(Main.trayIcon);
+				Main.trayIcon.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Main.undoWindowAction(OnStartAction.HIDE);
+					}
+				});
+			} catch(IOException e1) {
+			} catch(AWTException e1) {
+			}
+		}
+	}
+	
+	public static void systemTrayRemove() {
+		if(Main.trayIcon != null) {
+			SystemTray.getSystemTray().remove(Main.trayIcon);
+			Main.trayIcon = null;
+		}
+	}
+	
 	static {
 		if(Integer.parseInt("68") != ("D".getBytes()[0] & 0xFF))
 			Encryption.throwMajicError();
@@ -401,6 +448,18 @@ public class LauncherOptions {
 		
 		private OnStartAction(String langKey) {
 			this.langKey = langKey;
+		}
+		
+		public static OnStartAction[] getSupportedOnCloseActions() {
+			if(SystemTray.isSupported() && OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX)
+				return new OnStartAction[]{CLOSE, HIDE};
+			return new OnStartAction[]{CLOSE};
+		}
+		
+		public static OnStartAction[] getSupportedOnStartActions() {
+			if(SystemTray.isSupported() && OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX)
+				return values();
+			return new OnStartAction[]{CLOSE, MINIMIZE, NO};
 		}
 	}
 }

@@ -1,18 +1,14 @@
 package org.greencubes.launcher;
 
 import java.awt.AWTEvent;
-import java.awt.AWTException;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
-import java.awt.MenuItem;
 import java.awt.Point;
-import java.awt.PopupMenu;
 import java.awt.Rectangle;
 import java.awt.SystemTray;
-import java.awt.TrayIcon;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,7 +82,8 @@ public class LauncherMain {
 		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
 			MacOSX.setTitle(I18n.get("title"));
 		Main.currentFrame = frame;
-		systemTrayInit();
+		if(LauncherOptions.keepTrayIcon)
+			LauncherOptions.systemTrayInit();
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
@@ -447,39 +444,6 @@ public class LauncherMain {
 		}
 	}
 	//@formatter:on
-	
-	private void systemTrayInit() {
-		if(Main.trayIcon != null) {
-			SystemTray.getSystemTray().remove(Main.trayIcon);
-			Main.trayIcon = null;
-		}
-		if(SystemTray.isSupported()) {
-			try {
-				Image img = ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico256x256.png"));
-				Main.trayIcon = new TrayIcon(img, I18n.get("title"));
-				Main.trayIcon.setImageAutoSize(true);
-				final PopupMenu trayMenu = new PopupMenu();
-				MenuItem item = new MenuItem(I18n.get("menu.exit"));
-				item.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						Main.performWindowAction(OnStartAction.CLOSE);
-					}
-				});
-				trayMenu.add(item);
-				Main.trayIcon.setPopupMenu(trayMenu);
-				SystemTray.getSystemTray().add(Main.trayIcon);
-				Main.trayIcon.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						Main.undoWindowAction(OnStartAction.HIDE);
-					}
-				});
-			} catch(IOException e1) {
-			} catch(AWTException e1) {
-			}
-		}
-	}
 	
 	private void saveFrameInfo() {
 		JSONObject config = Main.getConfig();

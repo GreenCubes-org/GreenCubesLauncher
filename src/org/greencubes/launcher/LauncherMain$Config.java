@@ -373,7 +373,7 @@ public class LauncherMain$Config {
 									});
 									final ImageIcon empty = new ImageIcon(GPopupMenu.class.getResource("/res/menu.empty.png"));
 									final ImageIcon checked = new ImageIcon(GPopupMenu.class.getResource("/res/menu.check.png"));
-									for(final OnStartAction action : OnStartAction.values()) {
+									for(final OnStartAction action : OnStartAction.getSupportedOnStartActions()) {
 										final JMenuItem item = onStartSelect.addItem(I18n.get(action.langKey), newOnStartAction == action ? "/res/menu.check.png" : "/res/menu.empty.png");
 										item.addActionListener(new ActionListener() {
 											@Override
@@ -444,7 +444,7 @@ public class LauncherMain$Config {
 									});
 									final ImageIcon empty = new ImageIcon(GPopupMenu.class.getResource("/res/menu.empty.png"));
 									final ImageIcon checked = new ImageIcon(GPopupMenu.class.getResource("/res/menu.check.png"));
-									for(final OnStartAction action : new OnStartAction[] {OnStartAction.CLOSE, OnStartAction.HIDE}) {
+									for(final OnStartAction action : OnStartAction.getSupportedOnCloseActions()) {
 										final JMenuItem item = onStartSelect.addItem(I18n.get(action.langKey), newOnCloseAction == action ? "/res/menu.check.png" : "/res/menu.empty.png");
 										item.addActionListener(new ActionListener() {
 											@Override
