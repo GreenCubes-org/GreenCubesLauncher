@@ -90,7 +90,8 @@ public class LauncherMain {
 		frame.add(innerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
 			setPreferredSize(new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640)));
 			// Top line
-			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.EMPTY) {{
+			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.TOP_PANEL_BG_LOGO) {{
+				final JPanel topPanel = this;
 				add(logoPanel = new JPanelBG("/res/main.logo.png") {
 					// GreenCubes logo
 					Image highlightBg;
@@ -170,12 +171,12 @@ public class LauncherMain {
 							@Override
 							public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 								bg = mouseActive ? highlighedActiveBg : activeBg;
-								repaint();
+								topPanel.repaint();
 							}
 							@Override
 							public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 								bg = mouseActive ? highlightBg : defaultBg;
-								repaint();
+								topPanel.repaint();
 							}
 							@Override
 							public void popupMenuCanceled(PopupMenuEvent e) {
@@ -186,7 +187,7 @@ public class LauncherMain {
 							@Override
 							public void actionPerformed(ActionEvent e) {
 								bg = getMousePosition() != null ? highlighedActiveBg : activeBg;
-								repaint();
+								topPanel.repaint();
 							}
 						});
 						addMouseListener(new MouseAdapter() {
@@ -194,13 +195,13 @@ public class LauncherMain {
 							public void mouseEntered(MouseEvent e) {
 								mouseActive = true;
 								bg = mainPopup.isVisible() ? highlighedActiveBg : highlightBg;
-								repaint();
+								topPanel.repaint();
 							}
 							@Override
 						    public void mouseExited(MouseEvent e) {
 								mouseActive = false;
 						    	bg = mainPopup.isVisible() ? activeBg : defaultBg;
-						    	repaint();
+						    	topPanel.repaint();
 						    }
 						});
 				}});
