@@ -6,6 +6,7 @@ public class UIScheme {
 	
 	public static final Color BACKGROUND = getColor(0x171e1e);
 	public static final Color BIG_BUTTON = getColor(0x749393);
+	public static final Color BIG_BUTTON_ACTIVE = getColor(0xc0e5ed);
 	public static final Color EMPTY = getColor(0, 0);
 	public static final Color TEXT_COLOR = getColor(0xecffff);
 	

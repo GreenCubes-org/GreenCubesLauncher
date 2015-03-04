@@ -37,7 +37,6 @@ import javax.swing.text.StyleConstants;
 
 import org.greencubes.main.CrashReport;
 import org.greencubes.main.Main;
-import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
@@ -416,10 +415,18 @@ public class LauncherLogin {
 					weightx = 1;
 					weighty = 1;
 				}});
-				addMouseListener(new AbstractMouseListener() {
+				addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						doLogin();
+					}
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						setBackground(UIScheme.BIG_BUTTON_ACTIVE);
+					}
+					@Override
+					public void mouseExited(MouseEvent e) {
+						setBackground(UIScheme.BIG_BUTTON);
 					}
 				});
 			}});
@@ -436,7 +443,7 @@ public class LauncherLogin {
 				setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				addMouseListener(new AbstractMouseListener() {
+				addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						joinOffline();
@@ -464,7 +471,7 @@ public class LauncherLogin {
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				addMouseListener(new AbstractMouseListener() {
+				addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						LauncherUtil.onenURLInBrowser(Main.REGISTRATION_URL);
@@ -485,7 +492,7 @@ public class LauncherLogin {
 				setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 				//underline(this);
 				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				addMouseListener(new AbstractMouseListener() {
+				addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						LauncherUtil.onenURLInBrowser(Main.PASSWORD_RECOVER_URL);

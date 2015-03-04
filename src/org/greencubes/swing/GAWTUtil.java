@@ -10,6 +10,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -159,7 +160,7 @@ public class GAWTUtil {
 	}
 	
 	public static MouseListener createMinimizeListener(final Frame frame) {
-		return new AbstractMouseListener() {
+		return new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				frame.setState(Frame.ICONIFIED);
@@ -168,7 +169,7 @@ public class GAWTUtil {
 	}
 	
 	public static MouseListener createCloseListener(final Frame lastFrame) {
-		return new AbstractMouseListener() {
+		return new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				lastFrame.dispose();
@@ -178,7 +179,7 @@ public class GAWTUtil {
 	}
 	
 	public static MouseListener createMaximizeListener(final UndecoratedJFrame frame) {
-		return new AbstractMouseListener() {
+		return new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				int state = frame.getExtendedState();

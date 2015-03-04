@@ -4,6 +4,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Point;
@@ -41,7 +42,6 @@ import org.greencubes.client.Client;
 import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.main.Main;
 import org.greencubes.swing.AbstractComponentListener;
-import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.AbstractWindowListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
@@ -205,117 +205,123 @@ public class LauncherMain {
 						});
 				}});
 				
-				add(new JPanelBG("/res/main.top.png") {{ // Everything else on top
-					setMaximumSize(new Dimension(9999, 96));
-					setBackground(UIScheme.TOP_PANEL_BG);
-					setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{ // Window buttons
-						add(Box.createHorizontalGlue());
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Minimize button
-							s(this, 30, 30);
-							setAlignmentX(JComponent.CENTER_ALIGNMENT);
-							add(Box.createVerticalGlue());
-							JPanelBG panel;
-							add(panel = new JPanelBG("/res/minimize.png", "/res/minimize.active.png") {{
-								s(this, 14, 14);
-								setOpaque(false);
-							}});
-							add(Box.createVerticalGlue());
-							addMouseListener(new AbstractMouseListener() {
-								@Override
-								public void mousePressed(MouseEvent e) {
-									Main.performWindowAction(LauncherOptions.onLauncherMinimize);
-								}
-							});
-							addMouseListener(panel.getActiveMouseListener());
-						}});
-						if(OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX) // OS X shittly supports window expanding
-							add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
+				add(new JPanelBG("/res/main.top.png") { // Everything else on top
+					@Override
+					protected void drawBg(Graphics g) {
+						g.drawImage(this.bg, g.getClipBounds().width - this.bg.getWidth(this), 0, this);
+					}
+					{
+						setMaximumSize(new Dimension(9999, 96));
+						setBackground(UIScheme.TOP_PANEL_BG_LOGO);
+						setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{ // Window buttons
+							add(Box.createHorizontalGlue());
+							add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Minimize button
 								s(this, 30, 30);
+								setAlignmentX(JComponent.CENTER_ALIGNMENT);
 								add(Box.createVerticalGlue());
 								JPanelBG panel;
-								add(panel = new JPanelBG("/res/expand.png", "/res/expand.active.png") {{
+								add(panel = new JPanelBG("/res/minimize.png", "/res/minimize.active.png") {{
 									s(this, 14, 14);
 									setOpaque(false);
 								}});
 								add(Box.createVerticalGlue());
-								addMouseListener(GAWTUtil.createMaximizeListener(frame));
+								addMouseListener(new MouseAdapter() {
+									@Override
+									public void mousePressed(MouseEvent e) {
+										Main.performWindowAction(LauncherOptions.onLauncherMinimize);
+									}
+								});
 								addMouseListener(panel.getActiveMouseListener());
 							}});
-						add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Close button
-							s(this, 30, 30);
-							add(Box.createVerticalGlue());
-							JPanelBG panel;
-							add(panel = new JPanelBG("/res/cross.png", "/res/cross.active.png") {{
-								s(this, 14, 14);
-								setOpaque(false);
+							if(OperatingSystem.getCurrentPlatform() != OperatingSystem.OSX) // OS X shittly supports window expanding
+								add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Maximize button
+									s(this, 30, 30);
+									add(Box.createVerticalGlue());
+									JPanelBG panel;
+									add(panel = new JPanelBG("/res/expand.png", "/res/expand.active.png") {{
+										s(this, 14, 14);
+										setOpaque(false);
+									}});
+									add(Box.createVerticalGlue());
+									addMouseListener(GAWTUtil.createMaximizeListener(frame));
+									addMouseListener(panel.getActiveMouseListener());
+								}});
+							add(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{ // Close button
+								s(this, 30, 30);
+								add(Box.createVerticalGlue());
+								JPanelBG panel;
+								add(panel = new JPanelBG("/res/cross.png", "/res/cross.active.png") {{
+									s(this, 14, 14);
+									setOpaque(false);
+								}});
+								add(Box.createVerticalGlue());
+								addMouseListener(new MouseAdapter() {
+									@Override
+									public void mousePressed(MouseEvent e) {
+										Main.performWindowAction(LauncherOptions.onLauncherClose);
+									}
+								});
+								addMouseListener(panel.getActiveMouseListener());
 							}});
-							add(Box.createVerticalGlue());
-							addMouseListener(new AbstractMouseListener() {
-								@Override
-								public void mousePressed(MouseEvent e) {
-									Main.performWindowAction(LauncherOptions.onLauncherClose);
-								}
-							});
-							addMouseListener(panel.getActiveMouseListener());
 						}});
-					}});
-					
-					add(Box.createVerticalGlue());
-					
-					add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-						add(topGame = new JLabel() {{
-							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(UIScheme.TITLE_COLOR);
-							setText(I18n.get("main.title.game"));
-							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
-							addMouseListener(new MouseAdapter() {
-								@Override
-								public void mouseEntered(MouseEvent e) {
-									setForeground(UIScheme.TITLE_COLOR_SEL);
-								}
-								@Override
-								public void mouseExited(MouseEvent e) {
-									setForeground((clientPanel != null && clientPanel.getParent() != null) ? UIScheme.TITLE_COLOR_SEL : UIScheme.TITLE_COLOR);
-								}
-								@Override
-								public void mousePressed(MouseEvent e) {
-									play.displayPlayPanel();
-								}
-							});
+						
+						add(Box.createVerticalGlue());
+						
+						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+							add(topGame = new JLabel() {{
+								setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+								setForeground(UIScheme.TITLE_COLOR);
+								setText(I18n.get("main.title.game"));
+								setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+								addMouseListener(new MouseAdapter() {
+									@Override
+									public void mouseEntered(MouseEvent e) {
+										setForeground(UIScheme.TITLE_COLOR_SEL);
+									}
+									@Override
+									public void mouseExited(MouseEvent e) {
+										setForeground((clientPanel != null && clientPanel.getParent() != null) ? UIScheme.TITLE_COLOR_SEL : UIScheme.TITLE_COLOR);
+									}
+									@Override
+									public void mousePressed(MouseEvent e) {
+										play.displayPlayPanel();
+									}
+								});
+							}});
+							add(new JLabel() {{
+								setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+								setForeground(UIScheme.TITLE_COLOR);
+								setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
+								setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+								addMouseListener(new MouseAdapter() {
+									@Override
+									public void mouseEntered(MouseEvent e) {
+										setForeground(UIScheme.TITLE_COLOR_SEL);
+									}
+									@Override
+									public void mouseExited(MouseEvent e) {
+										setForeground(UIScheme.TITLE_COLOR);
+									}
+									@Override
+									public void mousePressed(MouseEvent e) {
+										LauncherUtil.onenURLInBrowser(Main.USER_CONTROL_PANEL_URL);
+									}
+								});
+							}});
+							add(configLabel = new JLabel() {{
+								setVisible(false);
+								setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
+								setForeground(UIScheme.TITLE_COLOR_SEL);
+								setText(I18n.get("settings.title").toUpperCase());
+								setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
+								disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+							}});
+							add(Box.createHorizontalGlue());
 						}});
-						add(new JLabel() {{
-							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(UIScheme.TITLE_COLOR);
-							setText((LauncherOptions.userInfo != null ? LauncherOptions.userInfo.optString("username") : LauncherOptions.sessionUser).toUpperCase());
-							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-							addMouseListener(new MouseAdapter() {
-								@Override
-								public void mouseEntered(MouseEvent e) {
-									setForeground(UIScheme.TITLE_COLOR_SEL);
-								}
-								@Override
-								public void mouseExited(MouseEvent e) {
-									setForeground(UIScheme.TITLE_COLOR);
-								}
-								@Override
-								public void mousePressed(MouseEvent e) {
-									LauncherUtil.onenURLInBrowser(Main.USER_CONTROL_PANEL_URL);
-								}
-							});
-						}});
-						add(configLabel = new JLabel() {{
-							setVisible(false);
-							setBorder(BorderFactory.createEmptyBorder(0, 16, 24, 16));
-							setForeground(UIScheme.TITLE_COLOR_SEL);
-							setText(I18n.get("settings.title").toUpperCase());
-							setFont(new Font(UIScheme.TITLE_FONT, Font.PLAIN, 24));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}});
-						add(Box.createHorizontalGlue());
-					}});
-				}});
+					}
+				});
 			}});
 			add(mainPanel = new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 				setMaximumSize(new Dimension(9999, 9999));
@@ -413,7 +419,7 @@ public class LauncherMain {
 										weighty = 1;
 									}});
 									add(Box.createHorizontalGlue());
-									addMouseListener(new AbstractMouseListener() {
+									addMouseListener(new MouseAdapter() {
 										@Override
 										public void mousePressed(MouseEvent e) {
 											try {

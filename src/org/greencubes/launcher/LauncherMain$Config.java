@@ -50,7 +50,6 @@ import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.launcher.LauncherOptions.OnStartAction;
 import org.greencubes.main.Main;
-import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.GPopupMenu;
@@ -202,7 +201,7 @@ public class LauncherMain$Config {
 								weightx = 1;
 								weighty = 1;
 							}});
-							addMouseListener(new AbstractMouseListener() {
+							addMouseListener(new MouseAdapter() {
 								@Override
 								public void mousePressed(MouseEvent e) {
 									boolean alert = !I18n.currentLanguage.equals(newLanguage);
@@ -227,7 +226,14 @@ public class LauncherMain$Config {
 										}, JOptionPane.QUESTION_MESSAGE, 300);
 									}
 									superClass.play.displayPlayPanel();
-									
+								}
+								@Override
+								public void mouseEntered(MouseEvent e) {
+									setBackground(UIScheme.BIG_BUTTON_ACTIVE);
+								}
+								@Override
+								public void mouseExited(MouseEvent e) {
+									setBackground(UIScheme.BIG_BUTTON);
 								}
 							});
 						}});

@@ -35,7 +35,6 @@ import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
 import org.greencubes.client.Server;
 import org.greencubes.client.IClientStatus.Status;
-import org.greencubes.swing.AbstractMouseListener;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.GPopupMenu;
@@ -220,10 +219,18 @@ public class LauncherMain$Play {
 							weighty = 1;
 						}});
 						GAWTUtil.removeMouseListeners(clientButtonText);
-						addMouseListener(new AbstractMouseListener() {
+						addMouseListener(new MouseAdapter() {
 							@Override
 							public void mouseClicked(MouseEvent e) {
 								pressTheBigButton();
+							}
+							@Override
+							public void mouseEntered(MouseEvent e) {
+								setBackground(UIScheme.BIG_BUTTON_ACTIVE);
+							}
+							@Override
+							public void mouseExited(MouseEvent e) {
+								setBackground(UIScheme.BIG_BUTTON);
 							}
 						});
 					}});

@@ -104,7 +104,6 @@ public class ClientMain extends Client {
 	
 	protected List<String> getLaunchParameters(String username, String session, Server server) {
 		List<String> params = new ArrayList<String>();
-		params.add("--fullscreen");
 		if(username != null) {
 			params.add("--session");
 			params.add(username);
