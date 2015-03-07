@@ -370,10 +370,10 @@ public final class Util {
 		if(bytes < 1024)
 			return bytes + "B";
 		if(bytes < 1024 * 1024)
-			return (bytes / 1024) + "KB";
+			return String.format("%.2fKB", bytes / 1024f);
 		if(bytes < 1024 * 1024 * 1024)
-			return (bytes / 1024 / 1024) + "MB";
-		return (bytes / 1024 / 1024 / 1024) + "GB";
+			return String.format("%.2fMB", bytes / 1024f / 1024f);
+		return String.format("%.2fGB", bytes / 1024f / 1024f / 1024f);
 	}
 	
 	/**
