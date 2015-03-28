@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.greencubes.util.Util;
+
 /**
  * Represents a configuration node.
  * 
@@ -548,6 +550,8 @@ public class YamlNode {
 			}
 
 			node = (Map<String, Object>) o;
+			if(node == null)
+				return;
 		}
 	}
 
@@ -567,5 +571,10 @@ public class YamlNode {
 		Map<String, Object> map = new HashMap<String, Object>();
 		fullDump(map, "");
 		return map;
+	}
+	
+	@Override
+	public String toString() {
+		return Util.toString(root);
 	}
 }

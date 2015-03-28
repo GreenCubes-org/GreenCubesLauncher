@@ -21,10 +21,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import sun.misc.Unsafe;
 
@@ -378,44 +380,43 @@ public final class Util {
 	
 	/**
 	 * <p>Performs a deep toString of provided object. It shows
-	 * content of arrays and collections. Maps are not supported yet.</p>
+	 * content of arrays, collections and maps (trove not supported yet).</p>
 	 * <p><b>Highly ineffective, use only for debug.</b></p>
 	 * @param object
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static String toString(Object object) {
 		if(object == null)
 			return "null";
 		StringBuilder buf = new StringBuilder();
-		Class<?> eClass = object.getClass();
-		
-		if(eClass.isArray()) {
-			if(eClass == byte[].class)
-				buf.append(Arrays.toString((byte[]) object));
-			else if(eClass == short[].class)
-				buf.append(Arrays.toString((short[]) object));
-			else if(eClass == int[].class)
-				buf.append(Arrays.toString((int[]) object));
-			else if(eClass == long[].class)
-				buf.append(Arrays.toString((long[]) object));
-			else if(eClass == char[].class)
-				buf.append(Arrays.toString((char[]) object));
-			else if(eClass == float[].class)
-				buf.append(Arrays.toString((float[]) object));
-			else if(eClass == double[].class)
-				buf.append(Arrays.toString((double[]) object));
-			else if(eClass == boolean[].class)
-				buf.append(Arrays.toString((boolean[]) object));
-			else // element is an array of object references
-				deepToString((Object[]) object, buf, new HashSet<Object>());
-		} else { // element is non-null and not an array
-			if(object instanceof Collection)
-				deepToString((Collection<Object>) object, buf, new HashSet<Object>());
-			else
-				buf.append(object.toString());
-		}
+		elementToString(object, buf, new HashSet<Object>());
 		return buf.toString();
+	}
+	
+	private static void deepToString(Map<Object, Object> m, StringBuilder buf, Set<Object> dejaVu) {
+		if(m == null) {
+			buf.append("null");
+			return;
+		}
+		if(m.size() == 0) {
+			buf.append("{}");
+			return;
+		}
+		dejaVu.add(m);
+		buf.append('{');
+		Iterator<Entry<Object, Object>> iterator = m.entrySet().iterator();
+		boolean has = false;
+		while(iterator.hasNext()) {
+			if(has)
+				buf.append(',');
+			Entry<Object, Object> e = iterator.next();
+			elementToString(e.getKey(), buf, dejaVu);
+			buf.append(':');
+			elementToString(e.getValue(), buf, dejaVu);
+			has = true;
+		}
+		buf.append('}');
+		dejaVu.remove(m);
 	}
 	
 	private static void deepToString(Collection<Object> list, StringBuilder buf, Set<Object> dejaVu) {
@@ -423,63 +424,67 @@ public final class Util {
 		deepToString(array, buf, dejaVu);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private static void deepToString(Object[] a, StringBuilder buf, Set<Object> dejaVu) {
 		if(a == null) {
 			buf.append("null");
 			return;
 		}
-		int iMax = a.length - 1;
-		if(iMax == -1) {
+		if(a.length == 0) {
 			buf.append("[]");
 			return;
 		}
-		
 		dejaVu.add(a);
 		buf.append('[');
-		for(int i = 0;; i++) {
+		for(int i = 0; i < a.length; i++) {
+			if(i != 0)
+				buf.append(',');
 			Object element = a[i];
-			if(element == null) {
-				buf.append("null");
-			} else {
-				Class<?> eClass = element.getClass();
-				
-				if(eClass.isArray()) {
-					if(eClass == byte[].class)
-						buf.append(Arrays.toString((byte[]) element));
-					else if(eClass == short[].class)
-						buf.append(Arrays.toString((short[]) element));
-					else if(eClass == int[].class)
-						buf.append(Arrays.toString((int[]) element));
-					else if(eClass == long[].class)
-						buf.append(Arrays.toString((long[]) element));
-					else if(eClass == char[].class)
-						buf.append(Arrays.toString((char[]) element));
-					else if(eClass == float[].class)
-						buf.append(Arrays.toString((float[]) element));
-					else if(eClass == double[].class)
-						buf.append(Arrays.toString((double[]) element));
-					else if(eClass == boolean[].class)
-						buf.append(Arrays.toString((boolean[]) element));
-					else { // element is an array of object references
-						if(dejaVu.contains(element))
-							buf.append("[...]");
-						else
-							deepToString((Object[]) element, buf, dejaVu);
-					}
-				} else { // element is non-null and not an array
-					if(element instanceof Collection)
-						deepToString((Collection<Object>) element, buf, dejaVu);
-					else
-						buf.append(element.toString());
-				}
-			}
-			if(i == iMax)
-				break;
-			buf.append(',');
+			elementToString(element, buf, dejaVu);
 		}
 		buf.append(']');
 		dejaVu.remove(a);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void elementToString(Object element, StringBuilder buf, Set<Object> dejaVu) {
+		if(element == null) {
+			buf.append("null");
+		} else {
+			Class<?> eClass = element.getClass();
+			if(eClass.isArray()) {
+				if(eClass == byte[].class)
+					buf.append(Arrays.toString((byte[]) element));
+				else if(eClass == short[].class)
+					buf.append(Arrays.toString((short[]) element));
+				else if(eClass == int[].class)
+					buf.append(Arrays.toString((int[]) element));
+				else if(eClass == long[].class)
+					buf.append(Arrays.toString((long[]) element));
+				else if(eClass == char[].class)
+					buf.append(Arrays.toString((char[]) element));
+				else if(eClass == float[].class)
+					buf.append(Arrays.toString((float[]) element));
+				else if(eClass == double[].class)
+					buf.append(Arrays.toString((double[]) element));
+				else if(eClass == boolean[].class)
+					buf.append(Arrays.toString((boolean[]) element));
+				else { // element is an array of object references
+					if(dejaVu.contains(element))
+						buf.append("[...]");
+					else
+						deepToString((Object[]) element, buf, dejaVu);
+				}
+			} else { // element is non-null and not an array
+				if(element instanceof Collection)
+					deepToString((Collection <Object>) element, buf, dejaVu);
+				else if(element instanceof Map)
+					deepToString((Map<Object, Object>) element, buf, dejaVu);
+				else if(element instanceof CharSequence)
+					buf.append('"').append(element.toString()).append('"');
+				else
+					buf.append(element.toString());
+			}
+		}
 	}
 	
 	public static File getAppDir(String appName) {

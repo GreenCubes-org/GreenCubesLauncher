@@ -42,11 +42,11 @@ import org.json.JSONTokener;
 public class Main {
 	
 	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
-	public static final String REGISTRATION_URL = "https://greencubes.org/?action=start";
+	public static final String REGISTRATION_URL = "https://greencubes.org/start";
 	public static final String SUPPORT_SYSTEM_URL = "https://help.greencubes.org/";
 	public static final String USER_CONTROL_PANEL_URL = "https://greencubes.org/?action=ucp#t";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
-	public static final String BUILD_INFO = "0.1.1 (2)";
+	public static final String BUILD_INFO = "0.1.2";
 	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = false;
 	
@@ -54,12 +54,12 @@ public class Main {
 	
 	public static RandomAccessFile userFile;
 	public static FileChannel userFileChannel;
-	
 	public static File launcherFile = null;
 	public static Frame currentFrame;
-	
 	public static TrayIcon trayIcon;
 	public static SingleInstanceWorker siw;
+	
+	public static boolean enableOldClient = TEST;
 	
 	public static void main(String[] args) {
 		// Setup some system properties before real startup
@@ -179,6 +179,9 @@ public class Main {
 			if(LauncherOptions.debug)
 				System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 		}
+		f = new File("enableold.txt");
+		if(f.exists())
+			enableOldClient = true;
 		try {
 			// Start launcher from updating
 			UIManager.put("PopupMenu.consumeEventOnClose", true);

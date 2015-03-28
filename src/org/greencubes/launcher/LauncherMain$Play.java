@@ -35,6 +35,7 @@ import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
 import org.greencubes.client.Server;
 import org.greencubes.client.IClientStatus.Status;
+import org.greencubes.main.Main;
 import org.greencubes.swing.GAWTUtil;
 import org.greencubes.swing.GJBoxPanel;
 import org.greencubes.swing.GPopupMenu;
@@ -69,53 +70,6 @@ public class LauncherMain$Play {
 	
 	//@formatter:off
 	void displayPlayPanel() {
-		/*mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
-			//setOpaque(false);
-			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			setBackground(new Color(38, 51, 51, 255));
-			add(new JPanel() {{
-				s(this, 1, 24);
-				setBackground(new Color(0, 0, 0, 0));
-			}});
-			add(new JPanel() {{ // New client button
-				s(this, 96, 96);
-				setBackground(new Color(38, 51, 51, 255));
-				add(new JPanel() {{ // Inner
-					s(this, 96, 96);
-					setOpaque(false);
-					add(new JPanelBG("/res/main.oldclient.logo.png") {{
-						s(this, 48, 48);
-					}});
-					JComponent pane;
-					add(pane = new JLabel() {{
-						setOpaque(false);
-						setAlignmentX(JLabel.CENTER_ALIGNMENT);
-						setBackground(new Color(0, 0, 0, 100));
-						setForeground(new Color(176, 230, 238, 255));
-						setText(I18n.get("client.main.name"));
-						setFont(new Font("ClearSans Light", Font.PLAIN, 14));
-						disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-					}});
-					GAWTUtil.removeMouseListeners(pane);
-				}});
-				final JPanel it = this;
-				addMouseListener(new AbstractMouseListener() {
-					@Override
-					public void mouseEntered(MouseEvent e) {
-						it.setBackground(new Color(82, 123, 123, 255));
-						it.revalidate();
-					}
-					
-					@Override
-					public void mouseExited(MouseEvent e) {
-						it.setBackground(new Color(38, 51, 51, 255));
-						it.revalidate();
-					}
-				});
-			}});
-			
-			add(Box.createVerticalGlue());
-		}});*/
 		if(superClass.clientPanel != null && superClass.clientPanel.getParent() != null)
 			return;
 		superClass.topGame.setForeground(UIScheme.TITLE_COLOR_SEL);
@@ -124,6 +78,102 @@ public class LauncherMain$Play {
 			superClass.configPanel = null;
 			superClass.configLabel.setVisible(false);
 		}
+		if(Main.enableOldClient)
+			superClass.mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
+				//setOpaque(false);
+				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+				setBackground(new Color(38, 51, 51, 255));
+				add(new JPanel() {{
+					s(this, 1, 24);
+					setBackground(new Color(0, 0, 0, 0));
+				}});
+				add(new JPanel() {{ // New client button
+					s(this, 96, 96);
+					setBackground(new Color(38, 51, 51, 255));
+					add(new JPanel() {{ // Inner
+						s(this, 96, 96);
+						setOpaque(false);
+						add(new JPanelBG("/res/main.client.logo.png") {{
+							setOpaque(false);
+							s(this, 48, 48);
+						}});
+						JComponent pane;
+						add(pane = new JLabel() {{
+							setOpaque(false);
+							setAlignmentX(JLabel.CENTER_ALIGNMENT);
+							setBackground(new Color(0, 0, 0, 100));
+							setForeground(new Color(176, 230, 238, 255));
+							setText(Client.MAIN.localizedName);
+							setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}});
+						GAWTUtil.removeMouseListeners(pane);
+					}});
+					final JPanel it = this;
+					addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseEntered(MouseEvent e) {
+							it.setBackground(new Color(82, 123, 123, 255));
+							it.revalidate();
+						}
+						
+						@Override
+						public void mouseExited(MouseEvent e) {
+							it.setBackground(new Color(38, 51, 51, 255));
+							it.revalidate();
+						}
+						
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							displayClient(Client.MAIN);
+						}
+					});
+				}});
+				
+				add(new JPanel() {{ // Old client button
+					s(this, 96, 96);
+					setBackground(new Color(38, 51, 51, 255));
+					add(new JPanel() {{ // Inner
+						s(this, 96, 96);
+						setOpaque(false);
+						add(new JPanelBG("/res/main.oldclient.logo.png") {{
+							s(this, 48, 48);
+						}});
+						JComponent pane;
+						add(pane = new JLabel() {{
+							setOpaque(false);
+							setAlignmentX(JLabel.CENTER_ALIGNMENT);
+							setBackground(new Color(0, 0, 0, 100));
+							setForeground(new Color(176, 230, 238, 255));
+							setText(Client.OLD.localizedName);
+							setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}});
+						GAWTUtil.removeMouseListeners(pane);
+					}});
+					final JPanel it = this;
+					addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseEntered(MouseEvent e) {
+							it.setBackground(new Color(82, 123, 123, 255));
+							it.revalidate();
+						}
+						
+						@Override
+						public void mouseExited(MouseEvent e) {
+							it.setBackground(new Color(38, 51, 51, 255));
+							it.revalidate();
+						}
+						
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							displayClient(Client.OLD);
+						}
+					});
+				}});
+				
+				add(Box.createVerticalGlue());
+			}});
 		if(superClass.clientPanel != null) {
 			superClass.mainPanel.add(superClass.clientPanel);
 			superClass.frame.revalidate();
@@ -154,6 +204,7 @@ public class LauncherMain$Play {
 		if(client == currentClient)
 			return;
 		synchronized(client) {
+			superClass.clientPanel.removeAll();
 			currentClient = client;
 			superClass.clientPanel.add(new JPanel() {{
 				setOpaque(false);

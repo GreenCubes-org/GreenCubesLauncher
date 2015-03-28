@@ -9,12 +9,14 @@ import javafx.scene.web.WebEngine;
 import javax.swing.SwingUtilities;
 
 import org.greencubes.launcher.LauncherMain;
+import org.greencubes.util.I18n;
 
 public abstract class Client {
 	
 	public static final List<Client> clients = new ArrayList<Client>();
 	
-	public static final Client MAIN = new ClientMain("client.main", "Новый клиент");
+	public static final Client MAIN = new ClientMain("client.main", I18n.get("GreenCubes"));
+	public static final Client OLD = new ClientOld("client.old", I18n.get("Старый клиент"));
 	
 	public final String name;
 	public final String localizedName;
