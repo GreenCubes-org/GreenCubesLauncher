@@ -57,6 +57,8 @@ import org.greencubes.util.OperatingSystem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import sun.java2d.SunGraphicsEnvironment;
+
 public class LauncherMain {
 	
 	final LauncherMain$Config config = new LauncherMain$Config(this);
@@ -87,8 +89,9 @@ public class LauncherMain {
 		frame.setIconImages(LauncherOptions.getIcons());
 		frame.setMinimumSize(new Dimension(640, 320));
 		frame.setMaximumSize(new Dimension(1440, 960));
+		final Rectangle usableBounds = SunGraphicsEnvironment.getUsableBounds(frame.getGraphicsConfiguration().getDevice());
 		frame.add(innerPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, UIScheme.BACKGROUND) {{
-			setPreferredSize(new Dimension(Main.getConfig().optInt("width", 900), Main.getConfig().optInt("height", 640)));
+			setPreferredSize(new Dimension(Math.min(Main.getConfig().optInt("width", 900), usableBounds.width), Math.min(Main.getConfig().optInt("height", 640), usableBounds.height)));
 			// Top line
 			add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.TOP_PANEL_BG_LOGO) {{
 				final JPanel topPanel = this;
@@ -332,7 +335,10 @@ public class LauncherMain {
 		frame.pack();
 		// Load position from config
 		if(Main.getConfig().has("posx") && Main.getConfig().has("posy")) {
-			frame.setLocation(Main.getConfig().optInt("posx", 0), Main.getConfig().optInt("posy", 0));
+			frame.setLocation(Math.max(Main.getConfig().optInt("posx", 0), usableBounds.x), Math.max(Main.getConfig().optInt("posy", 0), usableBounds.y));
+			Dimension d = innerPanel.getPreferredSize();
+			if(frame.getLocation().x - usableBounds.x + d.width > usableBounds.width || frame.getLocation().y - usableBounds.y + d.height > usableBounds.height)
+				frame.setLocationRelativeTo(null);
 		} else
 			frame.setLocationRelativeTo(null);
 		if(Main.getConfig().optBoolean("maximized")) {
