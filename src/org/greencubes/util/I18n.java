@@ -35,6 +35,10 @@ public class I18n {
 		return currentLanguage;
 	}
 	
+	public static String getLangKey() {
+		return currentLanguage.substring(0, 2);
+	}
+	
 	public static String getLocalizedDate(long time) {
 		return getLocalizedDate(new Date(time));
 	}
@@ -93,7 +97,7 @@ public class I18n {
 		Iterator<Entry<String,Object>> iterator = jo.getMap().entrySet().iterator();
 		while(iterator.hasNext()) {
 			Entry<String,Object> e = iterator.next();
-			langMap.put(e.getKey(), Util.toString(e.getValue()));
+			langMap.put(e.getKey(), String.valueOf(e.getValue()));
 		}
 		currentLocale = new Locale(currentLanguage.substring(0, 2), currentLanguage.substring(2, 4));
 		localizedDateFormat = new SimpleDateFormat("d MMMM yyyy", currentLocale);

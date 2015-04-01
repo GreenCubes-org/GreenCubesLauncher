@@ -134,7 +134,7 @@ public class ClientMain extends Client {
 		Platform.runLater(new Runnable() {
             @Override 
             public void run() {
-                browser.load("https://greencubes.org/?action=clientpage&client=main");
+                browser.load("https://greencubes.org/" + I18n.getLangKey() + "/?action=clientpage&client=main");
             }
         });
 	}
