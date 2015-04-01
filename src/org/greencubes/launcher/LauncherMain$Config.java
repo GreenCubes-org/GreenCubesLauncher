@@ -226,6 +226,7 @@ public class LauncherMain$Config {
 										}, JOptionPane.QUESTION_MESSAGE, 300);
 									}
 									superClass.play.displayPlayPanel();
+									newClientConfig = null;
 								}
 								@Override
 								public void mouseEntered(MouseEvent e) {
@@ -569,7 +570,7 @@ public class LauncherMain$Config {
 				if(Client.MAIN.getStatus().getStatus() != Status.READY && Client.MAIN.getStatus().getStatus() != Status.OFFLINE) {
 					configPage.add(new JTextPane() {{
 						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
-						setText(I18n.get("settings.client.needupdate"));
+						setText(I18n.get(Client.MAIN.getStatus().getStatus() == Status.RUNNING ? "settings.client.running" :"settings.client.needupdate"));
 						setForeground(UIScheme.TEXT_COLOR);
 						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
 						setEditable(false);

@@ -36,7 +36,7 @@ import org.json.JSONTokener;
 
 public class ClientMain extends Client {
 	
-	private final MainClinetStatus status;
+	private final ClinetStatus status;
 	private final List<Server> servers = new ArrayList<Server>();
 	private final ClientWorker worker = new ClientWorker();
 	private final List<GameFile> gameFiles = new ArrayList<GameFile>();
@@ -52,7 +52,7 @@ public class ClientMain extends Client {
 	
 	public ClientMain(String name, String localizedName) {
 		super(name, localizedName);
-		status = new MainClinetStatus();
+		status = new ClinetStatus();
 	}
 	
 	@Override
@@ -184,7 +184,7 @@ public class ClientMain extends Client {
 		}
 	}
 	
-	public class MainClinetStatus implements IClientStatus {
+	private class ClinetStatus implements IClientStatus {
 		
 		private Status status = Status.CHECK;
 		private String title = "";

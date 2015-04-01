@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bouncycastle.util.Arrays;
 import org.greencubes.download.Downloader;
+import org.greencubes.util.OperatingSystem;
 import org.greencubes.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,6 +74,28 @@ public class GameFile {
 		downloader.downloadFile(localFile, Util.urlEncode(prefix + remoteFileUrl));
 		localmd5 = Util.createChecksum(localFile);
 		needUpdate = false;
+	}
+	
+	public static GameFile getFileOsSpecific(JSONObject fileObject, File baseDirectory, Map<String, byte[]> localHashes) {
+		OperatingSystem os = OperatingSystem.getCurrentPlatform();
+		byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
+		String name = fileObject.optString("name");
+		if(name.contains("_not-mac")) {
+			if(os == OperatingSystem.OSX)
+				return null;
+		} else if(name.contains("_mac")) {
+			if(os != OperatingSystem.OSX)
+				return null;
+		} else if(name.contains("_win")) {
+			if(os != OperatingSystem.WINDOWS)
+				return null;
+		} else if(name.contains("_linux")) {
+			if(os != OperatingSystem.LINUX)
+				return null;
+		}
+		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes != null ? localHashes.get(name) : null, hash);
+		file.remoteFileSize = fileObject.optInt("length", -1);
+		return file;
 	}
 	
 	public static GameFile getFile(JSONObject fileObject, File baseDirectory, Map<String, byte[]> localHashes) {

@@ -104,7 +104,7 @@ public class LauncherMain$Play {
 							setBackground(new Color(0, 0, 0, 100));
 							setForeground(new Color(176, 230, 238, 255));
 							setText(Client.MAIN.localizedName);
-							setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+							setFont(new Font("ClearSans Light", Font.PLAIN, 12));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						GAWTUtil.removeMouseListeners(pane);
@@ -145,8 +145,8 @@ public class LauncherMain$Play {
 							setAlignmentX(JLabel.CENTER_ALIGNMENT);
 							setBackground(new Color(0, 0, 0, 100));
 							setForeground(new Color(176, 230, 238, 255));
-							setText(Client.OLD.localizedName);
-							setFont(new Font("ClearSans Light", Font.PLAIN, 14));
+							setText("<html><div style=\"text-align: center; width: 100%;\">" + Client.OLD.localizedName.replace("\n", "<br>") + "</div></html>");
+							setFont(new Font("ClearSans Light", Font.PLAIN, 12));
 							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 						}});
 						GAWTUtil.removeMouseListeners(pane);

@@ -2,20 +2,24 @@ package org.greencubes.client;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
@@ -36,7 +40,7 @@ import org.json.JSONTokener;
 
 public class ClientOld extends Client {
 	
-	private final MainClinetStatus status;
+	private final ClinetStatus status;
 	private final List<Server> servers = new ArrayList<Server>();
 	private final ClientWorker worker = new ClientWorker();
 	private final List<GameFile> gameFiles = new ArrayList<GameFile>();
@@ -52,7 +56,7 @@ public class ClientOld extends Client {
 	
 	public ClientOld(String name, String localizedName) {
 		super(name, localizedName);
-		status = new MainClinetStatus();
+		status = new ClinetStatus();
 	}
 	
 	@Override
@@ -62,7 +66,12 @@ public class ClientOld extends Client {
 		addServers(new File(getWorkingDirectory(), "customservers.json"));
 		if(LauncherOptions.showLocalServer || Main.TEST)
 			servers.add(new Server(I18n.get("servers.local"), "127.0.0.1", 25565));
-		selectServer(servers.get(0));
+		if(isSinglePlayerModeAllowed())
+			servers.add(new Server(I18n.get("servers.singleplayer"), null, 0));
+		if(isSinglePlayerModeAllowed() && LauncherOptions.sessionUserId == 0)
+			selectServer(servers.get(servers.size() - 1));
+		else
+			selectServer(servers.get(0));
 	}
 	
 	private void addServers(File serversFile) {
@@ -104,15 +113,18 @@ public class ClientOld extends Client {
 	
 	protected List<String> getLaunchParameters(String username, String session, Server server) {
 		List<String> params = new ArrayList<String>();
+		params.add("--directory");
+		params.add(getWorkingDirectory().getPath());
 		if(username != null) {
-			params.add("--session");
+			params.add("--player");
 			params.add(username);
+			params.add("--session");
 			if(session == null)
 				params.add("-");
 			else
 				params.add("1-" + session);
 		}
-		if(server != null) {
+		if(server != null && server.address != null && server.port != 0) {
 			params.add("--connect");
 			params.add(server.getFullAddress());
 		}
@@ -126,7 +138,7 @@ public class ClientOld extends Client {
 	
 	@Override
 	public boolean isSinglePlayerModeAllowed() {
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -134,7 +146,7 @@ public class ClientOld extends Client {
 		Platform.runLater(new Runnable() {
             @Override 
             public void run() {
-                browser.load("https://greencubes.org/?action=clientpage&client=old");
+            	browser.load("https://greencubes.org/" + I18n.getLangKey() + "/?action=clientpage&client=main");
             }
         });
 	}
@@ -184,7 +196,7 @@ public class ClientOld extends Client {
 		}
 	}
 	
-	public class MainClinetStatus implements IClientStatus {
+	private class ClinetStatus implements IClientStatus {
 		
 		private Status status = Status.CHECK;
 		private String title = "";
@@ -222,7 +234,7 @@ public class ClientOld extends Client {
 		List<GameFile> newGameFiles = new ArrayList<GameFile>();
 		Reader fr = null;
 		try {
-			fr = new InputStreamReader(new FileInputStream(new File("version.json")), "UTF-8");
+			fr = new InputStreamReader(new FileInputStream(new File(getWorkingDirectory(), "version.json")), "UTF-8");
 		} catch(IOException e) {
 		}
 		JSONObject localVersion = null;
@@ -266,14 +278,15 @@ public class ClientOld extends Client {
 			status(Status.ERROR, I18n.get("client.update.error.generic", 1), -1f);
 			return;
 		}
-		
 		for(int i = 0; i < hashesArray.length(); ++i) {
 			JSONObject fileObject = hashesArray.optJSONObject(i);
 			if(fileObject == null) {
 				status(Status.ERROR, I18n.get("client.update.error.generic2", 2, i), -1f);
 				return;
 			}
-			GameFile file = GameFile.getFile(fileObject, workingDirectory, localHashes);
+			GameFile file = GameFile.getFileOsSpecific(fileObject, workingDirectory, localHashes);
+			if(file == null)
+				continue;
 			if(file.needUpdate) {
 				//System.out.println("File to update: " + file.remoteFileUrl + " (local: " + Util.toString(file.localmd5) + ", remote: " + Util.toString(file.remotemd5) + ")");
 				needUpdate = true;
@@ -359,7 +372,7 @@ public class ClientOld extends Client {
 				}
 			}
 			currentVersion.put("files", newFilesList);
-			fw = new FileWriter(new File("version.json"));
+			fw = new FileWriter(new File(getWorkingDirectory(), "version.json"));
 			currentVersion.write(fw);
 		} catch(Exception e) {
 			if(Main.TEST)
@@ -374,6 +387,74 @@ public class ClientOld extends Client {
 		this.status.title = title;
 		this.status.progress = progress;
 		clientStatusUpdate();
+	}
+	
+	private String extractNatives() throws IOException {
+		File nativeFolder = new File(getWorkingDirectory(), "natives");
+		if(!nativeFolder.exists())
+			nativeFolder.mkdir();
+		for(File f : getWorkingDirectory().listFiles())
+			if(f.isDirectory() && f.getName().startsWith("natives-"))
+				f.deleteOnExit();
+		if(nativeFolder.exists()) {
+			for(File n : nativeFolder.listFiles()) {
+				if(!n.delete()) {
+					System.err.println("Error deleting native file " + n.getAbsolutePath() + ", using workaround");
+					nativeFolder.deleteOnExit();
+					nativeFolder = new File(getWorkingDirectory(), "natives-" + System.currentTimeMillis());
+					break;
+				}
+			}
+		}
+		String nativesName = "natives_";
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case OSX:
+			nativesName += "mac";
+			break;
+		case WINDOWS:
+			nativesName += "win";
+			break;
+		case LINUX:
+			nativesName += "linux";
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported OS");
+		}
+		nativesName += ".zip";
+
+		ZipFile zipped = new ZipFile(new File(getWorkingDirectory(), nativesName));
+		Enumeration<? extends ZipEntry> entities = zipped.entries();
+		while(entities.hasMoreElements()) {
+			ZipEntry entry = entities.nextElement();
+			if(entry.isDirectory() || entry.getName().indexOf('/') != -1)
+				continue;
+		}
+		entities = zipped.entries();
+		while(entities.hasMoreElements()) {
+			ZipEntry entry = entities.nextElement();
+
+			if(entry.isDirectory() || entry.getName().indexOf('/') != -1)
+				continue;
+			File f = new File(nativeFolder, entry.getName());
+			if(f.exists() && !f.delete())
+				continue;
+			InputStream in = zipped.getInputStream(zipped.getEntry(entry.getName()));
+			OutputStream out;
+			try {
+				out = new FileOutputStream(f);
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+			byte[] buffer = new byte[65536];
+			int bufferSize;
+			while((bufferSize = in.read(buffer, 0, buffer.length)) != -1) {
+				out.write(buffer, 0, bufferSize);
+			}
+			in.close();
+			out.close();
+		}
+		zipped.close();
+		return nativeFolder.getAbsolutePath();
 	}
 	
 	private class ClientWorker extends Thread {
@@ -400,30 +481,69 @@ public class ClientOld extends Client {
 					break;
 				case LOADING:
 					if(processMonitor == null) {
-						List<String> classPath = new ArrayList<String>();
+						String nativesPath;
 						try {
-							Scanner fr = new Scanner(new File(getWorkingDirectory(), "libraries/liborder.txt"));
-							while(fr.hasNext())
-								classPath.add(fr.nextLine());
-							fr.close();
-						} catch(FileNotFoundException e1) {
-							throw new RuntimeException(e1);
+							nativesPath = extractNatives();
+						} catch(IOException e1) {
+							status(Status.ERROR, e1.getLocalizedMessage(), -1f);
+							break;
 						}
+						List<String> classPath = new ArrayList<String>();
+						for(File f : new File(getWorkingDirectory(), "libraries/").listFiles())
+							classPath.add(f.getAbsolutePath());
 						List<String> command = new ArrayList<String>();
 						command.add(OperatingSystem.getJavaExecutable(false));
-						command.add("-Xincgc");
 						command.add("-Djava.net.preferIPv4Stack=true");
-						command.add("-Xms1024M");
-						command.add("-Xmx1024M");
+						command.add("-Djava.library.path=" + nativesPath);
+						Reader fr = null;
+						try {
+							fr = new InputStreamReader(new FileInputStream(new File(getWorkingDirectory(), "params.json")), "UTF-8");
+						} catch(IOException e) {
+						}
+						JSONObject paramsObj = null;
+						if(fr == null) {
+							paramsObj = new JSONObject();
+						} else {
+							try {
+								paramsObj = new JSONObject(new JSONTokener(fr));
+							} catch(JSONException e) {
+								paramsObj = new JSONObject();
+							} finally {
+								Util.close(fr);
+							}
+						}
+						JSONArray params = paramsObj.optJSONArray("params");
+						if(params == null || params.length() == 0) {
+							params = new JSONArray();
+							params.put("-Xincgc");
+							params.put("-Xms512M");
+							params.put("-Xmx512M");
+							try {
+								paramsObj.put("params", params);
+							} catch(JSONException e) {
+								e.printStackTrace();
+							}
+						}
+						FileWriter fw = null;
+						try {
+							fw = new FileWriter(new File(getWorkingDirectory(), "params.json"));
+							paramsObj.write(fw);
+						} catch(Exception e) {
+							if(Main.TEST)
+								e.printStackTrace();
+						} finally {
+							Util.close(fw);
+						}
+						for(int i = 0; i < params.length(); ++i)
+							command.add(params.optString(i));
 						command.add("-cp");
 						StringBuilder cp = new StringBuilder();
 						for(int i = 0; i < classPath.size(); ++i) {
-							cp.append(new File(getWorkingDirectory(), "libraries/" + classPath.get(i)).getAbsolutePath());
+							cp.append(classPath.get(i));
 							cp.append(System.getProperty("path.separator"));
 						}
-						cp.append("client.jar");
 						command.add(cp.toString());
-						command.add("org.greencubes.client.Main");
+						command.add("org.greencubes.util.Start");
 						JSONObject jo;
 						try {
 							jo = LauncherUtil.sessionRequest("action=session");
@@ -444,8 +564,6 @@ public class ClientOld extends Client {
 							status(Status.ERROR, e.getLocalizedMessage(), -1f);
 							break;
 						}
-					} else if(processMonitor.isStarted()) {
-						status(Status.RUNNING, "", -1f);
 						Main.performWindowAction(LauncherOptions.onClientStart);
 					} else if(!processMonitor.isProcessRunning()) { // If process crashed before fully started
 						status(Status.RUNNING, "", -1f);
@@ -561,6 +679,52 @@ public class ClientOld extends Client {
 				finished = setFinished;
 			}
 		}
+	}
+	
+	public static File getOldClientDir() {
+		String appName = "greencubes";
+		File baseDir = getAppDir();
+		File f;
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case LINUX:
+		case WINDOWS:
+			f = new File(baseDir, "." + appName + "/");
+			break;
+		case OSX:
+			f = new File(baseDir, appName + "/");
+			break;
+		default:
+			f = new File(baseDir, "." + appName + "/");
+			break;
+		}
+		if(!f.exists() && !f.mkdirs())
+			throw new RuntimeException("The working directory could not be created: " + f.getPath());
+		return f;
+	}
+
+	private static File getAppDir() {
+		String userHome = System.getProperty("user.home", ".");
+		File workingDirectory;
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case LINUX:
+			workingDirectory = new File(userHome);
+			break;
+		case WINDOWS:
+			String applicationData = System.getenv("APPDATA");
+			if(applicationData != null)
+				workingDirectory = new File(applicationData);
+			else
+				workingDirectory = new File(userHome);
+			break;
+		case OSX:
+			workingDirectory = new File(userHome, "Library/Application Support/");
+			break;
+		default:
+			workingDirectory = new File(userHome);
+		}
+		if(!workingDirectory.exists() && !workingDirectory.mkdirs())
+			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
+		return workingDirectory;
 	}
 	
 }
