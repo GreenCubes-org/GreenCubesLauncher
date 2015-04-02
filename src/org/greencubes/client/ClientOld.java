@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -389,6 +390,36 @@ public class ClientOld extends Client {
 		clientStatusUpdate();
 	}
 	
+	private void copyOldConfig() {
+		File targetFile = new File(getWorkingDirectory(), "options.txt");
+		File sourceFile = new File(getOldClientDir(), "options.txt");
+		if(!targetFile.exists() && sourceFile.exists()) {
+			try {
+				Files.copy(sourceFile.toPath(), targetFile.toPath());
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		targetFile = new File(getWorkingDirectory(), "chat/config.yml");
+		sourceFile = new File(getOldClientDir(), "chat/config.yml");
+		if(!targetFile.exists() && sourceFile.exists()) {
+			try {
+				Files.copy(sourceFile.toPath(), targetFile.toPath());
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		targetFile = new File(getWorkingDirectory(), "servers.dat");
+		sourceFile = new File(getOldClientDir(), "servers.dat");
+		if(!targetFile.exists() && sourceFile.exists()) {
+			try {
+				Files.copy(sourceFile.toPath(), targetFile.toPath());
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private String extractNatives() throws IOException {
 		File nativeFolder = new File(getWorkingDirectory(), "natives");
 		if(!nativeFolder.exists())
@@ -488,6 +519,7 @@ public class ClientOld extends Client {
 							status(Status.ERROR, e1.getLocalizedMessage(), -1f);
 							break;
 						}
+						copyOldConfig();
 						List<String> classPath = new ArrayList<String>();
 						for(File f : new File(getWorkingDirectory(), "libraries/").listFiles())
 							classPath.add(f.getAbsolutePath());
