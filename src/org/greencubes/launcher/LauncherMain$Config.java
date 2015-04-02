@@ -94,6 +94,11 @@ public class LauncherMain$Config {
 			if(parent != null)
 				parent.remove(superClass.clientPanel);
 		}
+		if(superClass.clientSelectPanel != null) {
+			Container parent = superClass.clientSelectPanel.getParent();
+			if(parent != null)
+				parent.remove(superClass.clientSelectPanel);
+		}
 		superClass.configLabel.setVisible(true);
 		superClass.topGame.setForeground(UIScheme.TITLE_COLOR);
 		superClass.mainPanel.add(superClass.configPanel = new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{

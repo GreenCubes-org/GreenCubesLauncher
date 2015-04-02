@@ -68,6 +68,7 @@ public class LauncherMain {
 	private JPanel innerPanel;
 	
 	UndecoratedJFrame frame;
+	JPanel clientSelectPanel;
 	JPanel mainPanel;
 	JPanel clientPanel;
 	JPanel configPanel;

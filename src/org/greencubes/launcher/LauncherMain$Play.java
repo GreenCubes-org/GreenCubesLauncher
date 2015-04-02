@@ -79,7 +79,7 @@ public class LauncherMain$Play {
 			superClass.configLabel.setVisible(false);
 		}
 		if(Main.enableOldClient)
-			superClass.mainPanel.add(new JPanelBG("/res/main.right.shadow.png") {{
+			superClass.mainPanel.add(superClass.clientSelectPanel = new JPanelBG("/res/main.right.shadow.png") {{
 				//setOpaque(false);
 				setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 				setBackground(new Color(38, 51, 51, 255));
