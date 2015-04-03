@@ -715,7 +715,7 @@ public class ClientOld extends Client {
 	
 	public static File getOldClientDir() {
 		String appName = "greencubes";
-		File baseDir = getAppDir();
+		File baseDir = Util.getAppDir();
 		File f;
 		switch(OperatingSystem.getCurrentPlatform()) {
 		case LINUX:
@@ -732,31 +732,5 @@ public class ClientOld extends Client {
 		if(!f.exists() && !f.mkdirs())
 			throw new RuntimeException("The working directory could not be created: " + f.getPath());
 		return f;
-	}
-
-	private static File getAppDir() {
-		String userHome = System.getProperty("user.home", ".");
-		File workingDirectory;
-		switch(OperatingSystem.getCurrentPlatform()) {
-		case LINUX:
-			workingDirectory = new File(userHome);
-			break;
-		case WINDOWS:
-			String applicationData = System.getenv("APPDATA");
-			if(applicationData != null)
-				workingDirectory = new File(applicationData);
-			else
-				workingDirectory = new File(userHome);
-			break;
-		case OSX:
-			workingDirectory = new File(userHome, "Library/Application Support/");
-			break;
-		default:
-			workingDirectory = new File(userHome);
-		}
-		if(!workingDirectory.exists() && !workingDirectory.mkdirs())
-			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
-		return workingDirectory;
-	}
-	
+	}	
 }

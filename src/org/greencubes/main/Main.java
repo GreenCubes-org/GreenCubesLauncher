@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.file.Files;
 import java.security.Security;
 import java.util.Random;
 
@@ -114,9 +115,15 @@ public class Main {
 		LauncherOptions.init();
 		Security.addProvider(new BouncyCastleProvider());
 		// Read config
+		if(!(new File("launcher.json").exists()) && (new File(Util.getAppDir("GreenCubes"), "launcher.json").exists())) {
+			try {
+				Files.move(new File(Util.getAppDir("GreenCubes"), "launcher.json").toPath(), new File("launcher.json").toPath());
+			} catch(IOException e) {
+			}
+		}
 		InputStream is = null;
 		try {
-			is = new FileInputStream(new File(Util.getAppDir("GreenCubes"), "launcher.json"));
+			is = new FileInputStream(new File("launcher.json"));
 			config = new JSONObject(new JSONTokener(is));
 			LauncherOptions.sessionUser = config.optString("user");
 			LauncherOptions.autoLogin = config.optBoolean("login");
@@ -255,7 +262,7 @@ public class Main {
 	public static void close() {
 		Util.close(userFileChannel, userFile, siw);
 		try {
-			FileWriter fw = new FileWriter(new File(Util.getAppDir("GreenCubes"), "launcher.json"));
+			FileWriter fw = new FileWriter(new File("launcher.json"));
 			config.write(fw);
 			Util.close(fw);
 		} catch(Exception e) {

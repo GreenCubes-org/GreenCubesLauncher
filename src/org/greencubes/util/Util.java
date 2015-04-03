@@ -507,7 +507,7 @@ public final class Util {
 		return f;
 	}
 	
-	private static File getAppDir() {
+	public static File getAppDir() {
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
 		switch(OperatingSystem.getCurrentPlatform()) {
