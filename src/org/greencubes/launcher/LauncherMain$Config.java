@@ -264,7 +264,7 @@ public class LauncherMain$Config {
 					JScrollPane scrollPane;
 					add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+							setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 							add(new JLabel(I18n.get("settings.launcher.language")) {{
 								setForeground(UIScheme.TEXT_COLOR);
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -272,7 +272,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 								{
 									final JLabel selectedLanguage;
@@ -335,7 +335,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+							setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 							add(new JLabel(I18n.get("settings.launcher.onstart")) {{
 								setForeground(UIScheme.TEXT_COLOR);
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -343,7 +343,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 								{
 									final JLabel selectedOnStart;;
@@ -406,7 +406,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+							setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 							add(new JLabel(I18n.get("settings.launcher.onclose")) {{
 								setForeground(UIScheme.TEXT_COLOR);
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -414,7 +414,7 @@ public class LauncherMain$Config {
 							add(Box.createHorizontalGlue());
 						}});
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 								{
 									final JLabel selectedOnStart;;
@@ -479,7 +479,7 @@ public class LauncherMain$Config {
 						final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
 						final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
 						add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-							setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+							setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 							final JCheckBox autoLoginCheckBox;
 							add(autoLoginCheckBox = new JCheckBox(I18n.get("login.autologin"), newAutoLogin ?  iconChecked : iconUnchecked, newAutoLogin) {{
 								setFocusPainted(false);
@@ -574,7 +574,7 @@ public class LauncherMain$Config {
 				configPage.removeAll();
 				if(Client.MAIN.getStatus().getStatus() != Status.READY && Client.MAIN.getStatus().getStatus() != Status.OFFLINE) {
 					configPage.add(new JTextPane() {{
-						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+						setBorder(BorderFactory.createEmptyBorder(4, 15, 4, 4));
 						setText(I18n.get(Client.MAIN.getStatus().getStatus() == Status.RUNNING ? "settings.client.running" :"settings.client.needupdate"));
 						setForeground(UIScheme.TEXT_COLOR);
 						setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -641,9 +641,19 @@ public class LauncherMain$Config {
 						add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 							final ImageIcon iconUnchecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.png"));
 							final ImageIcon iconChecked = new ImageIcon(JPanelBG.class.getResource("/res/checkbox.checked.png"));
+							final ImageIcon iconMainClient = new ImageIcon(JPanelBG.class.getResource("/res/main.client.logo.small.png"));
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
+								add(new JLabel("GreenCubes", iconMainClient, JLabel.LEADING) {{
+									setForeground(UIScheme.TEXT_COLOR);
+									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
+								}});
+								add(Box.createHorizontalGlue());
+							}});
+							
+							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
 								add(new JLabel(I18n.get("settings.client.generic")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
@@ -652,7 +662,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 								add(new JLabel(I18n.get("settings.client.language")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -661,7 +671,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 									{
 										final JLabel selectedLang;
@@ -734,7 +744,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 0));
 								add(new JLabel(I18n.get("settings.client.graphics")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 20));
@@ -743,7 +753,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 								add(new JLabel(I18n.get("settings.client.resolution")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -752,7 +762,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 									{
 										final JLabel selectedScreenSize;
@@ -820,7 +830,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new JCheckBox(I18n.get("settings.client.fullscreen"), newClientConfig.getBoolean("graphics.fullscreen", true) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.fullscreen", true)) {{
 									setFocusPainted(false);
 									setOpaque(false);
@@ -852,7 +862,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+								setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 								add(new JLabel(I18n.get("settings.client.textures")) {{
 									setForeground(UIScheme.TEXT_COLOR);
 									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
@@ -861,7 +871,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new GJBoxPanel(BoxLayout.LINE_AXIS, UIScheme.MENU_BG) {
 									{
 										final JLabel selectedQuality;
@@ -926,7 +936,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new JCheckBox(I18n.get("settings.client.vsync"), newClientConfig.getBoolean("graphics.vsync", true) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.vsync", true)) {{
 									setFocusPainted(false);
 									setOpaque(false);
@@ -958,7 +968,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new JCheckBox(I18n.get("settings.client.shadows"), newClientConfig.getBoolean("graphics.shadows", false) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.shadows", false)) {{
 									setFocusPainted(false);
 									setOpaque(false);
@@ -990,7 +1000,7 @@ public class LauncherMain$Config {
 							}});
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new JCheckBox(I18n.get("settings.client.water"), newClientConfig.getBoolean("graphics.water-shading", false) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.water-shading", false)) {{
 									setFocusPainted(false);
 									setOpaque(false);
@@ -1030,7 +1040,7 @@ public class LauncherMain$Config {
 						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 						if(!Main.IS_64_BIT_JAVA)
 							add(new JTextPane() {{
-								setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+								setBorder(BorderFactory.createEmptyBorder(4, 15, 4, 4));
 								setText(I18n.get("32alert"));
 								setForeground(new Color(255, 0, 0, 255));
 								setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
