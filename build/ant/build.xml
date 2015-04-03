@@ -77,7 +77,7 @@
 	    <move file="version.json" todir="${dir.target}" />
 	</target>
 	<target name="delete_temp">
-		<move file="${dir.target}\temp\obfmapping.txt" tofile="${dir.saveObfMapping}\obfmapping_${DSTAMP}.txt" />
+		<move file="${dir.target}\temp\obfmapping.txt" tofile="${dir.saveObfMapping}\obfmapping_${DSTAMP}-${build.version}.txt" />
 		<delete dir="${dir.target}\temp" />
 		<delete dir="${dir.target.libs}\org.eclipse.jdt.annotation_1.1.0.v20140129-1625.jar" />
 	</target>
