@@ -13,9 +13,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker.State;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
@@ -31,6 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import netscape.javascript.JSObject;
+
 import org.greencubes.client.Client;
 import org.greencubes.client.IClientStatus;
 import org.greencubes.client.Server;
@@ -43,6 +52,7 @@ import org.greencubes.swing.JPanelBG;
 import org.greencubes.swing.RoundedCornerBorder;
 import org.greencubes.swing.UIScheme;
 import org.greencubes.util.I18n;
+import org.greencubes.util.URLHandler;
 import org.greencubes.util.Util;
 
 public class LauncherMain$Play {
@@ -61,6 +71,7 @@ public class LauncherMain$Play {
 	private GPopupMenu serverListMenu;
 	private List<Server> currentServerList = new ArrayList<Server>();
 	private Server lastSelectedServer;
+	private Map<Client, JPanel> clientButtons = new HashMap<Client, JPanel>();
 	
 	Client currentClient;
 	
@@ -119,8 +130,10 @@ public class LauncherMain$Play {
 						
 						@Override
 						public void mouseExited(MouseEvent e) {
-							it.setBackground(new Color(38, 51, 51, 255));
-							it.revalidate();
+							if(currentClient != Client.MAIN) {
+								it.setBackground(new Color(38, 51, 51, 255));
+								it.revalidate();
+							}
 						}
 						
 						@Override
@@ -128,6 +141,7 @@ public class LauncherMain$Play {
 							displayClient(Client.MAIN);
 						}
 					});
+					clientButtons.put(Client.MAIN, it);
 				}});
 				
 				add(new JPanel() {{ // Old client button
@@ -161,8 +175,10 @@ public class LauncherMain$Play {
 						
 						@Override
 						public void mouseExited(MouseEvent e) {
-							it.setBackground(new Color(38, 51, 51, 255));
-							it.revalidate();
+							if(currentClient != Client.OLD){ 
+								it.setBackground(new Color(38, 51, 51, 255));
+								it.revalidate();
+							}
 						}
 						
 						@Override
@@ -170,6 +186,7 @@ public class LauncherMain$Play {
 							displayClient(Client.OLD);
 						}
 					});
+					clientButtons.put(Client.OLD, it);
 				}});
 				
 				add(Box.createVerticalGlue());
@@ -189,11 +206,12 @@ public class LauncherMain$Play {
 			setBackground(UIScheme.BACKGROUND);
 		}});
 		superClass.frame.revalidate();
+		final Client toDisplay = currentClient == null ? Client.MAIN : currentClient;
 		currentClient = null;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				displayClient(Client.MAIN);
+				displayClient(toDisplay);
 			}
 		});
 	}
@@ -204,6 +222,20 @@ public class LauncherMain$Play {
 		if(client == currentClient)
 			return;
 		synchronized(client) {
+			if(clientButtons.size() > 0) {
+				Iterator<Entry<Client, JPanel>> iterator = clientButtons.entrySet().iterator();
+				while(iterator.hasNext()) {
+					Entry<Client, JPanel> e = iterator.next();
+					JPanel clientButton = e.getValue();
+					if(e.getKey() == client) {
+						clientButton.setBackground(new Color(82, 123, 123, 255));
+						clientButton.revalidate();
+					} else {
+						clientButton.setBackground(new Color(38, 51, 51, 255));
+						clientButton.revalidate();
+					}
+				}
+			}
 			superClass.clientPanel.removeAll();
 			currentClient = client;
 			superClass.clientPanel.add(new JPanel() {{
@@ -312,7 +344,19 @@ public class LauncherMain$Play {
 			@Override
 			public void run() {
 				browser = new WebView();
-				WebEngine engine = browser.getEngine();
+				final WebEngine engine = browser.getEngine();
+				engine.getLoadWorker().stateProperty().addListener(
+			        new ChangeListener<State>() {
+						@Override
+						public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+							if(newValue == State.SUCCEEDED) {
+								JSObject obj = (JSObject) engine.executeScript("window");
+								obj.setMember("urlHandler", new URLHandler());
+								//engine.executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+								engine.executeScript("updateLinks();");
+							}
+						}
+			        });
 				Scene sc = new Scene(browser);
 				sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
 				panel.setScene(sc);
