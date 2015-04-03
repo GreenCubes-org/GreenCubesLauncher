@@ -127,6 +127,8 @@
 "settings.client.textures": "Качество текстур:",
 "settings.client.water": "Высокое качество воды",
 "settings.client.vsync": "Вертикальная синхронизация",
+"settings.client.renderdistance.dynamic": "Динамическая дальность видимости",
+"settings.client.renderdistance.min": "Минимальная дальность видимости",
 
 "quality.high": "Высоко",
 "quality.medium": "Нормально",

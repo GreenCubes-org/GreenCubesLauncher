@@ -937,6 +937,38 @@ public class LauncherMain$Config {
 							
 							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
 								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
+								add(new JCheckBox(I18n.get("settings.client.renderdistance.dynamic"), newClientConfig.getBoolean("graphics.dynamic-render-distance", true) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.dynamic-render-distance", true)) {{
+									setFocusPainted(false);
+									setOpaque(false);
+									setFont(new Font(UIScheme.TEXT_FONT, Font.PLAIN, 16));
+									setForeground(UIScheme.TITLE_COLOR);
+									addItemListener(new ItemListener() {
+										@Override
+										public void itemStateChanged(ItemEvent e) {
+											if(isSelected())
+												setIcon(iconChecked);
+											else
+												setIcon(iconUnchecked);
+											newClientConfig.setProperty("graphics.dynamic-render-distance", isSelected());
+										}
+									});
+									addMouseListener(new MouseAdapter() {
+										@Override
+										public void mouseEntered(MouseEvent e) {
+											setForeground(UIScheme.TITLE_COLOR_SEL);
+										}
+										@Override
+									    public void mouseExited(MouseEvent e) {
+											setForeground(UIScheme.TITLE_COLOR);
+									    }
+									});
+									setMargin(new Insets(2, 0, 2, 0));
+								}});
+								add(Box.createHorizontalGlue());
+							}});
+							
+							add(new GJBoxPanel(BoxLayout.LINE_AXIS, null) {{
+								setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 4));
 								add(new JCheckBox(I18n.get("settings.client.vsync"), newClientConfig.getBoolean("graphics.vsync", true) ?  iconChecked : iconUnchecked, newClientConfig.getBoolean("graphics.vsync", true)) {{
 									setFocusPainted(false);
 									setOpaque(false);

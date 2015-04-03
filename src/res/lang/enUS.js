@@ -121,6 +121,8 @@
 "settings.client.textures": "Texture quality:",
 "settings.client.water": "High quality water",
 "settings.client.vsync": "VSync",
+"settings.client.renderdistance.dynamic": "Dynamic vision distance",
+"settings.client.renderdistance.min": "Minimum vision distance",
 
 "quality.high": "High",
 "quality.medium": "Medium",
