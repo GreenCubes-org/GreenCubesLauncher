@@ -1,5 +1,7 @@
 package org.greencubes.client;
 
+import static org.greencubes.util.Util.getDocumentsDir;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,8 +105,20 @@ public class ClientMain extends Client {
 		return new File("").getAbsoluteFile();
 	}
 	
+	public File getUserDirectory() {
+		JSONObject config = Main.getConfig();
+		try {
+			if(config.has("userdir"))
+				return new File(config.getString("userdir"));
+		} catch(JSONException e) {
+		}
+		return new File(getDocumentsDir(), "GreenCubes/").getAbsoluteFile();
+	}
+	
 	protected List<String> getLaunchParameters(String username, String session, Server server) {
 		List<String> params = new ArrayList<String>();
+		params.add("--userdir");
+		params.add(getUserDirectory().getAbsolutePath());
 		if(username != null) {
 			params.add("--session");
 			params.add(username);
@@ -376,6 +391,15 @@ public class ClientMain extends Client {
 		clientStatusUpdate();
 	}
 	
+	private void moveUserFolder() {
+		if(new File("user/").exists() && !getUserDirectory().exists()) {
+			try {
+				Files.move(new File("user/").toPath(), getUserDirectory().toPath());
+			} catch(IOException e) {
+			}
+		}
+	}
+	
 	private class ClientWorker extends Thread {
 		
 		private long lastUpdateCheck = 0;
@@ -400,6 +424,7 @@ public class ClientMain extends Client {
 					break;
 				case LOADING:
 					if(processMonitor == null) {
+						moveUserFolder();
 						List<String> classPath = new ArrayList<String>();
 						try {
 							Scanner fr = new Scanner(new File(getWorkingDirectory(), "libraries/liborder.txt"));

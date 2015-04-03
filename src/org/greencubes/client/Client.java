@@ -15,8 +15,8 @@ public abstract class Client {
 	
 	public static final List<Client> clients = new ArrayList<Client>();
 	
-	public static final Client MAIN = new ClientMain("client.main", I18n.get("GreenCubes"));
-	public static final Client OLD = new ClientOld("client.old", I18n.get("Старый\nклиент"));
+	public static final ClientMain MAIN = new ClientMain("client.main", I18n.get("GreenCubes"));
+	public static final ClientOld OLD = new ClientOld("client.old", I18n.get("Старый\nклиент"));
 	
 	public final String name;
 	public final String localizedName;

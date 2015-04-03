@@ -532,6 +532,19 @@ public final class Util {
 		return workingDirectory;
 	}
 	
+	public static File getDocumentsDir() {
+		String userHome = System.getProperty("user.home", ".");
+		switch(OperatingSystem.getCurrentPlatform()) {
+		case WINDOWS:
+			// TODO : We can use registry to find real documents location if it was moved
+		case OSX:
+			return new File(userHome, "Documents/");
+		case LINUX:
+		default:
+			return new File(userHome);
+		}
+	}
+	
 	private static Random debugColorRandom = new Random();
 	
 	public static Color debugColor() {

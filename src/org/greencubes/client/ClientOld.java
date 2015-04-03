@@ -109,6 +109,8 @@ public class ClientOld extends Client {
 	
 	@Override
 	public File getWorkingDirectory() {
+		if(OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX)
+			return new File(Util.getDocumentsDir(), "GreenCubes/oldclient/").getAbsoluteFile();
 		return new File("oldclient/").getAbsoluteFile();
 	}
 	
