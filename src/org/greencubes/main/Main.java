@@ -187,8 +187,13 @@ public class Main {
 				System.out.println("Launcher file: " + launcherFile.getAbsolutePath());
 		}
 		f = new File("enableold.txt");
-		if(f.exists())
+		if(f.exists()) {
 			enableOldClient = true;
+		} else {
+			f = new File(Util.getDocumentsDir(), "GreenCubes/enableold.txt");
+			if(f.exists())
+				enableOldClient = true;
+		}
 		try {
 			// Start launcher from updating
 			UIManager.put("PopupMenu.consumeEventOnClose", true);
