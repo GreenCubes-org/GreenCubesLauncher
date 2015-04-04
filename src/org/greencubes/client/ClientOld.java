@@ -22,9 +22,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javafx.application.Platform;
-import javafx.scene.web.WebEngine;
-
 import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherMain;
@@ -145,13 +142,8 @@ public class ClientOld extends Client {
 	}
 	
 	@Override
-	public void openBrowserPage(final WebEngine browser) {
-		Platform.runLater(new Runnable() {
-            @Override 
-            public void run() {
-            	browser.load("https://greencubes.org/" + I18n.getLangKey() + "/?action=clientpage&client=old&change_lang=" + I18n.getLangKey());
-            }
-        });
+	protected String getUrlName() {
+		return "old";
 	}
 	
 	@Override
@@ -263,7 +255,7 @@ public class ClientOld extends Client {
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloader(ClientOld.this).readURL(Util.urlEncode("files/old/version.json"));
+			serverHash = LauncherOptions.getClientDownloader(ClientOld.this).readURL(Util.urlEncode("files/" + getUrlName() + "/version.json"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
@@ -375,7 +367,7 @@ public class ClientOld extends Client {
 				}
 			}
 			currentVersion.put("files", newFilesList);
-			fw = new FileWriter(new File(getWorkingDirectory(), "version.json"));
+			fw = new FileWriter(new File(workingDirectory, "version.json"));
 			currentVersion.write(fw);
 		} catch(Exception e) {
 			if(Main.TEST)
@@ -684,7 +676,7 @@ public class ClientOld extends Client {
 							repeats = 0;
 							while(true) {
 								try {
-									gf.downloadFile(d, "files/old/");
+									gf.downloadFile(d, "files/" + getUrlName() + "/");
 									//System.out.println("Downloaded: " + gf.remoteFileUrl + " (new local: " + Util.toString(gf.localmd5) + ")");
 									//d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
 									//gf.needUpdate = false;

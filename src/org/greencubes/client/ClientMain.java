@@ -20,9 +20,6 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import javafx.application.Platform;
-import javafx.scene.web.WebEngine;
-
 import org.greencubes.client.IClientStatus.Status;
 import org.greencubes.download.Downloader;
 import org.greencubes.launcher.LauncherMain;
@@ -109,9 +106,8 @@ public class ClientMain extends Client {
 		JSONObject config = Main.getConfig();
 		try {
 			if(config.has("userdir"))
-				return new File(config.getString("userdir"));
-		} catch(JSONException e) {
-		}
+				return new File(getWorkingDirectory(), config.getString("userdir"));
+		} catch(JSONException e) {}
 		return new File(getDocumentsDir(), "GreenCubes/").getAbsoluteFile();
 	}
 	
@@ -145,16 +141,6 @@ public class ClientMain extends Client {
 	}
 	
 	@Override
-	public void openBrowserPage(final WebEngine browser) {
-		Platform.runLater(new Runnable() {
-            @Override 
-            public void run() {
-                browser.load("https://greencubes.org/" + I18n.getLangKey() + "/?action=clientpage&client=main&change_lang=" + I18n.getLangKey());
-            }
-        });
-	}
-	
-	@Override
 	public IClientStatus getStatus() {
 		return status;
 	}
@@ -166,6 +152,10 @@ public class ClientMain extends Client {
 			if(!worker.isAlive())
 				worker.start();
 		}
+	}
+	
+	protected String getUrlName() {
+		return "main";
 	}
 	
 	@Override
@@ -199,28 +189,6 @@ public class ClientMain extends Client {
 		}
 	}
 	
-	private class ClinetStatus implements IClientStatus {
-		
-		private Status status = Status.CHECK;
-		private String title = "";
-		private float progress = -1f;
-		
-		@Override
-		public Status getStatus() {
-			return status;
-		}
-		
-		@Override
-		public String getStatusTitle() {
-			return title;
-		}
-		
-		@Override
-		public float getStatusProgress() {
-			return progress;
-		}
-	}
-	
 	private void prepareClientUpdate() {
 		worker.lastUpdateCheck = System.currentTimeMillis();
 		File workingDirectory = getWorkingDirectory();
@@ -237,9 +205,8 @@ public class ClientMain extends Client {
 		List<GameFile> newGameFiles = new ArrayList<GameFile>();
 		Reader fr = null;
 		try {
-			fr = new InputStreamReader(new FileInputStream(new File("version.json")), "UTF-8");
-		} catch(IOException e) {
-		}
+			fr = new InputStreamReader(new FileInputStream(new File(workingDirectory, "version.json")), "UTF-8");
+		} catch(IOException e) {}
 		JSONObject localVersion = null;
 		if(fr == null) {
 			localVersion = new JSONObject();
@@ -263,7 +230,7 @@ public class ClientMain extends Client {
 		// Load hases from server
 		String serverHash;
 		try {
-			serverHash = LauncherOptions.getClientDownloader(ClientMain.this).readURL(Util.urlEncode("files/main/version.json"));
+			serverHash = LauncherOptions.getClientDownloader(this).readURL(Util.urlEncode("files/" + getUrlName() + "/version.json"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
 			return;
@@ -374,7 +341,7 @@ public class ClientMain extends Client {
 				}
 			}
 			currentVersion.put("files", newFilesList);
-			fw = new FileWriter(new File("version.json"));
+			fw = new FileWriter(new File(getWorkingDirectory(), "version.json"));
 			currentVersion.write(fw);
 		} catch(Exception e) {
 			if(Main.TEST)
@@ -395,8 +362,29 @@ public class ClientMain extends Client {
 		if(new File("user/").exists() && !getUserDirectory().exists()) {
 			try {
 				Files.move(new File("user/").toPath(), getUserDirectory().toPath());
-			} catch(IOException e) {
-			}
+			} catch(IOException e) {}
+		}
+	}
+	
+	private class ClinetStatus implements IClientStatus {
+		
+		private Status status = Status.CHECK;
+		private String title = "";
+		private float progress = -1f;
+		
+		@Override
+		public Status getStatus() {
+			return status;
+		}
+		
+		@Override
+		public String getStatusTitle() {
+			return title;
+		}
+		
+		@Override
+		public float getStatusProgress() {
+			return progress;
 		}
 	}
 	
@@ -514,8 +502,7 @@ public class ClientMain extends Client {
 				}
 				try {
 					Thread.sleep(20L);
-				} catch(InterruptedException e) {
-				}
+				} catch(InterruptedException e) {}
 			}
 		}
 	}
@@ -557,7 +544,7 @@ public class ClientMain extends Client {
 							repeats = 0;
 							while(true) {
 								try {
-									gf.downloadFile(d, "files/main/");
+									gf.downloadFile(d, "files/" + getUrlName() + "/");
 									//System.out.println("Downloaded: " + gf.remoteFileUrl + " (new local: " + Util.toString(gf.localmd5) + ")");
 									//d.downloadFile(gf.localFile, Util.urlEncode("files/main/" + gf.remoteFileUrl));
 									//gf.needUpdate = false;

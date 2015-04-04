@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 
 import javax.swing.SwingUtilities;
@@ -17,6 +18,7 @@ public abstract class Client {
 	
 	public static final ClientMain MAIN = new ClientMain("client.main", I18n.get("GreenCubes"));
 	public static final ClientOld OLD = new ClientOld("client.old", I18n.get("Старый\nклиент"));
+	public static final ClientMainTest TEST = new ClientMainTest("client.main.test", I18n.get("Тестовый\nклиент"));
 	
 	public final String name;
 	public final String localizedName;
@@ -45,11 +47,11 @@ public abstract class Client {
 	
 	public abstract boolean isSinglePlayerModeAllowed();
 	
-	public abstract void openBrowserPage(WebEngine browser);
-	
 	public abstract IClientStatus getStatus();
 	
 	public abstract void doJob();
+	
+	protected abstract String getUrlName();
 	
 	public Server getSelectedServer() {
 		return selectedServer;
@@ -67,5 +69,13 @@ public abstract class Client {
 			}
 		});
 	}
-	
+
+	public void openBrowserPage(final WebEngine browser) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				browser.load("https://greencubes.org/" + I18n.getLangKey() + "/?action=clientpage&client=" + getUrlName() + "&change_lang=" + I18n.getLangKey());
+			}
+		});
+	}
 }

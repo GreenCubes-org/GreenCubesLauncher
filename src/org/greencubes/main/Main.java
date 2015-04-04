@@ -50,6 +50,7 @@ public class Main {
 	public static final String BUILD_INFO = "0.2.0";
 	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = false;
+	public static final boolean ENABLE_TEST_CLIENT = true;
 	
 	private static JSONObject config;
 	
