@@ -148,6 +148,7 @@ public class ClientMain extends Client {
 	@Override
 	public void load(LauncherMain launcherWindow) {
 		super.load(launcherWindow);
+		status(Status.CHECK, "", -1f);
 		synchronized(worker) {
 			if(!worker.isAlive())
 				worker.start();
@@ -405,7 +406,7 @@ public class ClientMain extends Client {
 				case OFFLINE:
 					break;
 				case CHECK:
-					if(LauncherOptions.sessionId == null)
+					if(LauncherOptions.sessionUserId == 0)
 						status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
 					else
 						prepareClientUpdate();

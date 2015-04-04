@@ -43,14 +43,14 @@ import org.json.JSONTokener;
 public class Main {
 	
 	public static final String PASSWORD_RECOVER_URL = "https://greencubes.org/?action=recover#t";
-	public static final String REGISTRATION_URL = "https://greencubes.org/start";
+	public static final String REGISTRATION_URL = "https://greencubes.org/start#t";
 	public static final String SUPPORT_SYSTEM_URL = "https://help.greencubes.org/";
 	public static final String USER_CONTROL_PANEL_URL = "https://greencubes.org/?action=ucp#t";
 	public static final String IPV4STACK = "-Djava.net.preferIPv4Stack=true";
 	public static final String BUILD_INFO = "0.2.0";
 	public static final boolean IS_64_BIT_JAVA;
 	public static final boolean TEST = false;
-	public static final boolean ENABLE_TEST_CLIENT = true;
+	public static final boolean ENABLE_TEST_CLIENT = false;
 	
 	private static JSONObject config;
 	

@@ -177,6 +177,7 @@ public class LauncherOptions {
 			Util.getUnsafe().freeMemory(sessionKeyAddress);
 			sessionKeyAddress = -1;
 		}
+		sessionId = null;
 		sessionUserId = 0;
 		try {
 			Main.userFileChannel.position(0);

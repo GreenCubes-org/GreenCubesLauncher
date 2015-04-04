@@ -1136,7 +1136,7 @@ public class LauncherMain$Config {
 				});
 				break;
 		}
-		superClass.frame.pack();
+		//superClass.frame.pack();
 		superClass.frame.revalidate();
 		superClass.frame.repaint();
 	}

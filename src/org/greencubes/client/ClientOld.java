@@ -155,6 +155,7 @@ public class ClientOld extends Client {
 	public void load(LauncherMain launcherWindow) {
 		super.load(launcherWindow);
 		synchronized(worker) {
+			status(Status.CHECK, "", -1f);
 			if(!worker.isAlive())
 				worker.start();
 		}
@@ -164,6 +165,8 @@ public class ClientOld extends Client {
 	public void doJob() {
 		switch(status.getStatus()) {
 		case OFFLINE:
+			selectServer(null);
+			status(Status.LOADING, "", -1f);
 			break;
 		case CHECK:
 			break;
@@ -499,7 +502,7 @@ public class ClientOld extends Client {
 				case OFFLINE:
 					break;
 				case CHECK:
-					if(LauncherOptions.sessionId == null)
+					if(LauncherOptions.sessionUserId == 0)
 						status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
 					else
 						prepareClientUpdate();
@@ -570,14 +573,20 @@ public class ClientOld extends Client {
 						}
 						command.add(cp.toString());
 						command.add("org.greencubes.util.Start");
+						String session;
 						JSONObject jo;
 						try {
 							jo = LauncherUtil.sessionRequest("action=session");
+							session = jo.optString("ssid");
 						} catch(Exception e) {
-							status(Status.ERROR, e.getLocalizedMessage(), -1f);
-							break;
+							if(LauncherOptions.sessionUserId == 0) {
+								session = null;
+							} else {
+								status(Status.ERROR, e.getLocalizedMessage(), -1f);
+								break;
+							}
 						}
-						command.addAll(getLaunchParameters(LauncherOptions.sessionUser, jo.optString("ssid"), getSelectedServer()));
+						command.addAll(getLaunchParameters(LauncherOptions.sessionUser, session, getSelectedServer()));
 						ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 						pb.directory(getWorkingDirectory());
 						try {
