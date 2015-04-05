@@ -244,6 +244,7 @@ public class LauncherMain$Play {
 		if(superClass.clientPanel != null) {
 			superClass.mainPanel.add(superClass.clientPanel);
 			superClass.frame.revalidate();
+			updateButtons();
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -267,27 +268,31 @@ public class LauncherMain$Play {
 	}
 	//@formatter:on
 	
+	private void updateButtons() {
+		if(clientButtons.size() > 0) {
+			Iterator<Entry<Client, JPanel>> iterator = clientButtons.entrySet().iterator();
+			while(iterator.hasNext()) {
+				Entry<Client, JPanel> e = iterator.next();
+				JPanel clientButton = e.getValue();
+				if(e.getKey() == currentClient) {
+					clientButton.setBackground(new Color(82, 123, 123, 255));
+					clientButton.revalidate();
+				} else {
+					clientButton.setBackground(new Color(38, 51, 51, 255));
+					clientButton.revalidate();
+				}
+			}
+		}
+	}
+	
 	//@formatter:off
 	private void displayClient(Client client) {
 		if(client == currentClient)
 			return;
 		synchronized(client) {
-			if(clientButtons.size() > 0) {
-				Iterator<Entry<Client, JPanel>> iterator = clientButtons.entrySet().iterator();
-				while(iterator.hasNext()) {
-					Entry<Client, JPanel> e = iterator.next();
-					JPanel clientButton = e.getValue();
-					if(e.getKey() == client) {
-						clientButton.setBackground(new Color(82, 123, 123, 255));
-						clientButton.revalidate();
-					} else {
-						clientButton.setBackground(new Color(38, 51, 51, 255));
-						clientButton.revalidate();
-					}
-				}
-			}
 			superClass.clientPanel.removeAll();
 			currentClient = client;
+			updateButtons();
 			superClass.clientPanel.add(new JPanel() {{
 				setOpaque(false);
 				setLayout(new GridBagLayout());
