@@ -227,6 +227,7 @@ Section "un.MainSection"
   Delete "$INSTDIR\OpenAL64.dll"
   Delete "$INSTDIR\OpenAL32.dll"
   Delete "$INSTDIR\patch.json"
+  Delete "$INSTDIR\enableold.txt"
   
   RMDir "$INSTDIR" ; Remove install dir only if it is empty now (in most cases it's not)
   
