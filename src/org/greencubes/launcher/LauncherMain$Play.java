@@ -98,51 +98,6 @@ public class LauncherMain$Play {
 					s(this, 1, 24);
 					setBackground(new Color(0, 0, 0, 0));
 				}});
-				add(new JPanel() {{ // New client button
-					s(this, 96, 96);
-					setBackground(new Color(38, 51, 51, 255));
-					add(new JPanel() {{ // Inner
-						s(this, 96, 96);
-						setOpaque(false);
-						add(new JPanelBG("/res/main.client.logo.png") {{
-							setOpaque(false);
-							s(this, 48, 48);
-						}});
-						JComponent pane;
-						add(pane = new JLabel() {{
-							setOpaque(false);
-							setAlignmentX(JLabel.CENTER_ALIGNMENT);
-							setBackground(new Color(0, 0, 0, 100));
-							setForeground(new Color(176, 230, 238, 255));
-							setText(Client.MAIN.localizedName);
-							setFont(new Font("ClearSans Light", Font.PLAIN, 12));
-							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-						}});
-						GAWTUtil.removeMouseListeners(pane);
-					}});
-					final JPanel it = this;
-					addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseEntered(MouseEvent e) {
-							it.setBackground(new Color(82, 123, 123, 255));
-							it.revalidate();
-						}
-						
-						@Override
-						public void mouseExited(MouseEvent e) {
-							if(currentClient != Client.MAIN) {
-								it.setBackground(new Color(38, 51, 51, 255));
-								it.revalidate();
-							}
-						}
-						
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							displayClient(Client.MAIN);
-						}
-					});
-					clientButtons.put(Client.MAIN, it);
-				}});
 				
 				if(Main.enableOldClient) {
 					add(new JPanel() {{ // Old client button
@@ -190,6 +145,52 @@ public class LauncherMain$Play {
 						clientButtons.put(Client.OLD, it);
 					}});
 				}
+				
+				add(new JPanel() {{ // New client button
+					s(this, 96, 96);
+					setBackground(new Color(38, 51, 51, 255));
+					add(new JPanel() {{ // Inner
+						s(this, 96, 96);
+						setOpaque(false);
+						add(new JPanelBG("/res/main.client.logo.png") {{
+							setOpaque(false);
+							s(this, 48, 48);
+						}});
+						JComponent pane;
+						add(pane = new JLabel() {{
+							setOpaque(false);
+							setAlignmentX(JLabel.CENTER_ALIGNMENT);
+							setBackground(new Color(0, 0, 0, 100));
+							setForeground(new Color(176, 230, 238, 255));
+							setText(Client.MAIN.localizedName);
+							setFont(new Font("ClearSans Light", Font.PLAIN, 12));
+							disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+						}});
+						GAWTUtil.removeMouseListeners(pane);
+					}});
+					final JPanel it = this;
+					addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseEntered(MouseEvent e) {
+							it.setBackground(new Color(82, 123, 123, 255));
+							it.revalidate();
+						}
+						
+						@Override
+						public void mouseExited(MouseEvent e) {
+							if(currentClient != Client.MAIN) {
+								it.setBackground(new Color(38, 51, 51, 255));
+								it.revalidate();
+							}
+						}
+						
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							displayClient(Client.MAIN);
+						}
+					});
+					clientButtons.put(Client.MAIN, it);
+				}});
 				
 				if(Main.ENABLE_TEST_CLIENT) {
 					add(new JPanel() {{ // Test client button
@@ -257,7 +258,7 @@ public class LauncherMain$Play {
 			setBackground(UIScheme.BACKGROUND);
 		}});
 		superClass.frame.revalidate();
-		final Client toDisplay = currentClient == null ? Client.MAIN : currentClient;
+		final Client toDisplay = currentClient == null ? (Main.enableOldClient ? Client.OLD : Client.MAIN) : currentClient;
 		currentClient = null;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
