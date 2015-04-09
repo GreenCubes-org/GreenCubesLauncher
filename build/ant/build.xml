@@ -148,31 +148,6 @@
 			</fileset>
 		</jar>
 	</target>
-	<target name="postprocess1">
-			<java fork="true" classname="org.greencubes.processors.RemoveProfiler" failonerror="true">
-				<arg value="${dir.target}\client.jar" />
-				<arg value="${dir.target}\client_pp.jar" />
-				<arg value="${toString:classpath}" />
-				<classpath>
-					<path refid="classpath"/>
-					<pathelement location="${dir.target}\temp\client_add.jar"/>
-					<pathelement location="${file.postprocess}"/>
-				</classpath>
-			</java>
-			<move file="${dir.target}\client_pp.jar" tofile="${dir.target}\client.jar" />
-		</target>
-	<target name="postprocess2">
-		<java fork="true" classname="org.greencubes.processors.RemoveProfiler" failonerror="true">
-			<arg value="${dir.target}\client.jar" />
-			<arg value="${dir.target}\client_pp.jar" />
-			<arg value="${toString:classpath}" />
-			<classpath>
-				<path refid="classpath"/>
-				<pathelement location="${file.postprocess}"/>
-			</classpath>
-		</java>
-		<move file="${dir.target}\client_pp.jar" tofile="${dir.target}\client.jar" />
-	</target>
 	<target name="rearchive">
 	    <delete file="${dir.target}\client.zip" />
 	    <delete file="${dir.target}\version.md5" />
