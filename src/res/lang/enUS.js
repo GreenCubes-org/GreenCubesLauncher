@@ -57,6 +57,8 @@
 "login.error.3": "Invalid username or password",
 
 "client.main.name": "GreenCubes",
+"client.old.name": "Old client",
+"client.main.test.name": "Test\nclient",
 "client.status.check": "Checking",
 "client.status.ready": "Ready",
 "client.status.start": "PLAY",

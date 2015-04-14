@@ -61,6 +61,8 @@
 "login.error.3": "Неверные имя аккаунта или пароль",
 
 "client.main.name": "GreenCubes",
+"client.old.name": "Старый\nклиент",
+"client.main.test.name": "Тестовый\nклиент",
 "client.status.check": "Проверка",
 "client.status.ready": "Готово",
 "client.status.start": "ИГРАТЬ",
