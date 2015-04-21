@@ -19,9 +19,17 @@ import org.json.JSONTokener;
 
 public class I18n {
 	
-	public static final String DEFAULT_LANG = "ruRU";
-	public static final String[] supportedLanguages = new String[] {"ruRU","enUS"};
-	
+	public static final String DEFAULT_LANG = "enUS";
+	public static final String[] supportedLanguages = new String[] {"ruRU", "enUS"};
+	public static final Map<String, String> languageAliases = new HashMap<String,String>() {{
+		put("ruRU", "ruRU");
+		put("enUS", "enUS");
+		put("beBY", "ruRU");
+		put("ukUA", "ruRU");
+		put("kkKZ", "ruRU");
+		put("kyKG", "ruRU");
+	}};
+	 
 	public static Map<String, String> langMap = new HashMap<String, String>();
 	public static Locale currentLocale;
 	public static String currentLanguage;
@@ -62,10 +70,7 @@ public class I18n {
 	}
 	
 	private static boolean isSupportedLang(String lang) {
-		for(String l : supportedLanguages)
-			if(l.equals(lang))
-				return true;
-		return false;
+		return languageAliases.containsKey(lang);
 	}
 	
 	private static void loadLanguage(String lang) {
@@ -76,15 +81,18 @@ public class I18n {
 		} else if(isSupportedLang(l + c.toUpperCase())) {
 			currentLanguage = l + c.toUpperCase();
 		} else {
-			for(String sl : supportedLanguages) {
-				if(sl.startsWith(l)) {
-					currentLanguage = sl;
+			Iterator<Entry<String, String>> iterator = languageAliases.entrySet().iterator();
+			while(iterator.hasNext()) {
+				Entry<String, String> e = iterator.next();
+				if(e.getKey().startsWith(l)) {
+					currentLanguage = e.getKey();
 					break;
 				}
 			}
 		}
 		if(!isSupportedLang(currentLanguage))
 			currentLanguage = DEFAULT_LANG;
+		currentLanguage = languageAliases.get(currentLanguage);
 		JSONObject jo;
 		try {
 			URL langUrl = I18n.class.getResource("/res/lang/" + currentLanguage + ".js");
