@@ -31,10 +31,10 @@ public class MacOSX {
 	
 	public static boolean hasRetinaDisplay() {
 		Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("apple.awt.contentScaleFactor");
-		if(obj instanceof Float) {
-			Float f = (Float) obj;
+		if(obj instanceof Number) {
+			Number f = (Number) obj;
 			int scale = f.intValue();
-			return (scale == 2); // 1 indicates a regular mac display.
+			return scale == 2; // 1 indicates a regular mac display.
 		}
 		return false;
 	}

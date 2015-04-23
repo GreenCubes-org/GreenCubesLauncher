@@ -1094,25 +1094,32 @@ public class LauncherMain$Config {
 				launcherConfig.setForeground(UIScheme.TITLE_COLOR);
 				about.setForeground(UIScheme.TITLE_COLOR_SEL);
 				configPage.removeAll();
-				final String separator = System.getProperty("line.separator");
+				final String separator = "<br>";//System.getProperty("line.separator");
 				final StringBuilder aboutPage = new StringBuilder();
+				aboutPage.append("<html>");
+				aboutPage.append("<body style=\"color: #ecffff; font-family: " + UIScheme.LONG_TEXT_FONG + "; font-size: 14;\">");
+				aboutPage.append("<h2>GreenCubes</h2>");
+				aboutPage.append("GreenCubes launcher version: ");
+				aboutPage.append(Main.BUILD_INFO);
+				aboutPage.append("<br><br><h2>Third-party licenses</h2>");
 				Scanner reader = null;
 				try {
 					reader = new Scanner(new InputStreamReader(Main.class.getResourceAsStream("/NOTICE"), "UTF-8"));
 					while(reader.hasNextLine()) {
-						if(aboutPage.length() > 0)
-							aboutPage.append(separator);
 						aboutPage.append(reader.nextLine());
+						aboutPage.append(separator);
 					}
 				} catch(IOException e) {
 					aboutPage.append(separator + separator + e.getLocalizedMessage());
 				} finally {
 					Util.close(reader);
 				}
+				aboutPage.append("</body></html>");
 				final JScrollPane scrollPane;
 				configPage.add(scrollPane = new JScrollPane(new GJBoxPanel(BoxLayout.PAGE_AXIS, null) {{
 					add(new JTextPane() {{
 						setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
+						setContentType("text/html");
 						setText(aboutPage.toString());
 						setForeground(UIScheme.TEXT_COLOR);
 						setFont(new Font(UIScheme.LONG_TEXT_FONG, Font.PLAIN, 14));

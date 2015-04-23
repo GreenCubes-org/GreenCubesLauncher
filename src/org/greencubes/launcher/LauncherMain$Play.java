@@ -125,7 +125,7 @@ public class LauncherMain$Play {
 						addMouseListener(new MouseAdapter() {
 							@Override
 							public void mouseEntered(MouseEvent e) {
-								it.setBackground(new Color(82, 123, 123, 255));
+								it.setBackground(new Color(109, 160, 160, 255));
 								it.revalidate();
 							}
 							
@@ -133,8 +133,10 @@ public class LauncherMain$Play {
 							public void mouseExited(MouseEvent e) {
 								if(currentClient != Client.OLD){ 
 									it.setBackground(new Color(38, 51, 51, 255));
-									it.revalidate();
+								} else {
+									it.setBackground(new Color(82, 123, 123, 255));
 								}
+								it.revalidate();
 							}
 							
 							@Override
@@ -172,7 +174,7 @@ public class LauncherMain$Play {
 					addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseEntered(MouseEvent e) {
-							it.setBackground(new Color(82, 123, 123, 255));
+							it.setBackground(new Color(109, 160, 160, 255));
 							it.revalidate();
 						}
 						
@@ -180,8 +182,10 @@ public class LauncherMain$Play {
 						public void mouseExited(MouseEvent e) {
 							if(currentClient != Client.MAIN) {
 								it.setBackground(new Color(38, 51, 51, 255));
-								it.revalidate();
+							} else {
+								it.setBackground(new Color(82, 123, 123, 255));
 							}
+							it.revalidate();
 						}
 						
 						@Override
@@ -219,7 +223,7 @@ public class LauncherMain$Play {
 						addMouseListener(new MouseAdapter() {
 							@Override
 							public void mouseEntered(MouseEvent e) {
-								it.setBackground(new Color(82, 123, 123, 255));
+								it.setBackground(new Color(109, 160, 160, 255));
 								it.revalidate();
 							}
 							
@@ -227,8 +231,10 @@ public class LauncherMain$Play {
 							public void mouseExited(MouseEvent e) {
 								if(currentClient != Client.TEST){ 
 									it.setBackground(new Color(38, 51, 51, 255));
-									it.revalidate();
+								} else {
+									it.setBackground(new Color(82, 123, 123, 255));
 								}
+								it.revalidate();
 							}
 							
 							@Override
