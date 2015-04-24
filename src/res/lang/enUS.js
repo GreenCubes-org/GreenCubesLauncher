@@ -91,6 +91,8 @@
 "menu.tip": "Click the button to display help or settings menu.",
 "menu.tip.ok": "OK",
 
+"browser.loading": "Loading...",
+
 "servers.local": "Local server",
 
 "update.error.start": "An error occurred while updating the launcher: launcher fails to start after update. Try to do it manually. If the game does not start, try to download the installer from the site https://greencubes.org. We apologize for any inconvenience. You can contact our support team at https://help.greencubes.org.",

@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -54,6 +59,8 @@ import org.greencubes.swing.UIScheme;
 import org.greencubes.util.I18n;
 import org.greencubes.util.URLHandler;
 import org.greencubes.util.Util;
+
+import com.sun.webpane.platform.WebPage;
 
 public class LauncherMain$Play {
 	
@@ -304,6 +311,7 @@ public class LauncherMain$Play {
 				setOpaque(false);
 				setLayout(new GridBagLayout());
 				final JFXPanel browserPanel = new JFXPanel();
+				browserPanel.setOpaque(false);
 				add(browserPanel, new GridBagConstraints() {{
 					gridx = 0;
 					gridy = 0;
@@ -405,8 +413,10 @@ public class LauncherMain$Play {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+				StackPane sp = new StackPane();
 				browser = new WebView();
 				final WebEngine engine = browser.getEngine();
+				
 				engine.getLoadWorker().stateProperty().addListener(
 			        new ChangeListener<State>() {
 						@Override
@@ -416,10 +426,20 @@ public class LauncherMain$Play {
 								obj.setMember("urlHandler", new URLHandler());
 								//engine.executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
 								engine.executeScript("updateLinks();");
+								browser.setVisible(true);
+							} else {
+								browser.setVisible(false);
 							}
 						}
 			        });
-				Scene sc = new Scene(browser);
+				browser.setVisible(false);
+				sp.getChildren().add(new Text(I18n.get("browser.loading")) {{
+					setFont(new javafx.scene.text.Font(UIScheme.TITLE_FONT, 36));
+					setFill(UIScheme.toPaint(UIScheme.TITLE_COLOR));
+				}});
+				sp.getChildren().add(browser);
+				final Scene sc = new Scene(sp);
+				sc.setFill(null);
 				sc.getStylesheets().add(LauncherMain.class.getResource("/res/scrollbar.css").toExternalForm());
 				panel.setScene(sc);
 				client.openBrowserPage(engine);

@@ -2,6 +2,8 @@ package org.greencubes.swing;
 
 import java.awt.Color;
 
+import javafx.scene.paint.Paint;
+
 public class UIScheme {
 	
 	public static final Color BACKGROUND = getColor(0x171e1e);
@@ -40,5 +42,9 @@ public class UIScheme {
 	
 	public static final Color getColor(int rgb) {
 		return getColor(rgb, 255);
+	}
+	
+	public static final Paint toPaint(Color color) {
+		return new javafx.scene.paint.Color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
 	}
 }

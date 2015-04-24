@@ -95,6 +95,8 @@
 "menu.tip": "Нажмите кнопку для вызова настроек или помощи.",
 "menu.tip.ok": "OK",
 
+"browser.loading": "Загрузка...",
+
 "servers.local": "Локальный сервер",
 "servers.singleplayer": "Одиночный режим",
 "servers.select": "Режим игры:",

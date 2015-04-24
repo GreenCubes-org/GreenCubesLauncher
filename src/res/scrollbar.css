@@ -1,3 +1,8 @@
+html {
+    background-color: #171e1e;
+    -fx-background-color: #171e1e;
+}
+
 .scroll-bar{
     -fx-background-color: #171e1e;
     -fx-background-radius: 0em;
