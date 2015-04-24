@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,9 +25,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
+import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -59,8 +57,6 @@ import org.greencubes.swing.UIScheme;
 import org.greencubes.util.I18n;
 import org.greencubes.util.URLHandler;
 import org.greencubes.util.Util;
-
-import com.sun.webpane.platform.WebPage;
 
 public class LauncherMain$Play {
 	
@@ -433,6 +429,7 @@ public class LauncherMain$Play {
 						}
 			        });
 				browser.setVisible(false);
+				browser.setFontSmoothingType(FontSmoothingType.GRAY);
 				sp.getChildren().add(new Text(I18n.get("browser.loading")) {{
 					setFont(new javafx.scene.text.Font(UIScheme.TITLE_FONT, 36));
 					setFill(UIScheme.toPaint(UIScheme.TITLE_COLOR));
