@@ -220,11 +220,10 @@ public class ClientOld extends Client {
 		worker.lastUpdateCheck = System.currentTimeMillis();
 		File workingDirectory = getWorkingDirectory();
 		if(!workingDirectory.exists()) {
-			if(!workingDirectory.mkdirs())
+			if(!workingDirectory.mkdirs()) {
 				status(Status.ERROR, I18n.get("client.update.error.folder"), -1f);
-			else
-				status(Status.NEED_UPDATE, I18n.get("client.update.ready"), -1f);
-			return;
+				return;
+			}
 		}
 		boolean needUpdate = false;
 		Map<String, byte[]> localHashes = new HashMap<String, byte[]>();
