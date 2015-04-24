@@ -66,7 +66,7 @@ public class ClientOld extends Client {
 			servers.add(new Server(I18n.get("servers.local"), "127.0.0.1", 25565));
 		if(isSinglePlayerModeAllowed())
 			servers.add(new Server(I18n.get("servers.singleplayer"), null, 0));
-		if(isSinglePlayerModeAllowed() && LauncherOptions.sessionUserId == 0)
+		if(isSinglePlayerModeAllowed() && LauncherOptions.isOffline())
 			selectServer(servers.get(servers.size() - 1));
 		else
 			selectServer(servers.get(0));
@@ -260,6 +260,8 @@ public class ClientOld extends Client {
 			serverHash = LauncherOptions.getClientDownloader(ClientOld.this).readURL(Util.urlEncode("files/" + getUrlName() + "/version.json"));
 		} catch(IOException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
+			if(Main.TEST)
+				e.printStackTrace();
 			return;
 		}
 		JSONObject remoteVersion;
@@ -267,6 +269,8 @@ public class ClientOld extends Client {
 			remoteVersion = new JSONObject(serverHash);
 		} catch(JSONException e) {
 			status(Status.ERROR, e.getLocalizedMessage(), -1f);
+			if(Main.TEST)
+				e.printStackTrace();
 			return;
 		}
 		this.remoteVersion = remoteVersion;
@@ -501,7 +505,7 @@ public class ClientOld extends Client {
 				case OFFLINE:
 					break;
 				case CHECK:
-					if(LauncherOptions.sessionUserId == 0)
+					if(LauncherOptions.isOffline())
 						status(Status.OFFLINE, I18n.get(Status.OFFLINE.statusName), -1f);
 					else
 						prepareClientUpdate();
@@ -578,7 +582,7 @@ public class ClientOld extends Client {
 							jo = LauncherUtil.sessionRequest("action=session");
 							session = jo.optString("ssid");
 						} catch(Exception e) {
-							if(LauncherOptions.sessionUserId == 0) {
+							if(LauncherOptions.isOffline()) {
 								session = null;
 							} else {
 								status(Status.ERROR, e.getLocalizedMessage(), -1f);
@@ -609,7 +613,7 @@ public class ClientOld extends Client {
 					break;
 				case READY:
 					// Check updates every 10 minutes
-					if(lastUpdateCheck + 600000 < System.currentTimeMillis())
+					if(!LauncherOptions.isOffline() && lastUpdateCheck + 600000 < System.currentTimeMillis())
 						prepareClientUpdate();
 					break;
 				case RUNNING:

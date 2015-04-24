@@ -116,6 +116,10 @@ public class LauncherOptions {
 		return icons;
 	}
 	
+	public static boolean isOffline() {
+		return sessionUserId <= 0 || sessionKeyAddress == -1 || sessionUser == null || sessionId == null;
+	}
+	
 	public static void setSession(int userId, String userName, byte[] key) {
 		if(sessionKeyAddress == -1)
 			sessionKeyAddress = Util.getUnsafe().allocateMemory(128);
