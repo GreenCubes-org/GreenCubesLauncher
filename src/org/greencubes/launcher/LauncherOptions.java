@@ -103,7 +103,6 @@ public class LauncherOptions {
 			try {
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico32x32.png")));
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico48x48.png")));
-				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico64x64.png")));
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico128x128.png")));
 				icons.add(ImageIO.read(LauncherOptions.class.getResource("/res/icons/gcico256x256.png")));
 			} catch(IOException e) {
