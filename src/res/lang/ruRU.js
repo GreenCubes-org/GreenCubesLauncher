@@ -37,7 +37,7 @@
 "client.update.error.generic2": "Ошибка обновление #%d (%s)",
 
 "client.start": "Начать играть",
-"client.loading": "Загрузка",
+"client.loading": "Запуск",
 
 "login.login": "Имя аккаунта",
 "login.password": "Пароль",

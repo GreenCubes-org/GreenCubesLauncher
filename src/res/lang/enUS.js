@@ -33,7 +33,7 @@
 "client.update.error.generic2": "Update error #%d (%s)",
 
 "client.start": "Start playing",
-"client.loading": "Loading",
+"client.loading": "Starting",
 
 "login.login": "Username",
 "login.password": "Password",
