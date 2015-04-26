@@ -46,7 +46,7 @@
 "login.nousername": "Enter your username",
 "login.nousernamepassword": "Enter your username and password",
 "login.nopassword": "Enter your password",
-"login.title": "Logging in...",
+"login.title": "Log in GreenCubes",
 "login.error.title": "Error",
 "login.error.repeat": "Try again",
 "login.error.offline": "Play offline",
