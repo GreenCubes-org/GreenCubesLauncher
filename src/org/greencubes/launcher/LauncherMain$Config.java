@@ -200,7 +200,7 @@ public class LauncherMain$Config {
 								setOpaque(false);
 								setAlignmentX(JLabel.CENTER_ALIGNMENT);
 								setForeground(UIScheme.TEXT_COLOR);
-								setText("Сохранить".toUpperCase());
+								setText(I18n.get("settings.save").toUpperCase());
 								setFont(new Font(UIScheme.TITLE_FONT, Font.BOLD, 24));
 							}}, new GridBagConstraints() {{
 								weightx = 1;

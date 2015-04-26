@@ -94,9 +94,12 @@
 "browser.loading": "Loading...",
 
 "servers.local": "Local server",
+"servers.singleplayer": "Singleplayer",
+"servers.select": "Game mode:",
 
 "update.error.start": "An error occurred while updating the launcher: launcher fails to start after update. Try to do it manually. If the game does not start, try to download the installer from the site https://greencubes.org. We apologize for any inconvenience. You can contact our support team at https://help.greencubes.org.",
 
+"settings.save": "Save",
 "settings.title": "Settings",
 "settings.launcher": "Launcher settings",
 "settings.client": "Game settings",
@@ -133,6 +136,7 @@
 "quality.low": "Low",
 
 "settings.client.needupdate": "You must update the client before managing settings. Go back to the game page and update.",
+"settings.client.running": "Unable to change settings while client is running. Close se client and try again.",
 
 "lang.ruRU": "Русский (Russian)",
 "lang.enUS": "English",
