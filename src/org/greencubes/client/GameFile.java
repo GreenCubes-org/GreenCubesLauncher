@@ -80,6 +80,7 @@ public class GameFile {
 		OperatingSystem os = OperatingSystem.getCurrentPlatform();
 		byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
 		String name = fileObject.optString("name");
+		String localPath = fileObject.optString("localPath", name);
 		if(name.contains("_not-mac")) {
 			if(os == OperatingSystem.OSX)
 				return null;
@@ -93,7 +94,7 @@ public class GameFile {
 			if(os != OperatingSystem.LINUX)
 				return null;
 		}
-		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes != null ? localHashes.get(name) : null, hash);
+		GameFile file = new GameFile(new File(baseDirectory, localPath), name, localHashes != null ? localHashes.get(name) : null, hash);
 		file.remoteFileSize = fileObject.optInt("length", -1);
 		return file;
 	}
@@ -101,7 +102,8 @@ public class GameFile {
 	public static GameFile getFile(JSONObject fileObject, File baseDirectory, Map<String, byte[]> localHashes) {
 		byte[] hash = Util.hexStringToByteArray(fileObject.optString("hash"));
 		String name = fileObject.optString("name");
-		GameFile file = new GameFile(new File(baseDirectory, name), name, localHashes != null ? localHashes.get(name) : null, hash);
+		String localPath = fileObject.optString("localPath", name);
+		GameFile file = new GameFile(new File(baseDirectory, localPath), name, localHashes != null ? localHashes.get(name) : null, hash);
 		file.remoteFileSize = fileObject.optInt("length", -1);
 		return file;
 	}

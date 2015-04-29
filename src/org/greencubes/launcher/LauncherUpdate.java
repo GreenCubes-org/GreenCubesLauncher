@@ -111,10 +111,12 @@ public class LauncherUpdate {
 					updateError(103, null);
 					return false;
 				}
-				GameFile file = GameFile.getFile(fileObject, workingDirectory, null);
+				GameFile file = GameFile.getFileOsSpecific(fileObject, workingDirectory, null);
+				if(file == null)
+					continue;
 				if(file.needUpdate)
 					needUpdate = true;
-				files.add(file);
+				supportingFiles.add(file);
 			}
 		}
 		
@@ -238,7 +240,6 @@ public class LauncherUpdate {
 			}
 		}
 		File patchDir = new File("patch");
-		File supportingDir = new File("");
 		if(patchDir.isFile()) {
 			updateError(201, null);
 			return false;
@@ -276,10 +277,9 @@ public class LauncherUpdate {
 		for(int i = 0; i < supportingFiles.size(); ++i) {
 			GameFile file = supportingFiles.get(i);
 			if(file.needUpdate) {
-				File localFile = new File(supportingDir, file.remoteFileUrl);
 				int trys = 0;
 				do {
-					DownloadThread dt = new DownloadThread(localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl), d);
+					DownloadThread dt = new DownloadThread(file.localFile, Util.urlEncode("files/launcher/" + file.remoteFileUrl), d);
 					dt.start();
 					while(!dt.downloaded) {
 						try {
