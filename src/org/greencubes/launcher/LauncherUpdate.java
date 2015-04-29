@@ -102,7 +102,7 @@ public class LauncherUpdate {
 			files.add(file);
 		}
 		// Update supporting files:
-		hashesArray = remoteVersion.optJSONArray("support");
+		hashesArray = remoteVersion.optJSONArray("additional");
 		List<GameFile> supportingFiles = new ArrayList<GameFile>();
 		if(hashesArray != null) {
 			for(int i = 0; i < hashesArray.length(); ++i) {
