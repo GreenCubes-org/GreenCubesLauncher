@@ -375,7 +375,8 @@ public class LauncherUpdate {
 	
 	private void updateError(int code, String message) {
 		saveUpdateErrorMessage(code, message);
-		frame.dispose();
+		if(frame != null)
+			frame.dispose();
 		frame = null;
 		System.err.println("Update error " + code + ": " + message);
 		int answer = -1;
