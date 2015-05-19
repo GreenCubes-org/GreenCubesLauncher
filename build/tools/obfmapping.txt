@@ -29606,10 +29606,10 @@ org.greencubes.launcher.LauncherUpdate -> org.greencubes.*.cA:
     305:306:void setDownloadStatus(long,long) -> DIh
     309:315:void setStatus(java.lang.String) -> DIh
     318:374:void createWindow() -> JZD
-    377:411:void updateError(int,java.lang.String) -> DIh
-    414:437:void saveUpdateErrorMessage(int,java.lang.String) -> jqA
-    440:448:java.util.List getLaunchParameters() -> AMb
-    456:460:void launcherLoad() -> jLa
+    377:412:void updateError(int,java.lang.String) -> DIh
+    415:438:void saveUpdateErrorMessage(int,java.lang.String) -> jqA
+    441:449:java.util.List getLaunchParameters() -> AMb
+    457:461:void launcherLoad() -> jLa
     52:52:javax.swing.JLabel access$0(org.greencubes.launcher.LauncherUpdate) -> DIh
     52:52:void access$1(org.greencubes.launcher.LauncherUpdate,javax.swing.JLabel) -> DIh
     51:51:javax.swing.JFrame access$2(org.greencubes.launcher.LauncherUpdate) -> jqA
@@ -29634,7 +29634,7 @@ org.greencubes.launcher.LauncherUpdate$4 -> org.greencubes.*.cH:
     370:372:void windowClosing(java.awt.event.WindowEvent) -> windowClosing
 org.greencubes.launcher.LauncherUpdate$5 -> org.greencubes.*.cI:
     org.greencubes.launcher.LauncherUpdate this$0 -> DIh
-    405:406:void run() -> run
+    406:407:void run() -> run
 org.greencubes.launcher.LauncherUtil -> org.greencubes.*.cJ:
     17:17:boolean canOpenBrowser() -> DIh
     21:29:void onenURLInBrowser(java.lang.String) -> DIh

@@ -1,2 +1,2 @@
-java -jar stringer-1.6.7\stringer.jar -configFile stringer.conf -proguardMapFile obfmapping.txt "C:\_Greencubes\_LAUNCHER\new\build\greencubes_obf.jar" "C:\_Greencubes\_LAUNCHER\new\build\greencubes.jar"
+java -jar stringer-1.8.11\stringer.jar -configFile stringer.conf -proguardMapFile obfmapping.txt "C:\_Greencubes\_LAUNCHER\new\build\greencubes_obf.jar" "C:\_Greencubes\_LAUNCHER\new\build\greencubes.jar"
 @pause
