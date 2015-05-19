@@ -155,7 +155,8 @@ public class ClientOld extends Client {
 	public void load(LauncherMain launcherWindow) {
 		super.load(launcherWindow);
 		synchronized(worker) {
-			status(Status.CHECK, "", -1f);
+			if(status.getStatus() != Status.UPDATING)
+				status(Status.CHECK, "", -1f);
 			if(!worker.isAlive())
 				worker.start();
 		}

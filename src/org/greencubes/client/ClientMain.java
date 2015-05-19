@@ -148,8 +148,9 @@ public class ClientMain extends Client {
 	@Override
 	public void load(LauncherMain launcherWindow) {
 		super.load(launcherWindow);
-		status(Status.CHECK, "", -1f);
 		synchronized(worker) {
+			if(status.getStatus() != Status.UPDATING)
+				status(Status.CHECK, "", -1f);
 			if(!worker.isAlive())
 				worker.start();
 		}
