@@ -49,6 +49,7 @@ public class Downloader {
 	public volatile int bytesDownloaded = 0;
 	public volatile IOException lastError = null;
 	public volatile boolean waitingForRepeat = false;
+	public boolean ignoreHTTPErrors = false;
 	private final CloseableHttpClient httpClient;
 	
 	private List<String> log = new ArrayList<String>();
@@ -126,7 +127,7 @@ public class Downloader {
 			try {
 				response = httpClient.execute(headRequest);
 				int code = response.getStatusLine().getStatusCode();
-				if(code >= 400) {
+				if(code >= 400 && !ignoreHTTPErrors) {
 					if(printUrls)
 						System.out.println("Http no 200 answer: " + code + " " + response.getStatusLine().getReasonPhrase());
 					EntityUtils.consumeQuietly(response.getEntity());
@@ -186,7 +187,7 @@ public class Downloader {
 				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
-				if(code >= 400) {
+				if(code >= 400 && !ignoreHTTPErrors) {
 					if(printUrls)
 						System.out.println("Http no 200 answer: " + code + " " + response.getStatusLine().getReasonPhrase());
 					EntityUtils.consumeQuietly(response.getEntity());
@@ -253,7 +254,7 @@ public class Downloader {
 				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
-				if(code >= 400) {
+				if(code >= 400 && !ignoreHTTPErrors) {
 					if(printUrls)
 						System.out.println("Http no 200 answer: " + code + " " + response.getStatusLine().getReasonPhrase());
 					EntityUtils.consumeQuietly(response.getEntity());
@@ -329,7 +330,7 @@ public class Downloader {
 				response = httpClient.execute(getRequest);
 				HttpEntity entity = response.getEntity();
 				int code = response.getStatusLine().getStatusCode();
-				if(code >= 400) {
+				if(code >= 400 && !ignoreHTTPErrors) {
 					if(printUrls)
 						System.out.println("Http no 200 answer: " + code + " " + response.getStatusLine().getReasonPhrase());
 					EntityUtils.consumeQuietly(response.getEntity());
