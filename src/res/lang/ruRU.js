@@ -60,8 +60,8 @@
 "login.exception": "Ошибка: %s",
 "login.error.3": "Неверные имя аккаунта или пароль",
 
-"client.main.name": "GreenCubes",
-"client.old.name": "Старый\nклиент",
+"client.main.name": "Тестовый\nклиент",
+"client.old.name": "GreenCubes",
 "client.main.test.name": "Тестовый\nклиент",
 "client.status.check": "Проверка",
 "client.status.ready": "Готово",
