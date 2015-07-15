@@ -28401,19 +28401,19 @@ org.greencubes.client.ClientMain -> org.greencubes.*.JZD:
     135:135:java.util.List getServers() -> AmB
     140:140:boolean isSinglePlayerModeAllowed() -> JZD
     145:145:org.greencubes.client.IClientStatus getStatus() -> AMb
-    150:154:void load(org.greencubes.launcher.LauncherMain) -> DIh
-    159:159:java.lang.String getUrlName() -> diH
-    164:191:void doJob() -> jLa
-    194:302:void prepareClientUpdate() -> vai
-    309:319:boolean checkGameFilesCorrectness() -> jvp
-    323:352:void updateVersionFile() -> lGC
-    355:359:void status(org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
-    362:367:void moveUserFolder() -> dih
+    150:155:void load(org.greencubes.launcher.LauncherMain) -> DIh
+    160:160:java.lang.String getUrlName() -> diH
+    165:192:void doJob() -> jLa
+    195:303:void prepareClientUpdate() -> vai
+    310:320:boolean checkGameFilesCorrectness() -> jvp
+    324:353:void updateVersionFile() -> lGC
+    356:360:void status(org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
+    363:368:void moveUserFolder() -> dih
     39:39:org.greencubes.client.ClientMain$ClinetStatus access$0(org.greencubes.client.ClientMain) -> DIh
-    354:354:void access$1(org.greencubes.client.ClientMain,org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
-    193:193:void access$2(org.greencubes.client.ClientMain) -> jqA
+    355:355:void access$1(org.greencubes.client.ClientMain,org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
+    194:194:void access$2(org.greencubes.client.ClientMain) -> jqA
     49:49:org.greencubes.client.ProcessMonitorThread access$3(org.greencubes.client.ClientMain) -> AmB
-    361:361:void access$4(org.greencubes.client.ClientMain) -> JZD
+    362:362:void access$4(org.greencubes.client.ClientMain) -> JZD
     49:49:void access$5(org.greencubes.client.ClientMain,org.greencubes.client.ProcessMonitorThread) -> DIh
     43:43:org.greencubes.client.ClientMain$FileDownloader access$6(org.greencubes.client.ClientMain) -> AMb
     43:43:void access$7(org.greencubes.client.ClientMain,org.greencubes.client.ClientMain$FileDownloader) -> DIh
@@ -28422,7 +28422,7 @@ org.greencubes.client.ClientMain -> org.greencubes.*.JZD:
     46:46:boolean access$10(org.greencubes.client.ClientMain) -> dAZ
     48:48:long access$11(org.greencubes.client.ClientMain) -> jZd
     45:45:long access$12(org.greencubes.client.ClientMain) -> vag
-    322:322:void access$13(org.greencubes.client.ClientMain) -> vai
+    323:323:void access$13(org.greencubes.client.ClientMain) -> vai
     47:47:void access$14(org.greencubes.client.ClientMain,int) -> DIh
     48:48:void access$15(org.greencubes.client.ClientMain,long) -> DIh
     42:42:java.util.List access$16(org.greencubes.client.ClientMain) -> jvp
@@ -28432,21 +28432,21 @@ org.greencubes.client.ClientMain$ClientWorker -> org.greencubes.*.AMb:
     boolean updateAborted -> jqA
     org.greencubes.client.ClientMain this$0 -> AmB
     int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status -> JZD
-    403:505:void run() -> run
-    391:391:int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status() -> DIh
-    394:394:void access$2(org.greencubes.client.ClientMain$ClientWorker,boolean) -> DIh
-    393:393:void access$3(org.greencubes.client.ClientMain$ClientWorker,long) -> DIh
+    404:506:void run() -> run
+    392:392:int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status() -> DIh
+    395:395:void access$2(org.greencubes.client.ClientMain$ClientWorker,boolean) -> DIh
+    394:394:void access$3(org.greencubes.client.ClientMain$ClientWorker,long) -> DIh
 org.greencubes.client.ClientMain$ClinetStatus -> org.greencubes.*.jLa:
     org.greencubes.client.IClientStatus$Status status -> DIh
     java.lang.String title -> jqA
     float progress -> AmB
     org.greencubes.client.ClientMain this$0 -> JZD
-    377:377:org.greencubes.client.IClientStatus$Status getStatus() -> DIh
-    382:382:java.lang.String getStatusTitle() -> jqA
-    387:387:float getStatusProgress() -> AmB
-    371:371:void access$1(org.greencubes.client.ClientMain$ClinetStatus,org.greencubes.client.IClientStatus$Status) -> DIh
-    372:372:void access$2(org.greencubes.client.ClientMain$ClinetStatus,java.lang.String) -> DIh
-    373:373:void access$3(org.greencubes.client.ClientMain$ClinetStatus,float) -> DIh
+    378:378:org.greencubes.client.IClientStatus$Status getStatus() -> DIh
+    383:383:java.lang.String getStatusTitle() -> jqA
+    388:388:float getStatusProgress() -> AmB
+    372:372:void access$1(org.greencubes.client.ClientMain$ClinetStatus,org.greencubes.client.IClientStatus$Status) -> DIh
+    373:373:void access$2(org.greencubes.client.ClientMain$ClinetStatus,java.lang.String) -> DIh
+    374:374:void access$3(org.greencubes.client.ClientMain$ClinetStatus,float) -> DIh
     13:21:void showError() -> JZD
 org.greencubes.client.ClientMain$FileDownloader -> org.greencubes.*.diH:
     int MAX_REPEATS -> JZD
@@ -28455,8 +28455,8 @@ org.greencubes.client.ClientMain$FileDownloader -> org.greencubes.*.diH:
     java.lang.String error -> AmB
     int repeats -> AMb
     org.greencubes.client.ClientMain this$0 -> jLa
-    521:522:void abort() -> DIh
-    526:575:void run() -> run
+    522:523:void abort() -> DIh
+    527:576:void run() -> run
 org.greencubes.client.ClientMainTest -> org.greencubes.*.dAZ:
     13:13:java.io.File getWorkingDirectory() -> jqA
     18:18:java.lang.String getUrlName() -> diH
@@ -28485,21 +28485,21 @@ org.greencubes.client.ClientOld -> org.greencubes.*.jZd:
     141:141:boolean isSinglePlayerModeAllowed() -> JZD
     146:146:java.lang.String getUrlName() -> diH
     151:151:org.greencubes.client.IClientStatus getStatus() -> AMb
-    156:160:void load(org.greencubes.launcher.LauncherMain) -> DIh
-    166:195:void doJob() -> jLa
-    220:334:void prepareClientUpdate() -> vag
-    341:351:boolean checkGameFilesCorrectness() -> vai
-    355:384:void updateVersionFile() -> jvp
-    387:391:void status(org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
-    394:421:void copyOldConfig() -> lGC
-    424:488:java.lang.String extractNatives() -> dih
-    723:740:java.io.File getOldClientDir() -> jQA
+    156:161:void load(org.greencubes.launcher.LauncherMain) -> DIh
+    167:196:void doJob() -> jLa
+    221:335:void prepareClientUpdate() -> vag
+    342:352:boolean checkGameFilesCorrectness() -> vai
+    356:385:void updateVersionFile() -> jvp
+    388:392:void status(org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
+    395:422:void copyOldConfig() -> lGC
+    425:489:java.lang.String extractNatives() -> dih
+    724:741:java.io.File getOldClientDir() -> jQA
     41:41:org.greencubes.client.ClientOld$ClinetStatus access$0(org.greencubes.client.ClientOld) -> DIh
-    386:386:void access$1(org.greencubes.client.ClientOld,org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
-    219:219:void access$2(org.greencubes.client.ClientOld) -> jqA
+    387:387:void access$1(org.greencubes.client.ClientOld,org.greencubes.client.IClientStatus$Status,java.lang.String,float) -> DIh
+    220:220:void access$2(org.greencubes.client.ClientOld) -> jqA
     51:51:org.greencubes.client.ProcessMonitorThread access$3(org.greencubes.client.ClientOld) -> AmB
-    423:423:java.lang.String access$4(org.greencubes.client.ClientOld) -> JZD
-    393:393:void access$5(org.greencubes.client.ClientOld) -> AMb
+    424:424:java.lang.String access$4(org.greencubes.client.ClientOld) -> JZD
+    394:394:void access$5(org.greencubes.client.ClientOld) -> AMb
     51:51:void access$6(org.greencubes.client.ClientOld,org.greencubes.client.ProcessMonitorThread) -> DIh
     45:45:org.greencubes.client.ClientOld$FileDownloader access$7(org.greencubes.client.ClientOld) -> jLa
     45:45:void access$8(org.greencubes.client.ClientOld,org.greencubes.client.ClientOld$FileDownloader) -> DIh
@@ -28508,7 +28508,7 @@ org.greencubes.client.ClientOld -> org.greencubes.*.jZd:
     48:48:boolean access$11(org.greencubes.client.ClientOld) -> jZd
     50:50:long access$12(org.greencubes.client.ClientOld) -> vag
     47:47:long access$13(org.greencubes.client.ClientOld) -> vai
-    354:354:void access$14(org.greencubes.client.ClientOld) -> jvp
+    355:355:void access$14(org.greencubes.client.ClientOld) -> jvp
     49:49:void access$15(org.greencubes.client.ClientOld,int) -> DIh
     50:50:void access$16(org.greencubes.client.ClientOld,long) -> DIh
     44:44:java.util.List access$17(org.greencubes.client.ClientOld) -> lGC
@@ -28519,21 +28519,21 @@ org.greencubes.client.ClientOld$ClientWorker -> org.greencubes.*.vag:
     boolean updateAborted -> jqA
     org.greencubes.client.ClientOld this$0 -> AmB
     int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status -> JZD
-    503:648:void run() -> run
-    491:491:int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status() -> DIh
-    494:494:void access$2(org.greencubes.client.ClientOld$ClientWorker,boolean) -> DIh
-    493:493:void access$3(org.greencubes.client.ClientOld$ClientWorker,long) -> DIh
+    504:649:void run() -> run
+    492:492:int[] $SWITCH_TABLE$org$greencubes$client$IClientStatus$Status() -> DIh
+    495:495:void access$2(org.greencubes.client.ClientOld$ClientWorker,boolean) -> DIh
+    494:494:void access$3(org.greencubes.client.ClientOld$ClientWorker,long) -> DIh
 org.greencubes.client.ClientOld$ClinetStatus -> org.greencubes.*.vai:
     org.greencubes.client.IClientStatus$Status status -> DIh
     java.lang.String title -> jqA
     float progress -> AmB
     org.greencubes.client.ClientOld this$0 -> JZD
-    205:205:org.greencubes.client.IClientStatus$Status getStatus() -> DIh
-    210:210:java.lang.String getStatusTitle() -> jqA
-    215:215:float getStatusProgress() -> AmB
-    199:199:void access$1(org.greencubes.client.ClientOld$ClinetStatus,org.greencubes.client.IClientStatus$Status) -> DIh
-    200:200:void access$2(org.greencubes.client.ClientOld$ClinetStatus,java.lang.String) -> DIh
-    201:201:void access$3(org.greencubes.client.ClientOld$ClinetStatus,float) -> DIh
+    206:206:org.greencubes.client.IClientStatus$Status getStatus() -> DIh
+    211:211:java.lang.String getStatusTitle() -> jqA
+    216:216:float getStatusProgress() -> AmB
+    200:200:void access$1(org.greencubes.client.ClientOld$ClinetStatus,org.greencubes.client.IClientStatus$Status) -> DIh
+    201:201:void access$2(org.greencubes.client.ClientOld$ClinetStatus,java.lang.String) -> DIh
+    202:202:void access$3(org.greencubes.client.ClientOld$ClinetStatus,float) -> DIh
     17:17:boolean canOpenBrowser() -> JZD
     21:29:void onenURLInBrowser(java.lang.String) -> DIh
     34:44:org.json.JSONObject sessionRequest(java.lang.String) -> jqA
@@ -28545,8 +28545,8 @@ org.greencubes.client.ClientOld$FileDownloader -> org.greencubes.*.jvp:
     java.lang.String error -> AmB
     int repeats -> AMb
     org.greencubes.client.ClientOld this$0 -> jLa
-    665:666:void abort() -> DIh
-    670:719:void run() -> run
+    666:667:void abort() -> DIh
+    671:720:void run() -> run
 org.greencubes.client.GameFile -> org.greencubes.*.lGC:
     java.io.File localFile -> DIh
     java.lang.String remoteFileUrl -> jqA
@@ -28615,21 +28615,22 @@ org.greencubes.download.Downloader -> org.greencubes.*.tHL:
     int bytesDownloaded -> DIh
     java.io.IOException lastError -> dAZ
     boolean waitingForRepeat -> jZd
-    org.apache.http.impl.client.CloseableHttpClient httpClient -> vag
-    java.util.List log -> vai
-    67:72:void close() -> jqA
-    75:76:void clearServers() -> AmB
-    79:79:java.lang.String[] getServers() -> JZD
-    83:83:java.lang.String[] getLog() -> AMb
-    87:92:void addServer(java.lang.String) -> DIh
-    95:100:void nextServer() -> jLa
-    103:103:boolean isCrashed() -> diH
-    107:154:int getFileSize(java.lang.String) -> AmB
-    158:228:void downloadFile(java.io.File,java.lang.String) -> DIh
-    231:288:java.io.InputStream getInputStream(java.lang.String) -> JZD
-    292:292:java.lang.String readURL(java.lang.String) -> jqA
-    296:367:java.lang.String readURL(java.lang.String,java.util.Map) -> DIh
-    371:381:void setupBetterKeystore() -> DIh
+    boolean ignoreHTTPErrors -> vag
+    org.apache.http.impl.client.CloseableHttpClient httpClient -> vai
+    java.util.List log -> jvp
+    68:73:void close() -> jqA
+    76:77:void clearServers() -> AmB
+    80:80:java.lang.String[] getServers() -> JZD
+    84:84:java.lang.String[] getLog() -> AMb
+    88:93:void addServer(java.lang.String) -> DIh
+    96:101:void nextServer() -> jLa
+    104:104:boolean isCrashed() -> diH
+    108:155:int getFileSize(java.lang.String) -> AmB
+    159:229:void downloadFile(java.io.File,java.lang.String) -> DIh
+    232:289:java.io.InputStream getInputStream(java.lang.String) -> JZD
+    293:293:java.lang.String readURL(java.lang.String) -> jqA
+    297:368:java.lang.String readURL(java.lang.String,java.util.Map) -> DIh
+    372:382:void setupBetterKeystore() -> DIh
 org.greencubes.download.HTTPResponseError -> org.greencubes.*.JzD:
     long serialVersionUID -> DIh
 org.greencubes.launcher.AuthError -> org.greencubes.*.jqa:
